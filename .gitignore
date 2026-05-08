@@ -1,0 +1,49 @@
+# Build results
+bin/
+obj/
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# ASP.NET Core
+appsettings.Development.json
+
+# Logs
+*.log
+
+# NuGet
+*.nupkg
+packages/
+
+# Test results
+TestResults/
+
+# Entity Framework
+*.db
+*.sqlite
+*.mdf
+*.ldf
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Coverage reports
+coverage/
+coverage-report/
+
+# Publish output
+publish/
+
+# Temporary files
+tmp/
+temp/
+
+# Node modules (if frontend later)
+node_modules/
