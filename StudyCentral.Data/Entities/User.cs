@@ -16,3 +16,9 @@ public class User
     
     public ICollection<Course> Courses { get; set; } = new List<Course>();
 }
+
+public enum UserRole
+{
+    Student,
+    Teacher
+}

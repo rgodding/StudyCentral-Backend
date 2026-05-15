@@ -14,3 +14,10 @@ public class Chat
     public List<Message> Messages { get; set; } = new List<Message>();
     public ICollection<User> Participants { get; set; } = new List<User>();
 }
+
+public enum ChatType
+{
+    Private,
+    Group,
+    Course
+}

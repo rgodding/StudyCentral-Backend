@@ -12,5 +12,6 @@ public class Assignment
     public Guid CourseId { get; set; }
     public Course? Course { get; set; }
     
+    public ICollection<File> Files { get; set; } = new List<File>();
     public ICollection<Submission> Submissions { get; set; } = new List<Submission>();
 }
