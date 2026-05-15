@@ -44,6 +44,7 @@ public class Startup
     {
         // Apply EF Core migrations if database doesn't exist
         
+        
         // Allows cors policy
         app.UseCors("AllowAll");
         
