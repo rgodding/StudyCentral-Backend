@@ -1,6 +1,0 @@
-@StudyCentral.API_HostAddress = http://localhost:5228
-
-GET {{StudyCentral.API_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
