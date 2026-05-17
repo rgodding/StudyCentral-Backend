@@ -1,4 +1,4 @@
-﻿namespace StudyCentral.Data.Entities;
+﻿namespace StudyCentral.API.Models.Entities;
 
 public class Assignment
 {
@@ -6,12 +6,12 @@ public class Assignment
 
     public string Title { get; set; } = null!;
     public string? Description { get; set; }
-    
+
     public DateTime Deadline { get; set; }
     
     public Guid CourseId { get; set; }
     public Course? Course { get; set; }
     
-    public ICollection<File> Files { get; set; } = new List<File>();
+    public ICollection<StudyFile> Files { get; set; } = new List<StudyFile>();
     public ICollection<Submission> Submissions { get; set; } = new List<Submission>();
 }

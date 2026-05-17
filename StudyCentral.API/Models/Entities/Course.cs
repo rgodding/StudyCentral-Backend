@@ -1,4 +1,4 @@
-﻿namespace StudyCentral.Data.Entities;
+﻿namespace StudyCentral.API.Models.Entities;
 
 public class Course
 {
@@ -10,5 +10,5 @@ public class Course
     public Guid TeacherId { get; set; }
     public User? Teacher { get; set; }
     
-    public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
+    public ICollection<User> Students { get; set; } = new List<User>();
 }

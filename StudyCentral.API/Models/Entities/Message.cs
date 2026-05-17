@@ -1,4 +1,4 @@
-﻿namespace StudyCentral.Data.Entities;
+﻿namespace StudyCentral.API.Models.Entities;
 
 public class Message
 {

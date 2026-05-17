@@ -1,4 +1,4 @@
-﻿namespace StudyCentral.Data.Entities;
+﻿namespace StudyCentral.API.Models.Entities;
 
 public class User
 {
@@ -10,9 +10,10 @@ public class User
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
 
-    public string? AvatarUrl { get; set; }
-
     public UserRole Role { get; set; }
+    
+    public StudyFile? Avatar { get; set; }
+
     
     public ICollection<Course> Courses { get; set; } = new List<Course>();
 }

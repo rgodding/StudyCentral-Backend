@@ -1,10 +1,8 @@
-﻿namespace StudyCentral.Data.Entities;
+﻿namespace StudyCentral.API.Models.Entities;
 
 public class Submission
 {
     public Guid Id { get; set; }
-    
-    public string FileUrl { get; set; }
     
     public DateTime SubmittedAt { get; set; }
     
@@ -16,4 +14,6 @@ public class Submission
     
     public Guid UserId { get; set; }
     public User User { get; set; }
+    
+    public ICollection<StudyFile> Files { get; set; } = new List<StudyFile>();
 }

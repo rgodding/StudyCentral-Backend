@@ -1,6 +1,6 @@
-﻿namespace StudyCentral.Data.Entities;
+﻿namespace StudyCentral.API.Models.Entities;
 
-public class File
+public class StudyFile
 {
     public Guid Id { get; set; }
 
