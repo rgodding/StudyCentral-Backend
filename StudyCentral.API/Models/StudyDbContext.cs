@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-
-namespace StudyCentral.Data;
+namespace StudyCentral.API.Models;
 
 public class StudyDbContext : DbContext
 {
@@ -19,11 +18,19 @@ public class StudyDbContext : DbContext
                 .AddUserSecrets<StudyDbContext>()
                 .AddEnvironmentVariables()
                 .Build();
-            var optionsBuilder = new DbContextOptionsBuilder<StudyDbContext>()
-                .UseSqlServer("Server=localhost;Database=StudyCentral;User Id=sa;Password=;");
-            
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                throw new Exception("Connection string not set");
+            }
+
+            var optionsBuilder = new DbContextOptionsBuilder<StudyDbContext>();
+            optionsBuilder.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 29)));
             return new StudyDbContext(optionsBuilder.Options);
         }
     }
+    
+    // Models to be set
+    public DbSet<User> Users { get; set; } = null!;
     
 }
