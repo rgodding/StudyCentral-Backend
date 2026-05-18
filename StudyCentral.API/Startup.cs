@@ -1,4 +1,5 @@
-﻿using StudyCentral.API.Middleware;
+﻿using StudyCentral.API.Configurations;
+using StudyCentral.API.Middleware;
 
 namespace StudyCentral.API;
 
@@ -17,16 +18,25 @@ public class Startup
 
         var issuer = Configuration["Jwt:Issuer"];
         var audience = Configuration["Jwt:Audience"];
-        var secret = Configuration["Jwt:Key"];
+        var key = Configuration["Jwt:Key"];
         
         var connectionString = Configuration["ConnectionStrings:DefaultConnection"];
         
         // Validate configuration values
-        if (string.IsNullOrEmpty(issuer) || string.IsNullOrEmpty(audience) || string.IsNullOrEmpty(secret))
+        if (string.IsNullOrEmpty(issuer) || string.IsNullOrEmpty(audience) || string.IsNullOrEmpty(key))
         {
+            Console.WriteLine("Invalid Configuration Values");
             throw new Exception("Invalid Configuration Values");
         }
         
+        
+        AuthenticationConfig.Configure(services, issuer, audience, key);
+        AuthorizationConfig.Configure(services);
+        ServiceConfig.Configure(services);
+        DatabaseConfig.Configure(services, connectionString);
+        SwaggerConfig.Configure(services);
+
+        Console.WriteLine("addubg controlers");
         services.AddControllers();
         
         // Adds cors policy which allows any origin, method and header
@@ -65,7 +75,8 @@ public class Startup
                 c.ConfigObject.AdditionalItems["persistAuthorization"] = true;
             });
         }
-        
+
+        Console.WriteLine("okay almost there");
         app.UseHttpsRedirection();
         app.UseRouting();
         app.UseAuthorization();
