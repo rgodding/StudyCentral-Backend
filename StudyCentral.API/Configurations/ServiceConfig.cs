@@ -2,5 +2,9 @@
 
 public class ServiceConfig
 {
+    public static void Configure(IServiceCollection services)
+    {
+        
+    }
     
 }

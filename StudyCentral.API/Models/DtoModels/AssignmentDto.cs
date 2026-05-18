@@ -6,4 +6,7 @@ public class AssignmentDto
     public string Title { get; set; } = null!;
     public string? Description { get; set; }
     public DateTime Deadline { get; set; }
+    
+    public ICollection<StudyFileDto> Files { get; set; } = new List<StudyFileDto>();
+    public ICollection<SubmissionDto> Submissions { get; set; } = new List<SubmissionDto>();
 }

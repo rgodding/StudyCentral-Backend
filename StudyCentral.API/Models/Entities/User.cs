@@ -13,7 +13,6 @@ public class User
     public UserRole Role { get; set; }
     
     public StudyFile? Avatar { get; set; }
-
     
     public ICollection<Course> Courses { get; set; } = new List<Course>();
 }
@@ -21,5 +20,6 @@ public class User
 public enum UserRole
 {
     Student,
-    Teacher
+    Teacher,
+    Admin
 }
