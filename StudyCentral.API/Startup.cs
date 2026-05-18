@@ -44,7 +44,6 @@ public class Startup
     {
         // Apply EF Core migrations if database doesn't exist
         
-        
         // Allows cors policy
         app.UseCors("AllowAll");
         
@@ -54,13 +53,13 @@ public class Startup
         if (env.IsDevelopment())
         {
             // Middleware for Testing
-            app.UseMiddleware<TestRunMiddleware>();
+            // app.UseMiddleware<TestRunMiddleware>();
             
             // app.UseDeveloperExceptionPage();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "copium-fitness-backend v1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "studycentral-backend v1");
 
                 // Persist Bearer token between requests & refreshes
                 c.ConfigObject.AdditionalItems["persistAuthorization"] = true;
