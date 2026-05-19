@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudyCentral.API.Authentication;
+using StudyCentral.API.Models.ApiModels.AuthModels;
 using StudyCentral.API.Services;
 
 namespace StudyCentral.API.Controllers.UserController;
@@ -20,18 +21,43 @@ public class AuthController : BaseUserController
     }
 
     [HttpGet]
+    [Route("get-user-info")]
+    public async Task<IActionResult> GetUserInfo()
+    {
+        var user = await _userService.GetUserInfo(UserPrincipal.Id);
+        var response = _mapper.Map<GetUserInfoResponseModel>(user);
+        return Ok(response);
+    }
+
+    [HttpGet]
     [Route("sign-in")]
     [AllowAnonymous]
-    public async Task<IActionResult> SignIn()
+    public async Task<IActionResult> SignIn([FromBody] SignInRequestModel request)
     {
-        return Ok("22");
+        var user = await _userService.GetUserByEmail(request.Email);
+        
+        // Check if the password is correct
+        if (!PasswordHelper.VerifyHash(request.Password, user.PasswordHash))
+        {
+            throw new UnauthorizedAccessException("Invalid password");
+        }
+        
+        var token = _jwtHelper.GenerateToken(user);
+
+        var response = new SignInResponseModel
+        {
+            Token = token,
+        };
+        
+        return Ok(response);
     }
 
     [HttpPost]
     [Route("sign-up")]
     [AllowAnonymous]
-    public async Task<IActionResult> SignUp()
+    public async Task<IActionResult> SignUp([FromBody] SignUpRequestModel request)
     {
-        return Ok();
+        var user = await _userService.CreateUser(request);
+        return Ok(user);
     }
 }

@@ -5,11 +5,11 @@ namespace StudyCentral.API.Controllers;
 
 public class BaseController : ControllerBase
 {
-    protected readonly IMapper Mapper;
+    protected readonly IMapper _mapper;
     
     public BaseController(IMapper mapper)
     {
-        Mapper = mapper;
+        _mapper = mapper;
     }
     
 }
