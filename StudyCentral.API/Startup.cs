@@ -44,11 +44,14 @@ public class Startup
         // Adds cors policy which allows any origin, method and header
         services.AddCors(options =>
         {
-            options.AddPolicy("AllowAll", builder =>
-                builder.AllowAnyOrigin()
-                    .AllowAnyMethod()
+            options.AddPolicy("Frontend", policy =>
+            {
+                policy
+                    .WithOrigins("http://localhost:5173")
                     .AllowAnyHeader()
-            );
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+            });
         });
     }
 
@@ -58,7 +61,7 @@ public class Startup
         dbContext.Database.Migrate();
         
         // Allows cors policy
-        app.UseCors("AllowAll");
+        app.UseCors("Frontend");
         
         // Middleware
         app.UseMiddleware<ExceptionMiddleware>();
