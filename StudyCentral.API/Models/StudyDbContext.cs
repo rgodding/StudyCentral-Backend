@@ -43,6 +43,106 @@ public class StudyDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // User
+        modelBuilder.Entity<User>()
+            .HasOne(u => u.Avatar);
+        
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
+        
+        // User & Avatar
+        modelBuilder.Entity<User>()
+            .HasOne(u => u.Avatar);
+        
+        // Course
+        
+        modelBuilder.Entity<Course>()
+            .HasIndex(c => c.Title)
+            .IsUnique();
+        
+        // Course & Teacher
+        modelBuilder.Entity<Course>()
+            .HasOne(c => c.Teacher);
+        
+        // Course & Students
+        modelBuilder.Entity<Course>()
+            .HasMany(c => c.Students)
+            .WithMany(s => s.Courses)
+            .UsingEntity(j => j.ToTable("CourseStudent"));
+        
+        // Course & Assignments
+        modelBuilder.Entity<Course>()
+            .HasMany(c => c.Assignments)
+            .WithOne(a => a.Course)
+            .HasForeignKey(a => a.CourseId);
+
+        // Assignment
+        modelBuilder.Entity<Assignment>()
+            .HasIndex(a => a.Title)
+            .IsUnique();
+        
+        // Assignment & Files
+        modelBuilder.Entity<Assignment>()
+            .HasMany(a => a.Files);
+        
+        // Assignment & Submissions
+        modelBuilder.Entity<Assignment>()
+            .HasMany(a => a.Submissions)
+            .WithOne(s => s.Assignment)
+            .HasForeignKey(s => s.AssignmentId);
+        
+        // Submission
+        modelBuilder.Entity<Submission>()   
+            .HasIndex(s => new { s.AssignmentId, s.UserId })
+            .IsUnique();
+        
+        // Submission & Files
+        modelBuilder.Entity<Submission>()
+            .HasMany(s => s.Files);
+        
+        // Chat
+        modelBuilder.Entity<Chat>()
+            .HasIndex(c => c.Name)
+            .IsUnique();
+        
+        // Chat & Course
+        modelBuilder.Entity<Chat>()
+            .HasOne(c => c.Course);
+        
+        // Chat & Messages
+        modelBuilder.Entity<Chat>()
+            .HasMany(c => c.Messages)
+            .WithOne(m => m.Chat)
+            .HasForeignKey(m => m.ChatId);
+        
+        // Chat & Participants
+        modelBuilder.Entity<Chat>()
+            .HasMany(c => c.Participants)
+            .WithMany(p => p.Chats)
+            .UsingEntity(j => j.ToTable("ChatParticipant"));
+        
+        // Message
+        
+        // Message & User
+        modelBuilder.Entity<Message>()
+            .HasOne(m => m.User)
+            .WithMany(u => u.Messages)
+            .HasForeignKey(m => m.UserId);
+       
+        // Notification
+        modelBuilder.Entity<Notification>()
+            .HasIndex(n => n.Title)
+            .IsUnique();
+        
+        // User & Notifications
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.Notifications)
+            .WithOne(n => n.User)
+            .HasForeignKey(n => n.UserId);
+        
+        
+        // SEED DATA
         
     }
     
