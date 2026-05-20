@@ -1,5 +1,7 @@
-﻿using StudyCentral.API.Configurations;
+﻿using Microsoft.EntityFrameworkCore;
+using StudyCentral.API.Configurations;
 using StudyCentral.API.Middleware;
+using StudyCentral.API.Models;
 
 namespace StudyCentral.API;
 
@@ -50,14 +52,16 @@ public class Startup
         });
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, StudyDbContext dbContext)
     {
         // Apply EF Core migrations if database doesn't exist
+        dbContext.Database.Migrate();
         
         // Allows cors policy
         app.UseCors("AllowAll");
         
         // Middleware
+        app.UseMiddleware<ExceptionMiddleware>();
         
         // Is in development environment
         if (env.IsDevelopment())

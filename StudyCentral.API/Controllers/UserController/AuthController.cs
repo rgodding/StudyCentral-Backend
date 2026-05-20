@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudyCentral.API.Authentication;
 using StudyCentral.API.Models.ApiModels.AuthModels;
+using StudyCentral.API.Models.DtoModels;
 using StudyCentral.API.Services;
 
 namespace StudyCentral.API.Controllers.UserController;
@@ -25,11 +26,11 @@ public class AuthController : BaseUserController
     public async Task<IActionResult> GetUserInfo()
     {
         var user = await _userService.GetUserInfo(UserPrincipal.Id);
-        var response = _mapper.Map<GetUserInfoResponseModel>(user);
+        var response = _mapper.Map<UserDto>(user);
         return Ok(response);
     }
 
-    [HttpGet]
+    [HttpPost]
     [Route("sign-in")]
     [AllowAnonymous]
     public async Task<IActionResult> SignIn([FromBody] SignInRequestModel request)
@@ -43,12 +44,10 @@ public class AuthController : BaseUserController
         }
         
         var token = _jwtHelper.GenerateToken(user);
-
         var response = new SignInResponseModel
         {
             Token = token,
         };
-        
         return Ok(response);
     }
 
@@ -58,6 +57,8 @@ public class AuthController : BaseUserController
     public async Task<IActionResult> SignUp([FromBody] SignUpRequestModel request)
     {
         var user = await _userService.CreateUser(request);
-        return Ok(user);
+        var response = _mapper.Map<SignUpResponseModel>(user);
+        
+        return Ok(response);
     }
 }

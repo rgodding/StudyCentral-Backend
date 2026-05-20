@@ -13,7 +13,7 @@ public interface IUserService
     Task<User> GetUserById(int id);
     Task<User> GetUserByEmail(string email);
     Task<User> CreateUser(SignUpRequestModel request);
-    Task<User> GetUserInfo(Guid token);
+    Task<User> GetUserInfo(Guid Id);
 }
 
 public class UserService : IUserService
@@ -51,12 +51,14 @@ public class UserService : IUserService
 
     public async Task<User> CreateUser(SignUpRequestModel request)
     {
+        Console.WriteLine("Creating user");
         var userExists = await _dbContext.Users.AnyAsync(x => x.Email == request.Email);
         if (userExists)
         {
             throw new ExceptionMiddleware.ConflictException($"Email already in use");
         }
-        
+
+        Console.WriteLine("Mapping request to user");
         var newUser = _mapper.Map<User>(request);
         
         var hashedPassword = PasswordHelper.HashPassword(request.Password);
@@ -69,8 +71,10 @@ public class UserService : IUserService
         return newUser;
     }
 
-    public Task<User> GetUserInfo(Guid token)
+    public async Task<User> GetUserInfo(Guid Id)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Users
+            .FirstOrDefaultAsync(u => u.Id == Id)
+            ?? throw new KeyNotFoundException("User with ID " + Id + " not found.");
     }
 }

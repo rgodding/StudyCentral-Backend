@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using StudyCentral.API.Authentication;
 
 namespace StudyCentral.API.Controllers;
 
+[Authorize(Policy = "IsUser")]
 public class BaseUserController : BaseController
 {
     protected readonly JwtHelper _jwtHelper;

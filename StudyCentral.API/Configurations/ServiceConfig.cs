@@ -1,4 +1,5 @@
-﻿using StudyCentral.API.Authentication;
+﻿using System.Text.Json.Serialization;
+using StudyCentral.API.Authentication;
 using StudyCentral.API.Models;
 using StudyCentral.API.Services;
 
@@ -9,6 +10,7 @@ public class ServiceConfig
     public static void Configure(IServiceCollection services)
     {
         ServiceClasses(services);
+        JsonConfig(services);
     }
     private static void ServiceClasses(IServiceCollection services)
     {
@@ -19,5 +21,15 @@ public class ServiceConfig
         // Services
         services.AddScoped<IUserService, UserService>();
 
+    }
+    
+    private static void JsonConfig(IServiceCollection services)
+    {
+        services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(
+                    new JsonStringEnumConverter());
+            });
     }
 }
