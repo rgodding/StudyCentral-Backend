@@ -47,3 +47,6 @@ temp/
 
 # Node modules (if frontend later)
 node_modules/
+
+azurite/
+__azurite*

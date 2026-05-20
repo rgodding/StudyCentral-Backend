@@ -18,8 +18,12 @@ public class ServiceConfig
         services.AddAutoMapper(typeof(MappingProfile));
         // JWT
         services.AddScoped<JwtHelper>();
+        // Blob
+        services.AddSingleton<IBlobService, BlobService>();
+        
         // Services
         services.AddScoped<IUserService, UserService>();
+        
 
     }
     

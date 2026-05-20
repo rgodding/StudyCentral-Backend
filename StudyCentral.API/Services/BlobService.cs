@@ -1,9 +1,11 @@
-﻿namespace StudyCentral.API.Services;
+﻿using Azure.Storage.Blobs;
+
+namespace StudyCentral.API.Services;
 
 public interface IBlobService
 {
     // Image functions
-    Task<Stream> GetImage(string url);
+    Task<(Stream, string)> GetImage(string url);
     Task<(int, string)> UploadImage(string fileName, IFormFile file);
     Task<(int, string)> DeleteImage(string url);
     Task<bool> ImageExists(string filename);
@@ -17,15 +19,34 @@ public interface IBlobService
 public class BlobService : IBlobService
 {
     
-    private readonly IConfiguration Configuration;
-    
+    private readonly IConfiguration _configuration;
+
     public BlobService(IConfiguration configuration)
     {
-        Configuration = configuration;
+        _configuration = configuration;
     }
-    
-    public Task<Stream> GetImage(string url)
+
+
+    public async Task<(Stream, string)> GetImage(string url)
     {
+        if (url == null)
+        {
+            throw new Exception("Image URL is null");
+        }
+        
+        var containerClient = GetBlobContainerClient();
+
+        try
+        {
+            var blobClient = containerClient.GetBlobClient(url);
+            var response = await blobClient.DownloadAsync();
+            return (response.Value.Content, response.Value.ContentType);
+        }
+        catch (Exception ex)
+        {
+            var defaultImage = await File.ReadAllBytesAsync("wwwroot/images/default-image.png");
+            return (new MemoryStream(defaultImage), "image/png");
+        }
         throw new NotImplementedException();
     }
 
@@ -57,5 +78,18 @@ public class BlobService : IBlobService
     public Task<bool> FileExists(string filename)
     {
         throw new NotImplementedException();
+    }
+    
+    private BlobContainerClient GetBlobContainerClient()
+    {
+        var connectionString = _configuration["Azurite:ConnectionString"];
+        var containerName = _configuration["Azurite:Container"];
+        Console.WriteLine("Connecting to Azure Blob Storage");
+        Console.WriteLine($"Container: {containerName}");
+        Console.WriteLine($"Connection String: {connectionString}");
+        var blobServiceClient = new BlobServiceClient(connectionString);
+        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+        containerClient.CreateIfNotExists();
+        return containerClient;
     }
 }
