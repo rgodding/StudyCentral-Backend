@@ -133,6 +133,28 @@ namespace StudyCentral.API.Migrations
                     b.ToTable("Courses");
                 });
 
+            modelBuilder.Entity("StudyCentral.API.Models.Entities.ImageFile", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("AltText")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Images");
+                });
+
             modelBuilder.Entity("StudyCentral.API.Models.Entities.Message", b =>
                 {
                     b.Property<Guid>("Id")
@@ -273,9 +295,6 @@ namespace StudyCentral.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid?>("AvatarId")
-                        .HasColumnType("char(36)");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("varchar(255)");
@@ -292,17 +311,49 @@ namespace StudyCentral.API.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<Guid?>("ProfilePictureId")
+                        .HasColumnType("char(36)");
+
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AvatarId");
-
                     b.HasIndex("Email")
                         .IsUnique();
 
+                    b.HasIndex("ProfilePictureId");
+
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("08deb68b-5c0f-447c-86a2-152bdf58b714"),
+                            Email = "user@mail.com",
+                            FirstName = "John",
+                            LastName = "Student",
+                            PasswordHash = "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6",
+                            Role = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("08deb68b-c568-4182-841f-7f7f7da655d8"),
+                            Email = "teacher@mail.com",
+                            FirstName = "Jonathan",
+                            LastName = "Teacher",
+                            PasswordHash = "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6",
+                            Role = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("08deb68b-ca1a-49f8-80a9-cebcdca84136"),
+                            Email = "admin@mail.com",
+                            FirstName = "Mister",
+                            LastName = "Admin",
+                            PasswordHash = "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6",
+                            Role = 2
+                        });
                 });
 
             modelBuilder.Entity("ChatUser", b =>
@@ -428,11 +479,11 @@ namespace StudyCentral.API.Migrations
 
             modelBuilder.Entity("StudyCentral.API.Models.Entities.User", b =>
                 {
-                    b.HasOne("StudyCentral.API.Models.Entities.StudyFile", "Avatar")
+                    b.HasOne("StudyCentral.API.Models.Entities.ImageFile", "ProfilePicture")
                         .WithMany()
-                        .HasForeignKey("AvatarId");
+                        .HasForeignKey("ProfilePictureId");
 
-                    b.Navigation("Avatar");
+                    b.Navigation("ProfilePicture");
                 });
 
             modelBuilder.Entity("StudyCentral.API.Models.Entities.Assignment", b =>

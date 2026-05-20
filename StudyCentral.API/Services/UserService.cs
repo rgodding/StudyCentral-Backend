@@ -10,15 +10,14 @@ namespace StudyCentral.API.Services;
 
 public interface IUserService
 {
-    Task<User> GetUserById(int id);
+    Task<User> GetUserById(Guid id);
     Task<User> GetUserByEmail(string email);
     Task<User> CreateUser(SignUpRequestModel request);
-    Task<User> GetUserInfo(Guid Id);
+    Task<User> GetUserInfo(Guid id);
 }
 
 public class UserService : IUserService
 {
-    
     private readonly StudyDbContext _dbContext;
     private readonly IMapper _mapper;
 
@@ -32,21 +31,16 @@ public class UserService : IUserService
     public async Task<User> GetUserById(Guid id)
     {
         return await _dbContext.Users
-            .FirstOrDefaultAsync(u => u.Id == id)
-            ?? throw new KeyNotFoundException("User with ID " + id + " not found.");
-    }
-
-    public Task<User> GetUserById(int id)
-    {
-        throw new NotImplementedException();
+                   .Include(u => u.ProfilePicture)
+                   .FirstOrDefaultAsync(u => u.Id == id) 
+               ?? throw new KeyNotFoundException("User with ID " + id + " not found.");
     }
 
     public async Task<User> GetUserByEmail(string email)
     {
         return await _dbContext.Users
                    .FirstOrDefaultAsync(u => u.Email == email)
-            ?? throw new KeyNotFoundException("User with email " + email + " not found.");
-        
+               ?? throw new KeyNotFoundException("User with email " + email + " not found.");
     }
 
     public async Task<User> CreateUser(SignUpRequestModel request)
@@ -60,21 +54,22 @@ public class UserService : IUserService
 
         Console.WriteLine("Mapping request to user");
         var newUser = _mapper.Map<User>(request);
-        
+
         var hashedPassword = PasswordHelper.HashPassword(request.Password);
-        
+
         newUser.PasswordHash = hashedPassword;
-        
+
         await _dbContext.Users.AddAsync(newUser);
         await _dbContext.SaveChangesAsync();
-        
+
         return newUser;
     }
 
-    public async Task<User> GetUserInfo(Guid Id)
+    public async Task<User> GetUserInfo(Guid id)
     {
         return await _dbContext.Users
-            .FirstOrDefaultAsync(u => u.Id == Id)
-            ?? throw new KeyNotFoundException("User with ID " + Id + " not found.");
+                   .FirstOrDefaultAsync(u => u.Id == id)
+               ?? throw new KeyNotFoundException("User with ID " + id + " not found.");
     }
 }
+    

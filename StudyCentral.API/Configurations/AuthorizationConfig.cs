@@ -28,12 +28,10 @@ public class AuthorizationConfig
                 policy.RequireAuthenticatedUser();
                 policy.Requirements.Add(new IsStudentRequirement(nameof(UserRole.Student)));
             });
-            
             options.AddPolicy("IsUser", policy =>
             {
                 policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                 policy.RequireAuthenticatedUser();
-                policy.AddRequirements(new IsUserRequirement(nameof(UserRole.Student), nameof(UserRole.Teacher), nameof(UserRole.Admin)));
             });
         });
     }

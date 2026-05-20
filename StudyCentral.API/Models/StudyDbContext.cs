@@ -40,23 +40,20 @@ public class StudyDbContext : DbContext
     public DbSet<Notification> Notifications { get; set; } = null!;
     public DbSet<Submission> Submissions { get; set; } = null!;
     public DbSet<StudyFile> Files { get; set; } = null!;
+    public DbSet<ImageFile> Images { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // User
-        modelBuilder.Entity<User>()
-            .HasOne(u => u.Avatar);
-        
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Email)
             .IsUnique();
         
         // User & Avatar
         modelBuilder.Entity<User>()
-            .HasOne(u => u.Avatar);
+            .HasOne(u => u.ProfilePicture);
         
         // Course
-        
         modelBuilder.Entity<Course>()
             .HasIndex(c => c.Title)
             .IsUnique();
@@ -143,7 +140,37 @@ public class StudyDbContext : DbContext
         
         
         // SEED DATA
-        
+        // Users
+        modelBuilder.Entity<User>().HasData(
+            new User
+            {
+                Id = Guid.Parse("08deb68b-5c0f-447c-86a2-152bdf58b714"),
+                Email = "user@mail.com",
+                PasswordHash = "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6",
+                FirstName = "John",
+                LastName = "Student",
+                Role = UserRole.Student
+            },
+            new User
+            {
+                Id = Guid.Parse("08deb68b-c568-4182-841f-7f7f7da655d8"),
+                Email = "teacher@mail.com",
+                PasswordHash = "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6",
+                FirstName = "Jonathan",
+                LastName = "Teacher",
+                Role = UserRole.Teacher
+            },
+            new User
+            {
+                Id = Guid.Parse("08deb68b-ca1a-49f8-80a9-cebcdca84136"),
+                Email = "admin@mail.com",
+                PasswordHash = "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6",
+                FirstName = "Mister",
+                LastName = "Admin",
+                Role = UserRole.Admin
+            }
+        );
+
     }
     
 }

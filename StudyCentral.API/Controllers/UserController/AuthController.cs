@@ -25,6 +25,7 @@ public class AuthController : BaseUserController
     [Route("get-user-info")]
     public async Task<IActionResult> GetUserInfo()
     {
+        Console.WriteLine("Getting user info");
         var user = await _userService.GetUserInfo(UserPrincipal.Id);
         var response = _mapper.Map<UserDto>(user);
         return Ok(response);

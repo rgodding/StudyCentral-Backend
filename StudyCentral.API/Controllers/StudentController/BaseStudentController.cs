@@ -2,19 +2,20 @@
 using Microsoft.AspNetCore.Authorization;
 using StudyCentral.API.Authentication;
 
-namespace StudyCentral.API.Controllers;
+namespace StudyCentral.API.Controllers.StudentController;
 
-[Authorize(Policy = "IsUser")]
-public class BaseUserController : BaseController
+[Authorize(Policy = "IsStudent")]
+public class BaseStudentController : BaseController
 {
     protected readonly JwtHelper _jwtHelper;
     private UserPrincipal? _userPrincipal;
 
-    public BaseUserController(IMapper mapper, JwtHelper jwtHelper) : base(mapper)
+    public BaseStudentController(IMapper mapper, JwtHelper jwtHelper, UserPrincipal? userPrincipal) : base(mapper)
     {
         _jwtHelper = jwtHelper;
+        _userPrincipal = userPrincipal;
     }
-    
+
     protected virtual UserPrincipal UserPrincipal
     {
         get

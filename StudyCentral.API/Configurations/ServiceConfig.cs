@@ -23,17 +23,20 @@ public class ServiceConfig
         
         // Services
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IStudentService, StudentService>();
         
 
     }
     
     private static void JsonConfig(IServiceCollection services)
     {
+        /*
         services.AddControllers()
             .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(
                     new JsonStringEnumConverter());
             });
+        */
     }
 }

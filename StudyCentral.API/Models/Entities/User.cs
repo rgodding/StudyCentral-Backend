@@ -12,7 +12,7 @@ public class User
 
     public UserRole Role { get; set; }
     
-    public StudyFile? Avatar { get; set; }
+    public ImageFile? ProfilePicture { get; set; }
     
     // Course related relationships
     public ICollection<Course> Courses { get; set; } = new List<Course>();
