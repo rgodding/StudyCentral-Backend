@@ -52,6 +52,41 @@ namespace StudyCentral.API.Migrations
                     b.ToTable("CourseStudent", (string)null);
                 });
 
+            modelBuilder.Entity("StudyCentral.API.Models.Entities.Announcement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("CourseId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("Title")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Announcements");
+                });
+
             modelBuilder.Entity("StudyCentral.API.Models.Entities.Assignment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -71,12 +106,17 @@ namespace StudyCentral.API.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("char(36)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId");
 
                     b.HasIndex("Title")
                         .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Assignments");
                 });
@@ -406,6 +446,21 @@ namespace StudyCentral.API.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("StudyCentral.API.Models.Entities.Announcement", b =>
+                {
+                    b.HasOne("StudyCentral.API.Models.Entities.Course", "Course")
+                        .WithMany("Announcements")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("StudyCentral.API.Models.Entities.User", null)
+                        .WithMany("Announcements")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Course");
+                });
+
             modelBuilder.Entity("StudyCentral.API.Models.Entities.Assignment", b =>
                 {
                     b.HasOne("StudyCentral.API.Models.Entities.Course", "Course")
@@ -413,6 +468,10 @@ namespace StudyCentral.API.Migrations
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("StudyCentral.API.Models.Entities.User", null)
+                        .WithMany("Assignments")
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Course");
                 });
@@ -518,6 +577,8 @@ namespace StudyCentral.API.Migrations
 
             modelBuilder.Entity("StudyCentral.API.Models.Entities.Course", b =>
                 {
+                    b.Navigation("Announcements");
+
                     b.Navigation("Assignments");
                 });
 
@@ -528,6 +589,10 @@ namespace StudyCentral.API.Migrations
 
             modelBuilder.Entity("StudyCentral.API.Models.Entities.User", b =>
                 {
+                    b.Navigation("Announcements");
+
+                    b.Navigation("Assignments");
+
                     b.Navigation("Messages");
 
                     b.Navigation("Notifications");

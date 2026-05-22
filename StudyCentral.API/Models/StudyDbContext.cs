@@ -39,6 +39,7 @@ public class StudyDbContext : DbContext
     public DbSet<Message> Messages { get; set; } = null!;
     public DbSet<Notification> Notifications { get; set; } = null!;
     public DbSet<Submission> Submissions { get; set; } = null!;
+    public DbSet<Announcement> Announcements { get; set; } = null!;
     public DbSet<StudyFile> Files { get; set; } = null!;
     public DbSet<ImageFile> Images { get; set; } = null!;
 
@@ -137,6 +138,17 @@ public class StudyDbContext : DbContext
             .HasMany(u => u.Notifications)
             .WithOne(n => n.User)
             .HasForeignKey(n => n.UserId);
+        
+        // Announcement
+        modelBuilder.Entity<Announcement>()
+            .HasIndex(a => a.Title)
+            .IsUnique();
+        
+        // Announcement & Course
+        modelBuilder.Entity<Announcement>()
+            .HasOne(a => a.Course)
+            .WithMany(c => c.Announcements)
+            .HasForeignKey(a => a.CourseId);
         
         
         // SEED DATA
