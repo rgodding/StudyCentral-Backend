@@ -23,6 +23,22 @@ public class StudentController : BaseStudentController
         var result = await _studentService.GetCoursesByStudentId(UserPrincipal.Id);
         return Ok(result);
     }
+    
+    [HttpGet]
+    [Route("get-assignments")]
+    public async Task<IActionResult> GetAssignmentsByStudentId()
+    {
+        return Ok("Assignments for student");
+    }
+    
+    [HttpGet]
+    [Route("get-announcements")]
+    public async Task<IActionResult> GetAnnouncementsByStudentId()
+    {
+        return Ok("Announcements for student");
+    }
+    
+    
 
     [HttpPost]
     [Route("upload-profile-picture")]

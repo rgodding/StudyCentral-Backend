@@ -1,13 +1,37 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Models;
+using StudyCentral.API.Models.ApiModels.StudentModels;
 using StudyCentral.API.Models.Entities;
 
 namespace StudyCentral.API.Services;
 
 public interface IStudentService    
 {
+    // Profile
     public Task UploadProfilePicture(Guid userId, IFormFile file, string altText);
+    
+    // Courses
     public Task<List<Course>> GetCoursesByStudentId(Guid userId);
+    public Task<Course> GetCourseById(Guid id);
+    
+    // Assignments
+    Task<List<Assignment>> GetAssignmentsByStudentId(Guid userId);
+    Task<Assignment> GetAssignmentById(Guid id);
+    
+    // Submissions
+    Task CreateSubmission(
+        Guid assignmentId,
+        Guid studentId,
+        CreateSubmissionRequestModel request
+    );
+    Task SubmitAssignment(
+        Guid assignmentId, 
+        Guid studentId,
+        SubmitAssignmentRequestModel request);
+    Task<List<Submission>> GetSubmissionsByStudentId(Guid studentId);
+    Task<Submission> GetSubmissionById(Guid id);
+    
+    
 }
 
 public class StudentService : IStudentService
@@ -64,5 +88,40 @@ public class StudentService : IStudentService
             .ToListAsync();
         
         return studentCourses;
+    }
+
+    public Task<Course> GetCourseById(Guid id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<List<Assignment>> GetAssignmentsByStudentId(Guid userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Assignment> GetAssignmentById(Guid id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task CreateSubmission(Guid assignmentId, Guid studentId, CreateSubmissionRequestModel request)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task SubmitAssignment(Guid assignmentId, Guid studentId, SubmitAssignmentRequestModel request)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<List<Submission>> GetSubmissionsByStudentId(Guid studentId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Submission> GetSubmissionById(Guid id)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -7,7 +7,7 @@ public class Submission
     public DateTime SubmittedAt { get; set; }
     
     public string? Feedback { get; set; }
-    public int Grade { get; set; }
+    public int? Grade { get; set; }
     
     public Guid AssignmentId { get; set; }
     public Assignment Assignment { get; set; }
@@ -16,4 +16,5 @@ public class Submission
     public User User { get; set; }
     
     public ICollection<StudyFile> Files { get; set; } = new List<StudyFile>();
+    public string? Comment { get; set; }
 }

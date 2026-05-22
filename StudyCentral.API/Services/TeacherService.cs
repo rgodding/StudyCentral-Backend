@@ -1,4 +1,5 @@
-﻿using StudyCentral.API.Models.ApiModels.CourseModels;
+﻿using StudyCentral.API.Models;
+using StudyCentral.API.Models.ApiModels.CourseModels;
 using StudyCentral.API.Models.ApiModels.TeacherModels;
 using StudyCentral.API.Models.Entities;
 
@@ -22,11 +23,13 @@ public interface ITeacherService
     public Task DeleteAssignment(Guid id);
     public Task GetAssignmentSubmissions(Guid assignmentId);
     public Task GetAssignmentSubmissionById(Guid id);
-    public Task GradeAssignmentSubmission(Guid assignmentId, Guid submissionId, int grade);
+    public Task GradeAssignmentSubmission(Guid assignmentId, Guid submissionId, GradeSubmissionRequestModel request);
 }
 
 public class TeacherService : ITeacherService
 {
+    private readonly StudyDbContext _dbContext;
+    
     public Task<List<Course>> GetCoursesByTeacherId(Guid userId)
     {
         throw new NotImplementedException();
@@ -92,7 +95,7 @@ public class TeacherService : ITeacherService
         throw new NotImplementedException();
     }
 
-    public Task GradeAssignmentSubmission(Guid assignmentId, Guid submissionId, int grade)
+    public Task GradeAssignmentSubmission(Guid assignmentId, Guid submissionId, GradeSubmissionRequestModel request)
     {
         throw new NotImplementedException();
     }
