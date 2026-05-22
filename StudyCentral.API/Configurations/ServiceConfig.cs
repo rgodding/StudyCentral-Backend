@@ -24,6 +24,7 @@ public class ServiceConfig
         // Services
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IStudentService, StudentService>();
+        services.AddScoped<ICourseService, CourseService>();
         
 
     }

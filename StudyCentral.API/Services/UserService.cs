@@ -68,8 +68,11 @@ public class UserService : IUserService
     public async Task<User> GetUserInfo(Guid id)
     {
         return await _dbContext.Users
+                   .Include(u => u.ProfilePicture)
+                   .Include(u => u.Courses)
                    .FirstOrDefaultAsync(u => u.Id == id)
                ?? throw new KeyNotFoundException("User with ID " + id + " not found.");
     }
+    
 }
     

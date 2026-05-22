@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using StudyCentral.API.Models.ApiModels.AuthModels;
+using StudyCentral.API.Models.ApiModels.CourseModels;
 using StudyCentral.API.Models.DtoModels;
 using StudyCentral.API.Models.Entities;
 
@@ -33,8 +34,17 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Notifications, opt => opt.Ignore())
             .ForMember(dest => dest.Messages, opt => opt.Ignore());
             */
-        
+            
         CreateMap<User, SignUpResponseModel>();
+
+        CreateMap<Course, CreateCourseRequestModel>();
+        CreateMap<CreateCourseRequestModel, Course>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore())
+            .ForMember(dest => dest.TeacherId, opt => opt.Ignore())
+            .ForMember(dest => dest.Teacher, opt => opt.Ignore())
+            .ForMember(dest => dest.Students, opt => opt.Ignore())
+            .ForMember(dest => dest.Assignments, opt => opt.Ignore());
+
 
     }
 }

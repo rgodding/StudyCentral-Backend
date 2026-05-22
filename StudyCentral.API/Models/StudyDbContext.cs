@@ -171,6 +171,33 @@ public class StudyDbContext : DbContext
             }
         );
 
+        modelBuilder.Entity<Course>().HasData(
+            new Course
+            {
+
+                Id = Guid.Parse("08deb82b-8d61-4e71-8ab5-2205c9dd79ba"),
+                Title = "Introduction to Programming",
+                Description = "Learn the basics of programming with this introductory course.",
+
+            },
+            new Course
+            {
+
+                Id = Guid.Parse("08deb82b-9093-4baa-806d-5a095a01328f"),
+                Title = "The Art of Programming",
+                Description = "Explore the art of programming with this course.",
+
+            },
+            new Course
+            {
+
+                Id = Guid.Parse("08deb82b-9368-4f46-8c29-b0498685408c"),
+                Title = "Advanced Programming",
+                Description = "Master advanced programming techniques with this course.",
+            }
+        );
+
+
     }
     
 }

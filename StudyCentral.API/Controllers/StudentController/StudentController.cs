@@ -15,6 +15,14 @@ public class StudentController : BaseStudentController
     {
         _studentService = studentService;
     }
+    
+    [HttpGet]
+    [Route("get-courses")]
+    public async Task<IActionResult> GetCoursesByUserId()
+    {
+        var result = await _studentService.GetCoursesByStudentId(UserPrincipal.Id);
+        return Ok(result);
+    }
 
     [HttpPost]
     [Route("upload-profile-picture")]

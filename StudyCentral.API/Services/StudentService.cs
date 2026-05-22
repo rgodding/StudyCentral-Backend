@@ -7,6 +7,7 @@ namespace StudyCentral.API.Services;
 public interface IStudentService    
 {
     public Task UploadProfilePicture(Guid userId, IFormFile file, string altText);
+    public Task<List<Course>> GetCoursesByStudentId(Guid userId);
 }
 
 public class StudentService : IStudentService
@@ -52,5 +53,16 @@ public class StudentService : IStudentService
         // Update the user's profile picture URL in the database
         currentUser.ProfilePicture = newProfilePicture;
         await _dbContext.SaveChangesAsync();
+    }
+    
+    public async Task<List<Course>> GetCoursesByStudentId(Guid userId)
+    {
+        var studentCourses = await _dbContext.Users
+            .Include(u => u.Courses)
+            .Where(u => u.Id == userId)
+            .SelectMany(u => u.Courses)
+            .ToListAsync();
+        
+        return studentCourses;
     }
 }

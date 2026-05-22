@@ -22,11 +22,25 @@ public class AuthController : BaseUserController
     }
 
     [HttpGet]
+    [Route("verify-token")]
+    public IActionResult VerifyToken()
+    {
+        Console.WriteLine("Token is valid");
+        return Ok();
+    }
+
+    [HttpGet]
     [Route("get-user-info")]
     public async Task<IActionResult> GetUserInfo()
     {
         var user = await _userService.GetUserInfo(UserPrincipal.Id);
-        var response = _mapper.Map<UserDto>(user);
+        var userDto = _mapper.Map<UserDto>(user);
+        var courses = _mapper.Map<List<CourseDto>>(user.Courses);
+        var response = new GetUserInfoResponseModel
+        {
+            User = userDto,
+            Courses = courses
+        };
         return Ok(response);
     }
 

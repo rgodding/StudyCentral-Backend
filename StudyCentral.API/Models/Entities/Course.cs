@@ -7,7 +7,7 @@ public class Course
     public string Title { get; set; } = null!;
     public string? Description { get; set; }
     
-    public Guid TeacherId { get; set; }
+    public Guid? TeacherId { get; set; }
     public User? Teacher { get; set; }
     
     public ICollection<User> Students { get; set; } = new List<User>();
