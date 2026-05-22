@@ -2,21 +2,19 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudyCentral.API.Authentication;
-using StudyCentral.API.Controllers.StudentController;
 using StudyCentral.API.Models.ApiModels.CourseModels;
 using StudyCentral.API.Models.DtoModels;
 using StudyCentral.API.Services;
 
-namespace StudyCentral.API.Controllers.UserController;
+namespace StudyCentral.API.Controllers.AdminController;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CourseController : BaseUserController
+public class CourseController : BaseAdminController
 {
     private readonly ICourseService _courseService;
 
-
-    public CourseController(IMapper mapper, JwtHelper jwtHelper, ICourseService courseService) : base(mapper, jwtHelper)
+    public CourseController(IMapper mapper, JwtHelper jwtHelper, UserPrincipal? userPrincipal, ICourseService courseService) : base(mapper, jwtHelper, userPrincipal)
     {
         _courseService = courseService;
     }
