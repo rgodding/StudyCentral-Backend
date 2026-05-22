@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using StudyCentral.API.Authentication;
 
 namespace StudyCentral.API.Controllers.TeacherController;
 
+[Authorize(Policy = "IsTeacher")]
 public class BaseTeacherController : BaseController
 {
     
