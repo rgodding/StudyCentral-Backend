@@ -35,121 +35,19 @@ public class StudyDbContext : DbContext
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<Course> Courses { get; set; } = null!;
     public DbSet<Assignment> Assignments { get; set; } = null!;
-    public DbSet<Chat> Chats { get; set; } = null!;
-    public DbSet<Message> Messages { get; set; } = null!;
-    public DbSet<Notification> Notifications { get; set; } = null!;
     public DbSet<Submission> Submissions { get; set; } = null!;
     public DbSet<Announcement> Announcements { get; set; } = null!;
     public DbSet<StudyFile> Files { get; set; } = null!;
-    public DbSet<ImageFile> Images { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // User
-        modelBuilder.Entity<User>()
-            .HasIndex(u => u.Email)
-            .IsUnique();
-        
-        // User & Avatar
-        modelBuilder.Entity<User>()
-            .HasOne(u => u.ProfilePicture);
-        
-        // Course
-        modelBuilder.Entity<Course>()
-            .HasIndex(c => c.Title)
-            .IsUnique();
-        
-        // Course & Teacher
-        modelBuilder.Entity<Course>()
-            .HasOne(c => c.Teacher);
-        
-        // Course & Students
-        modelBuilder.Entity<Course>()
-            .HasMany(c => c.Students)
-            .WithMany(s => s.Courses)
-            .UsingEntity(j => j.ToTable("CourseStudent"));
-        
-        // Course & Assignments
-        modelBuilder.Entity<Course>()
-            .HasMany(c => c.Assignments)
-            .WithOne(a => a.Course)
-            .HasForeignKey(a => a.CourseId);
-
-        // Assignment
-        modelBuilder.Entity<Assignment>()
-            .HasIndex(a => a.Title)
-            .IsUnique();
-        
-        // Assignment & Files
-        modelBuilder.Entity<Assignment>()
-            .HasMany(a => a.Files);
-        
-        // Assignment & Submissions
-        modelBuilder.Entity<Assignment>()
-            .HasMany(a => a.Submissions)
-            .WithOne(s => s.Assignment)
-            .HasForeignKey(s => s.AssignmentId);
-        
-        // Submission
-        modelBuilder.Entity<Submission>()   
-            .HasIndex(s => new { s.AssignmentId, s.UserId })
-            .IsUnique();
-        
-        // Submission & Files
-        modelBuilder.Entity<Submission>()
-            .HasMany(s => s.Files);
-        
-        // Chat
-        modelBuilder.Entity<Chat>()
-            .HasIndex(c => c.Name)
-            .IsUnique();
-        
-        // Chat & Course
-        modelBuilder.Entity<Chat>()
-            .HasOne(c => c.Course);
-        
-        // Chat & Messages
-        modelBuilder.Entity<Chat>()
-            .HasMany(c => c.Messages)
-            .WithOne(m => m.Chat)
-            .HasForeignKey(m => m.ChatId);
-        
-        // Chat & Participants
-        modelBuilder.Entity<Chat>()
-            .HasMany(c => c.Participants)
-            .WithMany(p => p.Chats)
-            .UsingEntity(j => j.ToTable("ChatParticipant"));
-        
-        // Message
-        
-        // Message & User
-        modelBuilder.Entity<Message>()
-            .HasOne(m => m.User)
-            .WithMany(u => u.Messages)
-            .HasForeignKey(m => m.UserId);
-       
-        // Notification
-        modelBuilder.Entity<Notification>()
-            .HasIndex(n => n.Title)
-            .IsUnique();
-        
-        // User & Notifications
-        modelBuilder.Entity<User>()
-            .HasMany(u => u.Notifications)
-            .WithOne(n => n.User)
-            .HasForeignKey(n => n.UserId);
-        
-        // Announcement
-        modelBuilder.Entity<Announcement>()
-            .HasIndex(a => a.Title)
-            .IsUnique();
-        
-        // Announcement & Course
-        modelBuilder.Entity<Announcement>()
-            .HasOne(a => a.Course)
-            .WithMany(c => c.Announcements)
-            .HasForeignKey(a => a.CourseId);
-        
+        // Configure entities
+        ConfigureUser(modelBuilder);
+        ConfigureCourse(modelBuilder);
+        ConfigureAssignment(modelBuilder);
+        ConfigureSubmission(modelBuilder);
+        ConfigureAnnouncement(modelBuilder);
+        ConfigureStudyFile(modelBuilder);
         
         // SEED DATA
         // Users
@@ -211,6 +109,135 @@ public class StudyDbContext : DbContext
         );
 
 
+    }
+
+    private static void ConfigureUser(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
+
+        modelBuilder.Entity<User>()
+            .HasOne(u => u.ProfilePicture)
+            .WithMany()
+            .HasForeignKey(u => u.ProfilePictureId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // Student enrollments
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.EnrolledCourses)
+            .WithMany(c => c.Students);
+
+        // Teacher courses
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.TeachingCourses)
+            .WithOne(c => c.Teacher)
+            .HasForeignKey(c => c.TeacherId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Created assignments
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.CreatedAssignments)
+            .WithOne(a => a.CreatedBy)
+            .HasForeignKey(a => a.CreatedById)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Created announcements
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.CreatedAnnouncements)
+            .WithOne(a => a.CreatedBy)
+            .HasForeignKey(a => a.CreatedById)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Submissions
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.Submissions)
+            .WithOne(s => s.Student)
+            .HasForeignKey(s => s.StudentId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+    
+    private static void ConfigureCourse(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Course>()
+            .Property(c => c.Title)
+            .HasMaxLength(100);
+
+        modelBuilder.Entity<Course>()
+            .Property(c => c.Description)
+            .HasMaxLength(1000);
+    }
+    
+    private static void ConfigureAssignment(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Assignment>()
+            .HasOne(a => a.Course)
+            .WithMany(c => c.Assignments)
+            .HasForeignKey(a => a.CourseId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Assignment>()
+            .Property(a => a.Title)
+            .HasMaxLength(100);
+
+        modelBuilder.Entity<Assignment>()
+            .Property(a => a.Description)
+            .HasMaxLength(2000);
+    }
+    
+    private static void ConfigureSubmission(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Submission>()
+            .HasOne(s => s.Assignment)
+            .WithMany(a => a.Submissions)
+            .HasForeignKey(s => s.AssignmentId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Submission>()
+            .Property(s => s.Feedback)
+            .HasMaxLength(2000);
+
+        modelBuilder.Entity<Submission>()
+            .Property(s => s.Comment)
+            .HasMaxLength(2000);
+    }
+    
+    private static void ConfigureAnnouncement(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Announcement>()
+            .HasOne(a => a.Course)
+            .WithMany(c => c.Announcements)
+            .HasForeignKey(a => a.CourseId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Announcement>()
+            .Property(a => a.Title)
+            .HasMaxLength(100);
+
+        modelBuilder.Entity<Announcement>()
+            .Property(a => a.Content)
+            .HasMaxLength(5000);
+    }
+    
+    private static void ConfigureStudyFile(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<StudyFile>()
+            .Property(f => f.Name)
+            .HasMaxLength(255);
+
+        modelBuilder.Entity<StudyFile>()
+            .Property(f => f.BlobName)
+            .HasMaxLength(500);
+
+        modelBuilder.Entity<StudyFile>()
+            .Property(f => f.ContentType)
+            .HasMaxLength(100);
+
+        modelBuilder.Entity<StudyFile>()
+            .HasOne(f => f.UploadedBy)
+            .WithMany()
+            .HasForeignKey(f => f.UploadedById)
+            .OnDelete(DeleteBehavior.Restrict);
     }
     
 }

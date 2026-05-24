@@ -12,7 +12,7 @@ using StudyCentral.API.Models;
 namespace StudyCentral.API.Migrations
 {
     [DbContext(typeof(StudyDbContext))]
-    [Migration("20260524124419_InitialCreate")]
+    [Migration("20260524140027_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,34 +25,19 @@ namespace StudyCentral.API.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("ChatUser", b =>
-                {
-                    b.Property<Guid>("ChatsId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("ParticipantsId")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("ChatsId", "ParticipantsId");
-
-                    b.HasIndex("ParticipantsId");
-
-                    b.ToTable("ChatParticipant", (string)null);
-                });
-
             modelBuilder.Entity("CourseUser", b =>
                 {
-                    b.Property<Guid>("CoursesId")
+                    b.Property<Guid>("EnrolledCoursesId")
                         .HasColumnType("char(36)");
 
                     b.Property<Guid>("StudentsId")
                         .HasColumnType("char(36)");
 
-                    b.HasKey("CoursesId", "StudentsId");
+                    b.HasKey("EnrolledCoursesId", "StudentsId");
 
                     b.HasIndex("StudentsId");
 
-                    b.ToTable("CourseStudent", (string)null);
+                    b.ToTable("CourseUser");
                 });
 
             modelBuilder.Entity("StudyCentral.API.Models.Entities.Announcement", b =>
@@ -63,7 +48,8 @@ namespace StudyCentral.API.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(5000)
+                        .HasColumnType("varchar(5000)");
 
                     b.Property<Guid>("CourseId")
                         .HasColumnType("char(36)");
@@ -71,21 +57,19 @@ namespace StudyCentral.API.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("char(36)");
+
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("char(36)");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId");
 
-                    b.HasIndex("Title")
-                        .IsUnique();
-
-                    b.HasIndex("UserId");
+                    b.HasIndex("CreatedById");
 
                     b.ToTable("Announcements");
                 });
@@ -99,55 +83,31 @@ namespace StudyCentral.API.Migrations
                     b.Property<Guid>("CourseId")
                         .HasColumnType("char(36)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("char(36)");
+
                     b.Property<DateTime>("Deadline")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext");
+                        .HasMaxLength(2000)
+                        .HasColumnType("varchar(2000)");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("char(36)");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId");
 
-                    b.HasIndex("Title")
-                        .IsUnique();
-
-                    b.HasIndex("UserId");
+                    b.HasIndex("CreatedById");
 
                     b.ToTable("Assignments");
-                });
-
-            modelBuilder.Entity("StudyCentral.API.Models.Entities.Chat", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid?>("CourseId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CourseId");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("Chats");
                 });
 
             modelBuilder.Entity("StudyCentral.API.Models.Entities.Course", b =>
@@ -156,22 +116,24 @@ namespace StudyCentral.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("Description")
-                        .HasColumnType("longtext");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
 
                     b.Property<Guid?>("TeacherId")
                         .HasColumnType("char(36)");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("TeacherId");
-
-                    b.HasIndex("Title")
-                        .IsUnique();
 
                     b.ToTable("Courses");
 
@@ -179,6 +141,7 @@ namespace StudyCentral.API.Migrations
                         new
                         {
                             Id = new Guid("08deb82b-8d61-4e71-8ab5-2205c9dd79ba"),
+                            CreatedAt = new DateTime(2026, 5, 24, 14, 0, 27, 359, DateTimeKind.Utc).AddTicks(1511),
                             Description = "Learn the basics of programming with this introductory course.",
                             TeacherId = new Guid("08deb68b-c568-4182-841f-7f7f7da655d8"),
                             Title = "Introduction to Programming"
@@ -186,6 +149,7 @@ namespace StudyCentral.API.Migrations
                         new
                         {
                             Id = new Guid("08deb82b-9093-4baa-806d-5a095a01328f"),
+                            CreatedAt = new DateTime(2026, 5, 24, 14, 0, 27, 359, DateTimeKind.Utc).AddTicks(1515),
                             Description = "Explore the art of programming with this course.",
                             TeacherId = new Guid("08deb68b-c568-4182-841f-7f7f7da655d8"),
                             Title = "The Art of Programming"
@@ -193,92 +157,10 @@ namespace StudyCentral.API.Migrations
                         new
                         {
                             Id = new Guid("08deb82b-9368-4f46-8c29-b0498685408c"),
+                            CreatedAt = new DateTime(2026, 5, 24, 14, 0, 27, 359, DateTimeKind.Utc).AddTicks(1517),
                             Description = "Master advanced programming techniques with this course.",
                             Title = "Advanced Programming"
                         });
-                });
-
-            modelBuilder.Entity("StudyCentral.API.Models.Entities.ImageFile", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("AltText")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("UploadedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Images");
-                });
-
-            modelBuilder.Entity("StudyCentral.API.Models.Entities.Message", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("ChatId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("SentAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChatId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Messages");
-                });
-
-            modelBuilder.Entity("StudyCentral.API.Models.Entities.Notification", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Title")
-                        .IsUnique();
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("StudyCentral.API.Models.Entities.StudyFile", b =>
@@ -287,16 +169,26 @@ namespace StudyCentral.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("AltText")
+                        .HasColumnType("longtext");
+
                     b.Property<Guid?>("AssignmentId")
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("BlobName")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
                     b.Property<string>("ContentType")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<long>("Size")
                         .HasColumnType("bigint");
@@ -310,15 +202,16 @@ namespace StudyCentral.API.Migrations
                     b.Property<DateTime>("UploadedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<Guid>("UploadedById")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AssignmentId");
 
                     b.HasIndex("SubmissionId");
+
+                    b.HasIndex("UploadedById");
 
                     b.ToTable("Files");
                 });
@@ -333,26 +226,27 @@ namespace StudyCentral.API.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<string>("Comment")
-                        .HasColumnType("longtext");
+                        .HasMaxLength(2000)
+                        .HasColumnType("varchar(2000)");
 
                     b.Property<string>("Feedback")
-                        .HasColumnType("longtext");
+                        .HasMaxLength(2000)
+                        .HasColumnType("varchar(2000)");
 
                     b.Property<int?>("Grade")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("StudentId")
+                        .HasColumnType("char(36)");
+
                     b.Property<DateTime>("SubmittedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("char(36)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("AssignmentId");
 
-                    b.HasIndex("AssignmentId", "UserId")
-                        .IsUnique();
+                    b.HasIndex("StudentId");
 
                     b.ToTable("Submissions");
                 });
@@ -362,6 +256,9 @@ namespace StudyCentral.API.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -385,6 +282,9 @@ namespace StudyCentral.API.Migrations
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
@@ -398,52 +298,43 @@ namespace StudyCentral.API.Migrations
                         new
                         {
                             Id = new Guid("08deb68b-5c0f-447c-86a2-152bdf58b714"),
+                            CreatedAt = new DateTime(2026, 5, 24, 14, 0, 27, 359, DateTimeKind.Utc).AddTicks(1408),
                             Email = "user@mail.com",
                             FirstName = "John",
                             LastName = "Student",
                             PasswordHash = "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6",
-                            Role = 0
+                            Role = 1,
+                            UpdatedAt = new DateTime(2026, 5, 24, 14, 0, 27, 359, DateTimeKind.Utc).AddTicks(1409)
                         },
                         new
                         {
                             Id = new Guid("08deb68b-c568-4182-841f-7f7f7da655d8"),
+                            CreatedAt = new DateTime(2026, 5, 24, 14, 0, 27, 359, DateTimeKind.Utc).AddTicks(1419),
                             Email = "teacher@mail.com",
                             FirstName = "Jonathan",
                             LastName = "Teacher",
                             PasswordHash = "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6",
-                            Role = 1
+                            Role = 2,
+                            UpdatedAt = new DateTime(2026, 5, 24, 14, 0, 27, 359, DateTimeKind.Utc).AddTicks(1419)
                         },
                         new
                         {
                             Id = new Guid("08deb68b-ca1a-49f8-80a9-cebcdca84136"),
+                            CreatedAt = new DateTime(2026, 5, 24, 14, 0, 27, 359, DateTimeKind.Utc).AddTicks(1422),
                             Email = "admin@mail.com",
                             FirstName = "Mister",
                             LastName = "Admin",
                             PasswordHash = "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6",
-                            Role = 2
+                            Role = 3,
+                            UpdatedAt = new DateTime(2026, 5, 24, 14, 0, 27, 359, DateTimeKind.Utc).AddTicks(1422)
                         });
-                });
-
-            modelBuilder.Entity("ChatUser", b =>
-                {
-                    b.HasOne("StudyCentral.API.Models.Entities.Chat", null)
-                        .WithMany()
-                        .HasForeignKey("ChatsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("StudyCentral.API.Models.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("ParticipantsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("CourseUser", b =>
                 {
                     b.HasOne("StudyCentral.API.Models.Entities.Course", null)
                         .WithMany()
-                        .HasForeignKey("CoursesId")
+                        .HasForeignKey("EnrolledCoursesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -462,11 +353,15 @@ namespace StudyCentral.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("StudyCentral.API.Models.Entities.User", null)
-                        .WithMany("Announcements")
-                        .HasForeignKey("UserId");
+                    b.HasOne("StudyCentral.API.Models.Entities.User", "CreatedBy")
+                        .WithMany("CreatedAnnouncements")
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Course");
+
+                    b.Navigation("CreatedBy");
                 });
 
             modelBuilder.Entity("StudyCentral.API.Models.Entities.Assignment", b =>
@@ -477,59 +372,25 @@ namespace StudyCentral.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("StudyCentral.API.Models.Entities.User", null)
-                        .WithMany("Assignments")
-                        .HasForeignKey("UserId");
+                    b.HasOne("StudyCentral.API.Models.Entities.User", "CreatedBy")
+                        .WithMany("CreatedAssignments")
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Course");
-                });
 
-            modelBuilder.Entity("StudyCentral.API.Models.Entities.Chat", b =>
-                {
-                    b.HasOne("StudyCentral.API.Models.Entities.Course", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseId");
-
-                    b.Navigation("Course");
+                    b.Navigation("CreatedBy");
                 });
 
             modelBuilder.Entity("StudyCentral.API.Models.Entities.Course", b =>
                 {
                     b.HasOne("StudyCentral.API.Models.Entities.User", "Teacher")
-                        .WithMany()
-                        .HasForeignKey("TeacherId");
+                        .WithMany("TeachingCourses")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Teacher");
-                });
-
-            modelBuilder.Entity("StudyCentral.API.Models.Entities.Message", b =>
-                {
-                    b.HasOne("StudyCentral.API.Models.Entities.Chat", "Chat")
-                        .WithMany("Messages")
-                        .HasForeignKey("ChatId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("StudyCentral.API.Models.Entities.User", "User")
-                        .WithMany("Messages")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Chat");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("StudyCentral.API.Models.Entities.Notification", b =>
-                {
-                    b.HasOne("StudyCentral.API.Models.Entities.User", "User")
-                        .WithMany("Notifications")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("StudyCentral.API.Models.Entities.StudyFile", b =>
@@ -541,6 +402,14 @@ namespace StudyCentral.API.Migrations
                     b.HasOne("StudyCentral.API.Models.Entities.Submission", null)
                         .WithMany("Files")
                         .HasForeignKey("SubmissionId");
+
+                    b.HasOne("StudyCentral.API.Models.Entities.User", "UploadedBy")
+                        .WithMany()
+                        .HasForeignKey("UploadedById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("UploadedBy");
                 });
 
             modelBuilder.Entity("StudyCentral.API.Models.Entities.Submission", b =>
@@ -551,22 +420,23 @@ namespace StudyCentral.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("StudyCentral.API.Models.Entities.User", "User")
+                    b.HasOne("StudyCentral.API.Models.Entities.User", "Student")
                         .WithMany("Submissions")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Assignment");
 
-                    b.Navigation("User");
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("StudyCentral.API.Models.Entities.User", b =>
                 {
-                    b.HasOne("StudyCentral.API.Models.Entities.ImageFile", "ProfilePicture")
+                    b.HasOne("StudyCentral.API.Models.Entities.StudyFile", "ProfilePicture")
                         .WithMany()
-                        .HasForeignKey("ProfilePictureId");
+                        .HasForeignKey("ProfilePictureId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("ProfilePicture");
                 });
@@ -576,11 +446,6 @@ namespace StudyCentral.API.Migrations
                     b.Navigation("Files");
 
                     b.Navigation("Submissions");
-                });
-
-            modelBuilder.Entity("StudyCentral.API.Models.Entities.Chat", b =>
-                {
-                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("StudyCentral.API.Models.Entities.Course", b =>
@@ -597,15 +462,13 @@ namespace StudyCentral.API.Migrations
 
             modelBuilder.Entity("StudyCentral.API.Models.Entities.User", b =>
                 {
-                    b.Navigation("Announcements");
+                    b.Navigation("CreatedAnnouncements");
 
-                    b.Navigation("Assignments");
-
-                    b.Navigation("Messages");
-
-                    b.Navigation("Notifications");
+                    b.Navigation("CreatedAssignments");
 
                     b.Navigation("Submissions");
+
+                    b.Navigation("TeachingCourses");
                 });
 #pragma warning restore 612, 618
         }

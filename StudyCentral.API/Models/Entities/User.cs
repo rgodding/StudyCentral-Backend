@@ -12,24 +12,26 @@ public class User
 
     public UserRole Role { get; set; }
     
-    public ImageFile? ProfilePicture { get; set; }
+    public Guid? ProfilePictureId { get; set; }
+    public StudyFile? ProfilePicture { get; set; }
     
-    // Course related relationships
-    public ICollection<Course> Courses { get; set; } = new List<Course>();
+    // Audit
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    
+    // Student relationships
+    public ICollection<Course> EnrolledCourses { get; set; } = new List<Course>();
     public ICollection<Submission> Submissions { get; set; } = new List<Submission>();
-    public ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
-    public ICollection<Announcement> Announcements { get; set; } = new List<Announcement>();
     
-    
-    // Chat related relationships
-    public ICollection<Chat> Chats { get; set; } = new List<Chat>();
-    public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
-    public ICollection<Message> Messages { get; set; } = new List<Message>();
-    
+    // Teacher relationships
+    public ICollection<Course> TeachingCourses { get; set; } = new List<Course>();
+    public ICollection<Assignment> CreatedAssignments { get; set; } = new List<Assignment>();
+    public ICollection<Announcement> CreatedAnnouncements { get; set; } = new List<Announcement>();
 }
 
 public enum UserRole
 {
+    User,
     Student,
     Teacher,
     Admin
