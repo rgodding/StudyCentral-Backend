@@ -27,6 +27,7 @@
 
     <ItemGroup>
       <Folder Include="Azurite\" />
+      <Folder Include="Controllers\Courses\" />
       <Folder Include="Migrations\" />
     </ItemGroup>
 
