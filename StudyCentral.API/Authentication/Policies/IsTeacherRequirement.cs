@@ -21,6 +21,7 @@ public class IsTeacherHandler : AuthorizationHandler<IsTeacherRequirement>
 {
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, IsTeacherRequirement requirement)
     {
+        Console.WriteLine("Verifying if the user is a teacher");
         if (context.User.IsInRole(requirement.RoleOfTeacher))
         {
             context.Succeed(requirement);

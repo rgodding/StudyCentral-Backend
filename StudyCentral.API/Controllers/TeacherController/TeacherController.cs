@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using StudyCentral.API.Services;
 
 namespace StudyCentral.API.Controllers.TeacherController;
 
@@ -7,8 +8,7 @@ namespace StudyCentral.API.Controllers.TeacherController;
 [Route("api/[controller]")]
 public class TeacherController : BaseTeacherController
 {
-    public TeacherController(IMapper mapper) : base(mapper)
+    public TeacherController(IMapper mapper, ITeacherService teacherService) : base(mapper, teacherService)
     {
     }
-    
 }

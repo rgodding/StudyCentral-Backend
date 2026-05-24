@@ -221,9 +221,11 @@ namespace StudyCentral.API.Migrations
                     SubmittedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Feedback = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Grade = table.Column<int>(type: "int", nullable: false),
+                    Grade = table.Column<int>(type: "int", nullable: true),
                     AssignmentId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
+                    UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Comment = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -333,12 +335,7 @@ namespace StudyCentral.API.Migrations
             migrationBuilder.InsertData(
                 table: "Courses",
                 columns: new[] { "Id", "Description", "TeacherId", "Title" },
-                values: new object[,]
-                {
-                    { new Guid("08deb82b-8d61-4e71-8ab5-2205c9dd79ba"), "Learn the basics of programming with this introductory course.", null, "Introduction to Programming" },
-                    { new Guid("08deb82b-9093-4baa-806d-5a095a01328f"), "Explore the art of programming with this course.", null, "The Art of Programming" },
-                    { new Guid("08deb82b-9368-4f46-8c29-b0498685408c"), "Master advanced programming techniques with this course.", null, "Advanced Programming" }
-                });
+                values: new object[] { new Guid("08deb82b-9368-4f46-8c29-b0498685408c"), "Master advanced programming techniques with this course.", null, "Advanced Programming" });
 
             migrationBuilder.InsertData(
                 table: "Users",
@@ -348,6 +345,15 @@ namespace StudyCentral.API.Migrations
                     { new Guid("08deb68b-5c0f-447c-86a2-152bdf58b714"), "user@mail.com", "John", "Student", "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6", null, 0 },
                     { new Guid("08deb68b-c568-4182-841f-7f7f7da655d8"), "teacher@mail.com", "Jonathan", "Teacher", "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6", null, 1 },
                     { new Guid("08deb68b-ca1a-49f8-80a9-cebcdca84136"), "admin@mail.com", "Mister", "Admin", "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6", null, 2 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Courses",
+                columns: new[] { "Id", "Description", "TeacherId", "Title" },
+                values: new object[,]
+                {
+                    { new Guid("08deb82b-8d61-4e71-8ab5-2205c9dd79ba"), "Learn the basics of programming with this introductory course.", new Guid("08deb68b-c568-4182-841f-7f7f7da655d8"), "Introduction to Programming" },
+                    { new Guid("08deb82b-9093-4baa-806d-5a095a01328f"), "Explore the art of programming with this course.", new Guid("08deb68b-c568-4182-841f-7f7f7da655d8"), "The Art of Programming" }
                 });
 
             migrationBuilder.CreateIndex(

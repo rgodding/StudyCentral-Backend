@@ -65,12 +65,12 @@ public class StudentService : IStudentService
         };
         
         // Upload the new profile picture to the blob storage
-        await _blobService.UploadImage(newProfilePicture.FileName, file);
+        await _blobService.UploadFile(newProfilePicture.FileName, file);
         
         // Delete the old profile picture if it exists
         if (currentUser.ProfilePicture != null)
         {
-            await _blobService.DeleteImage(currentUser.ProfilePicture.FileName);
+            await _blobService.DeleteFile(currentUser.ProfilePicture.FileName);
             _dbContext.Images.Remove(currentUser.ProfilePicture);
         }
         

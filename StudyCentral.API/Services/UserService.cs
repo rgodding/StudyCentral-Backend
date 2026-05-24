@@ -10,6 +10,7 @@ namespace StudyCentral.API.Services;
 
 public interface IUserService
 {
+    Task<List<User>> GetUsers();
     Task<User> GetUserById(Guid id);
     Task<User> GetUserByEmail(string email);
     Task<User> CreateUser(SignUpRequestModel request);
@@ -26,6 +27,17 @@ public class UserService : IUserService
     {
         _dbContext = context;
         _mapper = mapper;
+    }
+
+    public async Task<List<User>> GetUsers()
+    {
+        var users = await _dbContext.Users
+            .Include(u => u.ProfilePicture)
+            .Include(u => u.Courses)
+            .Include(u => u.Assignments)
+            .Include(u => u.Submissions)
+            .ToListAsync();
+        return users;
     }
 
     public async Task<User> GetUserById(Guid id)

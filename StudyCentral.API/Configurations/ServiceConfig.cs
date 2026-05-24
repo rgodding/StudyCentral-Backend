@@ -1,5 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using Microsoft.AspNetCore.Authorization;
 using StudyCentral.API.Authentication;
+using StudyCentral.API.Authentication.Policies;
 using StudyCentral.API.Models;
 using StudyCentral.API.Services;
 
@@ -9,9 +10,19 @@ public class ServiceConfig
 {
     public static void Configure(IServiceCollection services)
     {
+        AuthorizationHandlers(services);
         ServiceClasses(services);
         JsonConfig(services);
     }
+
+    private static void AuthorizationHandlers(IServiceCollection services)
+    {
+        services.AddSingleton<IAuthorizationHandler, IsAdminHandler>();
+        services.AddSingleton<IAuthorizationHandler, IsTeacherHandler>();
+        services.AddSingleton<IAuthorizationHandler, IsStudentHandler>();
+        
+    }
+
     private static void ServiceClasses(IServiceCollection services)
     {
         // AutoMapper
@@ -20,15 +31,15 @@ public class ServiceConfig
         services.AddScoped<JwtHelper>();
         // Blob
         services.AddSingleton<IBlobService, BlobService>();
-        
+
         // Services
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IStudentService, StudentService>();
         services.AddScoped<ICourseService, CourseService>();
-        
-
+        services.AddScoped<ITeacherService, TeacherService>();
+        services.AddScoped<IChatService, ChatService>();
     }
-    
+
     private static void JsonConfig(IServiceCollection services)
     {
         /*
@@ -38,6 +49,6 @@ public class ServiceConfig
                 options.JsonSerializerOptions.Converters.Add(
                     new JsonStringEnumConverter());
             });
-        */
+            */
     }
 }

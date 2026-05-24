@@ -177,12 +177,14 @@ namespace StudyCentral.API.Migrations
                         {
                             Id = new Guid("08deb82b-8d61-4e71-8ab5-2205c9dd79ba"),
                             Description = "Learn the basics of programming with this introductory course.",
+                            TeacherId = new Guid("08deb68b-c568-4182-841f-7f7f7da655d8"),
                             Title = "Introduction to Programming"
                         },
                         new
                         {
                             Id = new Guid("08deb82b-9093-4baa-806d-5a095a01328f"),
                             Description = "Explore the art of programming with this course.",
+                            TeacherId = new Guid("08deb68b-c568-4182-841f-7f7f7da655d8"),
                             Title = "The Art of Programming"
                         },
                         new
@@ -327,10 +329,13 @@ namespace StudyCentral.API.Migrations
                     b.Property<Guid>("AssignmentId")
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("Comment")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Feedback")
                         .HasColumnType("longtext");
 
-                    b.Property<int>("Grade")
+                    b.Property<int?>("Grade")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("SubmittedAt")

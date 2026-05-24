@@ -21,6 +21,12 @@ public class JwtHelper
     /// </summary>
     public static UserPrincipal GetUser(ClaimsPrincipal claims)
     {
+        Console.WriteLine("Getting user from JWT token");
+        Console.WriteLine("Claims:");
+        foreach (var claim in claims.Claims)
+        {
+            Console.WriteLine($"Type: {claim.Type}, Value: {claim.Value}");
+        }
         return new UserPrincipal
         {
             Id = Guid.Parse(

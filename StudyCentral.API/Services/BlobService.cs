@@ -7,15 +7,12 @@ namespace StudyCentral.API.Services;
 public interface IBlobService
 {
     // Image functions
-    Task<(Stream, string)> GetImage(string url);
-    Task<(string, string)> UploadImage(string fileName, IFormFile file);
-    Task DeleteImage(string url);
-    Task<bool> ImageExists(string filename);
-    
-    // File functions
-    Task<(int, string)> UploadFile(string fileName, IFormFile file);
-    Task<(int, string)> DeleteFile(string url);
+    Task<(Stream, string)> GetFile(string url);
+    Task<(string, string)> UploadFile(string fileName, IFormFile file);
+    Task DeleteFile(string url);
     Task<bool> FileExists(string filename);
+    Task<int> GetBlobCount();
+    Task<bool> Wipe();
 }
 
 public class BlobService : IBlobService
@@ -29,7 +26,7 @@ public class BlobService : IBlobService
     }
 
 
-    public async Task<(Stream, string)> GetImage(string url)
+    public async Task<(Stream, string)> GetFile(string url)
     {
         if (url == null)
         {
@@ -51,13 +48,13 @@ public class BlobService : IBlobService
         }
     }
 
-    public async Task<(string, string)> UploadImage(string fileName, IFormFile file)
+    public async Task<(string, string)> UploadFile(string fileName, IFormFile file)
     {
         using var memoryStream = new MemoryStream();
         await file.CopyToAsync(memoryStream);
         var fileBytes = memoryStream.ToArray();
         
-        var imageExists = await ImageExists(fileName);
+        var imageExists = await FileExists(fileName);
         if (imageExists)
         {
             throw new ExceptionMiddleware.ConflictException($"Image with name {fileName} already exists");
@@ -73,7 +70,7 @@ public class BlobService : IBlobService
         return (fileName, file.ContentType);
     }
 
-    public async Task DeleteImage(string url)
+    public async Task DeleteFile(string url)
     {
         try
         {
@@ -85,34 +82,20 @@ public class BlobService : IBlobService
             throw new Exception("Image not found");
         }
     }
-
-    public Task<(int, string)> UploadFile(string fileName, IFormFile file)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<(int, string)> DeleteFile(string url)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<bool> FileExists(string filename)
-    {
-        throw new NotImplementedException();
-    }
     
-    public async Task<bool> ImageExists(string filename)
+    
+    public async Task<bool> FileExists(string filename)
     {
         var containerClient = GetBlobContainerClient();
         var blobClient = containerClient.GetBlobClient(filename);
         return await blobClient.ExistsAsync();
     }
 
-    public int GetBlobCount()
+    public async Task<int> GetBlobCount()
     {
         var containerClient = GetBlobContainerClient();
-        var blobs = containerClient.GetBlobs();
-        return blobs.Count();
+        var blobs =  containerClient.GetBlobs();
+        return await Task.FromResult(blobs.Count());
     }
 
     public Task<bool> Wipe()

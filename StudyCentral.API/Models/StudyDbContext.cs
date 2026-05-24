@@ -190,6 +190,7 @@ public class StudyDbContext : DbContext
                 Id = Guid.Parse("08deb82b-8d61-4e71-8ab5-2205c9dd79ba"),
                 Title = "Introduction to Programming",
                 Description = "Learn the basics of programming with this introductory course.",
+                TeacherId = Guid.Parse("08deb68b-c568-4182-841f-7f7f7da655d8"),
 
             },
             new Course
@@ -198,7 +199,7 @@ public class StudyDbContext : DbContext
                 Id = Guid.Parse("08deb82b-9093-4baa-806d-5a095a01328f"),
                 Title = "The Art of Programming",
                 Description = "Explore the art of programming with this course.",
-
+                TeacherId = Guid.Parse("08deb68b-c568-4182-841f-7f7f7da655d8"),
             },
             new Course
             {
