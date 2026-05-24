@@ -10,3 +10,8 @@ dotnet user-secrets set "Azurite:ConnectionString" "UseDevelopmentStorage=true;"
 dotnet user-secrets set "Azurite:UseHttps" "false"
 dotnet user-secrets set "Azurite:Container" "studycentralcontainer"
 ```
+
+## Start Azurite
+```bash
+
+```

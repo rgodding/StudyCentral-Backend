@@ -34,6 +34,7 @@ public class ServiceConfig
 
         // Services
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IUserService, UserService>();
         services.AddScoped<IChatService, ChatService>();
     }
 

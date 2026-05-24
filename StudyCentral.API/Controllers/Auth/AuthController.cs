@@ -9,8 +9,7 @@ namespace StudyCentral.API.Controllers.Auth;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Policy = "IsUser")]
-public class AuthController : BaseUserController
+public class AuthController : BaseController
 {
     private readonly IAuthService _authService;
     
@@ -37,13 +36,4 @@ public class AuthController : BaseUserController
         var response = await _authService.SignUp(signUpDto);
         return Ok(response);
     }
-    
-    [HttpGet]
-    [Route("me")]
-    public async Task<ActionResult<AuthResponseDto>> GetMe()
-    {
-        var response = await _authService.GetCurrentUser(UserPrincipal.Id);
-        return Ok(response);
-    }
-    
 }
