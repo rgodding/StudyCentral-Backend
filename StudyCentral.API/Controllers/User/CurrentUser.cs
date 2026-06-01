@@ -7,11 +7,11 @@ namespace StudyCentral.API.Controllers.User;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UserController : BaseUserController
+public class CurrentUser : BaseUserController
 {
     private readonly IUserService _userService;
 
-    public UserController(IMapper mapper, IUserService userService) : base(mapper)
+    public CurrentUser(IMapper mapper, IUserService userService) : base(mapper)
     {
         _userService = userService;
     }
@@ -19,6 +19,7 @@ public class UserController : BaseUserController
     [HttpGet]
     public async Task<ActionResult<UserDto>> GetCurrentUser()
     {
+        Console.WriteLine("Okay getting current user");
         var user = await _userService.GetCurrentUser(UserPrincipal.Id);
 
         return Ok(user);

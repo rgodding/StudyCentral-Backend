@@ -11,7 +11,7 @@ public class Startup
     {
         Configuration = configuration;
     }
-    
+
     private IConfiguration Configuration { get; }
 
     public void ConfigureServices(IServiceCollection services)
@@ -21,17 +21,17 @@ public class Startup
         var issuer = Configuration["Jwt:Issuer"];
         var audience = Configuration["Jwt:Audience"];
         var key = Configuration["Jwt:Key"];
-        
+
         var connectionString = Configuration["ConnectionStrings:DefaultConnection"];
-        
+
         // Validate configuration values
         if (string.IsNullOrEmpty(issuer) || string.IsNullOrEmpty(audience) || string.IsNullOrEmpty(key))
         {
             Console.WriteLine("Invalid Configuration Values");
             throw new Exception("Invalid Configuration Values");
         }
-        
-        
+
+
         AuthenticationConfig.Configure(services, issuer, audience, key);
         AuthorizationConfig.Configure(services);
         ServiceConfig.Configure(services);
@@ -40,15 +40,10 @@ public class Startup
 
         Console.WriteLine("addubg controlers");
         services.AddControllers();
-        
+
         // Adds cors policy which allows any origin, method and header
         services.AddCors(options =>
         {
-            options.AddPolicy("AllowAll", builder =>
-                builder.AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-            );
             options.AddPolicy("Frontend", policy =>
             {
                 policy
@@ -64,20 +59,16 @@ public class Startup
     {
         // Apply EF Core migrations if database doesn't exist
         dbContext.Database.Migrate();
-        
-        // Allows cors policy
-        app.UseCors("AllowAll");
-        app.UseCors("Frontend");
-        
+
         // Middleware
         app.UseMiddleware<ExceptionMiddleware>();
-        
+
         // Is in development environment
         if (env.IsDevelopment())
         {
             // Middleware for Testing
             // app.UseMiddleware<TestRunMiddleware>();
-            
+
             // app.UseDeveloperExceptionPage();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
@@ -92,11 +83,10 @@ public class Startup
         Console.WriteLine("okay almost there");
         app.UseHttpsRedirection();
         app.UseRouting();
+        app.UseCors("Frontend");
+        
         app.UseAuthorization();
         app.UseAuthentication();
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllers();
-        });
+        app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
 }
