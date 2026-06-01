@@ -50,3 +50,8 @@ node_modules/
 
 azurite/
 __azurite*
+
+# Test coverage
+TestResults/
+Coverage/
+coveragereport/

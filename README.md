@@ -20,9 +20,9 @@ dotnet user-secrets set "Azurite:Container" "studycentralcontainer"
 ```bash
 dotnet tool install -g dotnet-reportgenerator-globaltool
 
-dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=./Coverage/
+dotnet test --collect:"XPlat Code Coverage" - run tests
 
-reportgenerator -reports:".\Coverage\coverage.cobertura.xml" -targetdir:"coveragereport"
+reportgenerator -reports:".\TestResults\*\coverage.cobertura.xml" -targetdir:"coveragereport"
 
 ii .\coveragereport\index.html
 ```
