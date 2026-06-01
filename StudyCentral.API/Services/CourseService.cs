@@ -1,19 +1,21 @@
-﻿using StudyCentral.API.Models.Dtos.Courses;
+﻿using Microsoft.EntityFrameworkCore;
+using StudyCentral.API.Models;
+using StudyCentral.API.Models.Dtos.Courses;
 using StudyCentral.API.Models.Entities;
 
 namespace StudyCentral.API.Services;
 
 public interface ICourseService
 {
-    Task<List<CourseDto>> GetAllCourses();
-    Task<CourseDto> GetCourse(Guid id);
+    Task<List<Course>> GetAllCourses();
+    Task<Course> GetCourse(Guid id);
     
-    Task<CourseDto> CreateCourse(CreateCourseDto courseDto);
-    Task<CourseDto> UpdateCourse(Guid id, UpdateCourseDto courseDto);
+    Task<Course> CreateCourse(CreateCourseDto course);
+    Task<Course> UpdateCourse(Guid id, UpdateCourseDto course);
     Task DeleteCourse(Guid id);
     
-    Task<List<CourseDto>> GetCoursesByTeacherId(Guid teacherId);
-    Task<List<CourseDto>> GetCoursesByStudentId(Guid studentId);
+    Task<List<Course>> GetCoursesByTeacherId(Guid teacherId);
+    Task<List<Course>> GetCoursesByStudentId(Guid studentId);
     
     Task<List<User>> GetEnrolledStudents(Guid courseId);
     
@@ -23,22 +25,33 @@ public interface ICourseService
 
 public class CourseService : ICourseService
 {
-    public Task<List<CourseDto>> GetAllCourses()
+    private readonly StudyDbContext _dbContext;
+
+    public CourseService(StudyDbContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
+
+    public async Task<List<Course>> GetAllCourses()
+    {
+        var result = await _dbContext.Courses
+            .Include(c => c.Teacher)
+            .ToListAsync();
+
+        return result;
+    }
+
+    public Task<Course> GetCourse(Guid id)
     {
         throw new NotImplementedException();
     }
 
-    public Task<CourseDto> GetCourse(Guid id)
+    public Task<Course> CreateCourse(CreateCourseDto course)
     {
         throw new NotImplementedException();
     }
 
-    public Task<CourseDto> CreateCourse(CreateCourseDto courseDto)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<CourseDto> UpdateCourse(Guid id, UpdateCourseDto courseDto)
+    public Task<Course> UpdateCourse(Guid id, UpdateCourseDto course)
     {
         throw new NotImplementedException();
     }
@@ -48,12 +61,12 @@ public class CourseService : ICourseService
         throw new NotImplementedException();
     }
 
-    public Task<List<CourseDto>> GetCoursesByTeacherId(Guid teacherId)
+    public Task<List<Course>> GetCoursesByTeacherId(Guid teacherId)
     {
         throw new NotImplementedException();
     }
 
-    public Task<List<CourseDto>> GetCoursesByStudentId(Guid studentId)
+    public Task<List<Course>> GetCoursesByStudentId(Guid studentId)
     {
         throw new NotImplementedException();
     }

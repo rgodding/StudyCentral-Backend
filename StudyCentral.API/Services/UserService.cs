@@ -37,7 +37,7 @@ public class UserService : IUserService
 
         if (user == null)
         {
-            throw new Exception("User not found");
+            throw new KeyNotFoundException("User not found");
         }
         
 

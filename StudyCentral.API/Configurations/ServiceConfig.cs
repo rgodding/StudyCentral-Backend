@@ -36,6 +36,8 @@ public class ServiceConfig
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IChatService, ChatService>();
+        services.AddScoped<ICourseService, CourseService>();
+        
     }
 
     private static void JsonConfig(IServiceCollection services)
