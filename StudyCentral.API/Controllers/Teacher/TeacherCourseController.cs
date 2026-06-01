@@ -19,7 +19,8 @@ public class TeacherCourseController : BaseTeacherController
     [HttpGet]
     public async Task<IActionResult> GetCourses()
     {
-        var response = await _courseService.GetAllCourses();
+        var result = await _courseService.GetAllCourses();
+        var response = _mapper.Map<List<CourseDto>>(result);
         return Ok(response);
     }
 
@@ -27,7 +28,8 @@ public class TeacherCourseController : BaseTeacherController
     [Route("{courseId}")]
     public async Task<IActionResult> GetCourseById(Guid courseId)
     {
-        var response = await _courseService.GetCourse(courseId);
+        var result = await _courseService.GetCourse(courseId);
+        var response = _mapper.Map<CourseDto>(result);
         return Ok(response);
     }
 

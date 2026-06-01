@@ -12,7 +12,6 @@ public class ContextGenerator
             .Options;
         
         var dbContext = new StudyDbContext(options);
-        dbContext.Database.EnsureCreated();
         return dbContext;
     }
     
