@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using StudyCentral.API.Configurations;
 using StudyCentral.API.Models.Entities;
 
 namespace StudyCentral.API.Models;
@@ -49,66 +50,8 @@ public class StudyDbContext : DbContext
         ConfigureAnnouncement(modelBuilder);
         ConfigureStudyFile(modelBuilder);
         
-        // SEED DATA
-        // Users
-        modelBuilder.Entity<User>().HasData(
-            new User
-            {
-                Id = Guid.Parse("08deb68b-5c0f-447c-86a2-152bdf58b714"),
-                Email = "user@mail.com",
-                PasswordHash = "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6",
-                FirstName = "John",
-                LastName = "Student",
-                Role = UserRole.Student
-            },
-            new User
-            {
-                Id = Guid.Parse("08deb68b-c568-4182-841f-7f7f7da655d8"),
-                Email = "teacher@mail.com",
-                PasswordHash = "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6",
-                FirstName = "Jonathan",
-                LastName = "Teacher",
-                Role = UserRole.Teacher
-            },
-            new User
-            {
-                Id = Guid.Parse("08deb68b-ca1a-49f8-80a9-cebcdca84136"),
-                Email = "admin@mail.com",
-                PasswordHash = "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6",
-                FirstName = "Mister",
-                LastName = "Admin",
-                Role = UserRole.Admin
-            }
-        );
-
-        modelBuilder.Entity<Course>().HasData(
-            new Course
-            {
-
-                Id = Guid.Parse("08deb82b-8d61-4e71-8ab5-2205c9dd79ba"),
-                Title = "Introduction to Programming",
-                Description = "Learn the basics of programming with this introductory course.",
-                TeacherId = Guid.Parse("08deb68b-c568-4182-841f-7f7f7da655d8"),
-
-            },
-            new Course
-            {
-
-                Id = Guid.Parse("08deb82b-9093-4baa-806d-5a095a01328f"),
-                Title = "The Art of Programming",
-                Description = "Explore the art of programming with this course.",
-                TeacherId = Guid.Parse("08deb68b-c568-4182-841f-7f7f7da655d8"),
-            },
-            new Course
-            {
-
-                Id = Guid.Parse("08deb82b-9368-4f46-8c29-b0498685408c"),
-                Title = "Advanced Programming",
-                Description = "Master advanced programming techniques with this course.",
-            }
-        );
-
-
+        // Seed Data
+        SeedData.Seed(modelBuilder);
     }
 
     private static void ConfigureUser(ModelBuilder modelBuilder)
@@ -123,76 +66,55 @@ public class StudyDbContext : DbContext
             .HasForeignKey(u => u.ProfilePictureId)
             .OnDelete(DeleteBehavior.SetNull);
 
-        // Student enrollments
         modelBuilder.Entity<User>()
             .HasMany(u => u.EnrolledCourses)
             .WithMany(c => c.Students);
-
-        // Teacher courses
-        modelBuilder.Entity<User>()
-            .HasMany(u => u.TeachingCourses)
-            .WithOne(c => c.Teacher)
-            .HasForeignKey(c => c.TeacherId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        // Created assignments
-        modelBuilder.Entity<User>()
-            .HasMany(u => u.CreatedAssignments)
-            .WithOne(a => a.CreatedBy)
-            .HasForeignKey(a => a.CreatedById)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        // Created announcements
-        modelBuilder.Entity<User>()
-            .HasMany(u => u.CreatedAnnouncements)
-            .WithOne(a => a.CreatedBy)
-            .HasForeignKey(a => a.CreatedById)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        // Submissions
-        modelBuilder.Entity<User>()
-            .HasMany(u => u.Submissions)
-            .WithOne(s => s.Student)
-            .HasForeignKey(s => s.StudentId)
-            .OnDelete(DeleteBehavior.Cascade);
     }
     
     private static void ConfigureCourse(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Course>()
             .Property(c => c.Title)
+            .IsRequired()
             .HasMaxLength(100);
 
         modelBuilder.Entity<Course>()
             .Property(c => c.Description)
             .HasMaxLength(1000);
+        
+        modelBuilder.Entity<Course>()
+            .HasOne(c => c.Teacher)
+            .WithMany(u => u.TeachingCourses)
+            .HasForeignKey(c => c.TeacherId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
     
     private static void ConfigureAssignment(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Assignment>()
-            .HasOne(a => a.Course)
-            .WithMany(c => c.Assignments)
-            .HasForeignKey(a => a.CourseId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<Assignment>()
             .Property(a => a.Title)
+            .IsRequired()
             .HasMaxLength(100);
 
         modelBuilder.Entity<Assignment>()
             .Property(a => a.Description)
             .HasMaxLength(2000);
+        
+        modelBuilder.Entity<Assignment>()
+            .HasOne(a => a.Course)
+            .WithMany(c => c.Assignments)
+            .HasForeignKey(a => a.CourseId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<Assignment>()
+            .HasOne(a => a.CreatedBy)
+            .WithMany(u => u.CreatedAssignments)
+            .HasForeignKey(a => a.CreatedById)
+            .OnDelete(DeleteBehavior.Restrict);
     }
     
     private static void ConfigureSubmission(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Submission>()
-            .HasOne(s => s.Assignment)
-            .WithMany(a => a.Submissions)
-            .HasForeignKey(s => s.AssignmentId)
-            .OnDelete(DeleteBehavior.Cascade);
-
         modelBuilder.Entity<Submission>()
             .Property(s => s.Feedback)
             .HasMaxLength(2000);
@@ -200,44 +122,97 @@ public class StudyDbContext : DbContext
         modelBuilder.Entity<Submission>()
             .Property(s => s.Comment)
             .HasMaxLength(2000);
+        
+        modelBuilder.Entity<Submission>()
+            .HasOne(s => s.Assignment)
+            .WithMany(a => a.Submissions)
+            .HasForeignKey(s => s.AssignmentId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<Submission>()
+            .HasOne(s => s.Student)
+            .WithMany(u => u.Submissions)
+            .HasForeignKey(s => s.StudentId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<Submission>()
+            .HasIndex(s => new { s.AssignmentId, s.StudentId })
+            .IsUnique();
     }
-    
+
     private static void ConfigureAnnouncement(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Announcement>()
+            .Property(a => a.Title)
+            .IsRequired()
+            .HasMaxLength(100);
+
+        modelBuilder.Entity<Announcement>()
+            .Property(a => a.Content)
+            .IsRequired()
+            .HasMaxLength(5000);
+        
         modelBuilder.Entity<Announcement>()
             .HasOne(a => a.Course)
             .WithMany(c => c.Announcements)
             .HasForeignKey(a => a.CourseId)
             .OnDelete(DeleteBehavior.Cascade);
-
+        
         modelBuilder.Entity<Announcement>()
-            .Property(a => a.Title)
-            .HasMaxLength(100);
-
-        modelBuilder.Entity<Announcement>()
-            .Property(a => a.Content)
-            .HasMaxLength(5000);
+            .HasOne(a => a.CreatedBy)
+            .WithMany(u => u.CreatedAnnouncements)
+            .HasForeignKey(a => a.CreatedById)
+            .OnDelete(DeleteBehavior.Restrict);
     }
-    
+
     private static void ConfigureStudyFile(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<StudyFile>()
             .Property(f => f.Name)
+            .IsRequired()
             .HasMaxLength(255);
 
         modelBuilder.Entity<StudyFile>()
             .Property(f => f.BlobName)
+            .IsRequired()
             .HasMaxLength(500);
 
         modelBuilder.Entity<StudyFile>()
             .Property(f => f.ContentType)
+            .IsRequired()
             .HasMaxLength(100);
 
         modelBuilder.Entity<StudyFile>()
+            .Property(f => f.AltText)
+            .HasMaxLength(100);
+        
+        // Uploader
+        modelBuilder.Entity<StudyFile>()
             .HasOne(f => f.UploadedBy)
-            .WithMany()
+            .WithMany(u => u.UploadedFiles)
             .HasForeignKey(f => f.UploadedById)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        // Course
+        modelBuilder.Entity<StudyFile>()
+            .HasOne(f => f.Course)
+            .WithMany(c => c.Files)
+            .HasForeignKey(f => f.CourseId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        // Assignment
+        modelBuilder.Entity<StudyFile>()
+            .HasOne(f => f.Assignment)
+            .WithMany(a => a.Files)
+            .HasForeignKey(f => f.AssignmentId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        // Submission
+        modelBuilder.Entity<StudyFile>()
+            .HasOne(f => f.Submission)
+            .WithMany(s => s.Files)
+            .HasForeignKey(f => f.SubmissionId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
     
 }

@@ -15,6 +15,8 @@ public class User
     public Guid? ProfilePictureId { get; set; }
     public StudyFile? ProfilePicture { get; set; }
     
+    public ICollection<StudyFile> UploadedFiles { get; set; } = new List<StudyFile>();
+    
     // Audit
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

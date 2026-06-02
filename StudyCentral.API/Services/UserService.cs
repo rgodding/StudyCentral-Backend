@@ -57,6 +57,7 @@ public class UserService : IUserService
         UpdateUserDto dto)
     {
         var user = await _dbContext.Users
+            .Include(u => u.ProfilePicture)
             .FirstOrDefaultAsync(u => u.Id == userId);
 
         if (user == null)

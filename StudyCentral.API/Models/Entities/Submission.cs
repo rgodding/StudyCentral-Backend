@@ -12,7 +12,7 @@ public class Submission
     // Teacher feedback
     public string? Feedback { get; set; }
 
-    public int? Grade { get; set; }
+    public decimal? Grade { get; set; }
 
     // Assignment
     public Guid AssignmentId { get; set; }

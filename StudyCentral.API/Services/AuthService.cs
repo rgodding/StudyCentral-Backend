@@ -11,7 +11,6 @@ public interface IAuthService
 {
     Task<AuthResponseDto> SignUp(SignUpDto signUpDto);
     Task<AuthResponseDto> SignIn(SignInDto signInDto);
-    Task<UserDto> GetCurrentUser(Guid userId);
 }
 
 public class AuthService : IAuthService
@@ -87,26 +86,6 @@ public class AuthService : IAuthService
                 LastName = user.LastName,
                 Role = user.Role.ToString()
             }
-        };
-    }
-
-    public async Task<UserDto> GetCurrentUser(Guid userId)
-    {
-        var user = await _dbContext.Users
-            .FirstOrDefaultAsync(u => u.Id == userId);
-
-        if (user == null)
-        {
-            throw new Exception("User not found");
-        }
-
-        return new UserDto
-        {
-            Id = user.Id,
-            Email = user.Email,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Role = user.Role.ToString()
         };
     }
 }

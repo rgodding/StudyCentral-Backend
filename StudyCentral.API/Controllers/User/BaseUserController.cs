@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using StudyCentral.API.Authentication;
 
-namespace StudyCentral.API.Controllers;
+namespace StudyCentral.API.Controllers.User;
 
 public class BaseUserController : BaseController
 {
