@@ -37,6 +37,7 @@ public class ServiceConfig
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IChatService, ChatService>();
         services.AddScoped<ICourseService, CourseService>();
+        services.AddScoped<IAssignmentService, AssignmentService>();
         
     }
 
