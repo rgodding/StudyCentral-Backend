@@ -11,5 +11,5 @@ public class CourseDto
     
     public DateTime CreatedAt { get; set; }
     
-    public UserPreviewDto? Teacher { get; set; }
+    public UserDto? Teacher { get; set; }
 }

@@ -19,10 +19,9 @@ public class CurrentUser : BaseUserController
     [HttpGet]
     public async Task<ActionResult<UserDto>> GetCurrentUser()
     {
-        Console.WriteLine("Okay getting current user");
         var user = await _userService.GetCurrentUser(UserPrincipal.Id);
-
-        return Ok(user);
+        var response = _mapper.Map<UserDto>(user);
+        return Ok(response);
     }
 
     [HttpPut]
@@ -32,8 +31,8 @@ public class CurrentUser : BaseUserController
         var user = await _userService.UpdateCurrentUser(
             UserPrincipal.Id,
             dto);
-
-        return Ok(user);
+        var response = _mapper.Map<UserDto>(user);
+        return Ok(response);
     }
     
     [HttpPost]
@@ -44,7 +43,8 @@ public class CurrentUser : BaseUserController
             UserPrincipal.Id,
             file,
             altText);
-        return Ok(user);
+        var response = _mapper.Map<UserDto>(user);
+        return Ok(response);
     }
     
 }

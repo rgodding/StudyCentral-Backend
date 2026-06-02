@@ -46,7 +46,7 @@ public class AnnouncementService : IAnnouncementService
     public async Task<Announcement> CreateAnnouncement(Guid teacherId, Guid courseId, CreateAnnouncementDto request)
     {
         var teacher = await _dbContext.Users
-            .FirstOrDefaultAsync(u => u.Id == teacherId && u.Role == UserRole.Teacher)
+                          .FirstOrDefaultAsync(u => u.Id == teacherId && u.Role == UserRole.Teacher)
             ?? throw new KeyNotFoundException("Teacher not found");
         
         var course = await  _dbContext.Courses

@@ -14,6 +14,8 @@ public class User
     
     public Guid? ProfilePictureId { get; set; }
     public StudyFile? ProfilePicture { get; set; }
+
+    public string? ProfilePictureUrl { get; set; }
     
     public ICollection<StudyFile> UploadedFiles { get; set; } = new List<StudyFile>();
     

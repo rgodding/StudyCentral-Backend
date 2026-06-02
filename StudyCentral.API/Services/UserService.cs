@@ -7,13 +7,13 @@ namespace StudyCentral.API.Services;
 
 public interface IUserService
 {
-    Task<UserDto> GetCurrentUser(Guid userId);
+    Task<User> GetCurrentUser(Guid userId);
 
-    Task<UserDto> UpdateCurrentUser(
+    Task<User> UpdateCurrentUser(
         Guid userId,
         UpdateUserDto dto);
     
-    Task<UserDto> UpdateProfilePicture(Guid userId, IFormFile file, string? altText);
+    Task<User> UpdateProfilePicture(Guid userId, IFormFile file, string? altText);
 }
 
 public class UserService : IUserService
@@ -29,7 +29,7 @@ public class UserService : IUserService
     }
 
 
-    public async Task<UserDto> GetCurrentUser(Guid userId)
+    public async Task<User> GetCurrentUser(Guid userId)
     {
         var user = await _dbContext.Users
             .Include(u => u.ProfilePicture)
@@ -39,20 +39,11 @@ public class UserService : IUserService
         {
             throw new KeyNotFoundException("User not found");
         }
-        
 
-        return new UserDto
-        {
-            Id = user.Id,
-            Email = user.Email,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Role = user.Role.ToString(),
-            ProfilePictureUrl = user.ProfilePicture?.BlobName
-        };
+        return user;
     }
 
-    public async Task<UserDto> UpdateCurrentUser(
+    public async Task<User> UpdateCurrentUser(
         Guid userId,
         UpdateUserDto dto)
     {
@@ -71,18 +62,10 @@ public class UserService : IUserService
         user.UpdatedAt = DateTime.UtcNow;
 
         await _dbContext.SaveChangesAsync();
-
-        return new UserDto
-        {
-            Id = user.Id,
-            Email = user.Email,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Role = user.Role.ToString()
-        };
+        return user;
     }
 
-    public async Task<UserDto> UpdateProfilePicture(Guid userId, IFormFile file, string? altText)
+    public async Task<User> UpdateProfilePicture(Guid userId, IFormFile file, string? altText)
     {
         var user = await _dbContext.Users
             .Include(u => u.ProfilePicture)
@@ -120,16 +103,11 @@ public class UserService : IUserService
         
         _dbContext.Files.Add(studyFile);
         user.ProfilePicture = studyFile;
+        user.ProfilePictureUrl = studyFile.BlobName;
         user.UpdatedAt = DateTime.UtcNow;
         await _dbContext.SaveChangesAsync();
-        
-        return new UserDto
-        {
-            Id = user.Id,
-            Email = user.Email,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Role = user.Role.ToString()
-        };
+
+        return user;
+
     }
 }
