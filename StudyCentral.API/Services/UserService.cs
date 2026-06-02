@@ -106,7 +106,7 @@ public class UserService : IUserService
             BlobName = blobName,
             ContentType = file.ContentType,
             Size = file.Length,
-            Type = FileType.Image,
+            FileType = FileType.Image,
             AltText = altText,
             UploadedById = user.Id
         };

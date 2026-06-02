@@ -7,7 +7,7 @@ public class StudyFile
     public string Name { get; set; } = null!;
     public string BlobName { get; set; } = null!;
 
-    public FileType Type { get; set; }
+    public FileType FileType { get; set; }
 
     public string ContentType { get; set; } = null!;
     public long Size { get; set; }
@@ -19,6 +19,19 @@ public class StudyFile
 
     public Guid UploadedById { get; set; }
     public User UploadedBy { get; set; } = null!;
+    
+    // Optional Owners
+    public Guid? CourseId { get; set; }
+    public Course? Course { get; set; }
+    
+    public Guid? AssignmentId { get; set; }
+    public Assignment? Assignment { get; set; }
+    
+    public Guid? SubmissionId { get; set; }
+    public Submission? Submission { get; set; }
+    
+    public Guid? UserId { get; set; }
+    public User? User { get; set; }
 }
 
 public enum FileType

@@ -35,9 +35,11 @@ public class ServiceConfig
         // Services
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
-        services.AddScoped<IChatService, ChatService>();
         services.AddScoped<ICourseService, CourseService>();
         services.AddScoped<IAssignmentService, AssignmentService>();
+        services.AddScoped<ISubmissionService, SubmissionService>();
+        services.AddScoped<IAnnouncementService, AnnouncementService>();
+        services.AddScoped<IStudyFileService, StudyFileService>();
         
     }
 
