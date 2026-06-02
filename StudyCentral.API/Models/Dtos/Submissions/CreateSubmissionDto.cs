@@ -2,5 +2,5 @@
 
 public class CreateSubmissionDto
 {
-    
+    public string? Comment { get; set; }
 }

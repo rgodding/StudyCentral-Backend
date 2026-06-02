@@ -14,6 +14,7 @@ public interface IAnnouncementService
     
     Task<Announcement> CreateAnnouncement(Guid teacherId, Guid courseId, CreateAnnouncementDto request);
     Task<Announcement> UpdateAnnouncement(Guid teacherId, Guid announcementId, UpdateAnnouncementDto request);
+    Task DeleteAnnouncement(Guid teacherId, Guid announcementId);
 }
 
 public class AnnouncementService : IAnnouncementService
@@ -61,8 +62,33 @@ public class AnnouncementService : IAnnouncementService
         
     }
 
-    public Task<Announcement> UpdateAnnouncement(Guid teacherId, Guid announcementId, UpdateAnnouncementDto request)
+    public async Task<Announcement> UpdateAnnouncement(Guid teacherId, Guid announcementId, UpdateAnnouncementDto request)
     {
-        throw new NotImplementedException();
+        var teacher = await  _dbContext.Users
+            .FirstOrDefaultAsync(u => u.Id == teacherId && u.Role == UserRole.Teacher)
+            ?? throw new KeyNotFoundException("Teacher not found");
+        
+        var announcement = await _dbContext.Announcements
+            .FirstOrDefaultAsync(a => a.Id == announcementId)
+            ?? throw new KeyNotFoundException("Announcement not found");
+        
+        announcement.Title = request.Title ?? announcement.Title;
+        announcement.Content = request.Content ?? announcement.Content;
+        await _dbContext.SaveChangesAsync();
+        return announcement;
+    }
+
+    public async Task DeleteAnnouncement(Guid teacherId, Guid announcementId)
+    {
+        var teacher = await _dbContext.Users
+            .FirstOrDefaultAsync(u => u.Id == teacherId && u.Role == UserRole.Teacher)
+            ?? throw new KeyNotFoundException("Teacher not found");
+        
+        var announcement = await _dbContext.Announcements
+            .FirstOrDefaultAsync(a => a.Id == announcementId)
+            ?? throw new KeyNotFoundException("Announcement not found");
+        
+        _dbContext.Announcements.Remove(announcement);
+        await _dbContext.SaveChangesAsync();
     }
 }

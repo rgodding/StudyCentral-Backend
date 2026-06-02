@@ -1,11 +1,14 @@
-﻿using StudyCentral.API.Models.Dtos.Assignments;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using StudyCentral.API.Models;
+using StudyCentral.API.Models.Dtos.Assignments;
 using StudyCentral.API.Models.Entities;
 
 namespace StudyCentral.API.Services;
 
 public interface IAssignmentService
 {
-    Task<Assignment> GetAssignment(Guid assignmentId);
+    Task<Assignment> GetAssignmentById(Guid assignmentId);
     Task<List<Assignment>> GetAssignmentsByCourseId(Guid courseId);
     
     Task<Assignment> CreateAssignment(Guid teacherId, Guid courseId, CreateAssignmentDto request);
@@ -20,28 +23,76 @@ public interface IAssignmentService
 
 public class AssignmentService : IAssignmentService
 {
-    public Task<Assignment> GetAssignment(Guid assignmentId)
+    private readonly StudyDbContext _dbContext;
+    private readonly IMapper _mapper;
+
+    public AssignmentService(StudyDbContext dbContext, IMapper mapper)
     {
-        throw new NotImplementedException();
+        _dbContext = dbContext;
+        _mapper = mapper;
     }
 
-    public Task<List<Assignment>> GetAssignmentsByCourseId(Guid courseId)
+    public async Task<Assignment> GetAssignmentById(Guid assignmentId)
     {
-        throw new NotImplementedException();
+        return await  _dbContext.Assignments
+            .FirstOrDefaultAsync(a => a.Id == assignmentId)
+            ?? throw new KeyNotFoundException("Assignment not found");
     }
 
-    public Task<Assignment> CreateAssignment(Guid teacherId, Guid courseId, CreateAssignmentDto request)
+    public async Task<List<Assignment>> GetAssignmentsByCourseId(Guid courseId)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Assignments
+            .Where(a => a.CourseId == courseId)
+            .ToListAsync();
     }
 
-    public Task<Assignment> UpdateAssignment(Guid teacherId, Guid assignmentId, UpdateAssignmentDto request)
+    public async Task<Assignment> CreateAssignment(Guid teacherId, Guid courseId, CreateAssignmentDto request)
     {
-        throw new NotImplementedException();
+        var teacher = await _dbContext.Users
+            .FirstOrDefaultAsync(u => u.Id == teacherId && u.Role == UserRole.Teacher)
+            ?? throw new KeyNotFoundException("Teacher not found");
+        
+        var course = await  _dbContext.Courses
+            .FirstOrDefaultAsync(c => c.Id == courseId && c.TeacherId == teacher.Id)
+            ?? throw new KeyNotFoundException("Course not found");
+        
+        var assignment = _mapper.Map<Assignment>(request);
+        
+        assignment.Course = course;
+        _dbContext.Assignments.Add(assignment);
+        await _dbContext.SaveChangesAsync();
+        return assignment;
     }
 
-    public Task DeleteAssignment(Guid teacherId, Guid assignmentId)
+    public async Task<Assignment> UpdateAssignment(Guid teacherId, Guid assignmentId, UpdateAssignmentDto request)
     {
-        throw new NotImplementedException();
+        var teacher = await _dbContext.Users
+            .FirstOrDefaultAsync(u => u.Id == teacherId && u.Role == UserRole.Teacher)
+            ?? throw new KeyNotFoundException("Teacher not found");
+        
+        var assignment = await  _dbContext.Assignments
+            .FirstOrDefaultAsync(a => a.Id == assignmentId && a.Course.TeacherId == teacher.Id)
+            ?? throw new KeyNotFoundException("Course not found");
+        
+        assignment.Title = request.Title ??  assignment.Title;
+        assignment.Description = request.Description ??  assignment.Description;
+        assignment.Deadline = request.Deadline ??  assignment.Deadline;
+        
+        await _dbContext.SaveChangesAsync();
+        return assignment;
+    }
+
+    public async Task DeleteAssignment(Guid teacherId, Guid assignmentId)
+    {
+        var teacher = await _dbContext.Users
+            .FirstOrDefaultAsync(u => u.Id == teacherId && u.Role == UserRole.Teacher)
+            ?? throw new KeyNotFoundException("Teacher not found");
+        
+        var assignment = await  _dbContext.Assignments
+            .FirstOrDefaultAsync(a => a.Id == assignmentId && a.Course.TeacherId == teacher.Id)
+            ?? throw new KeyNotFoundException("Course not found");
+        
+        _dbContext.Assignments.Remove(assignment);
+        await _dbContext.SaveChangesAsync();
     }
 }

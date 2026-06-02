@@ -1,4 +1,7 @@
-﻿using StudyCentral.API.Models.Dtos.Submissions;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using StudyCentral.API.Models;
+using StudyCentral.API.Models.Dtos.Submissions;
 using StudyCentral.API.Models.Entities;
 
 namespace StudyCentral.API.Services;
@@ -7,48 +10,99 @@ public interface ISubmissionService
 {
     Task<Submission> GetSubmissionById(Guid submissionId);
     Task<List<Submission>> GetSubmissionsByCourseId(Guid courseId);
-    Task<List<Submission>> GetSubmissionsByAssessmentId(Guid assessmentId);
+    Task<List<Submission>> GetSubmissionsByAssignmentId(Guid assignmentId);
     Task<List<Submission>> GetSubmissionsByStudentId(Guid studentId);
     
-    Task<Submission> CreateSubmission(Guid studentId, Guid submissionId, CreateSubmissionDto request);
+    Task<Submission> CreateSubmission(Guid studentId, Guid assignmentId, CreateSubmissionDto request);
     Task<Submission> UpdateSubmission(Guid studentId, Guid submissionId, UpdateSubmissionDto request);
     Task DeleteSubmission(Guid studentId, Guid submissionId);
 }
 
 public class SubmissionService : ISubmissionService
 {
-    public Task<Submission> GetSubmissionById(Guid submissionId)
+    private readonly StudyDbContext _dbContext;
+    private readonly IMapper _mapper;
+
+    public SubmissionService(StudyDbContext dbContext, IMapper mapper)
     {
-        throw new NotImplementedException();
+        _dbContext = dbContext;
+        _mapper = mapper;
     }
 
-    public Task<List<Submission>> GetSubmissionsByCourseId(Guid courseId)
+    public async Task<Submission> GetSubmissionById(Guid submissionId)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Submissions
+            .FirstOrDefaultAsync(s => s.Id == submissionId)
+            ?? throw new KeyNotFoundException("Submission not found");
     }
 
-    public Task<List<Submission>> GetSubmissionsByAssessmentId(Guid assessmentId)
+    public async Task<List<Submission>> GetSubmissionsByCourseId(Guid courseId)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Submissions
+            .Where(s => s.Assignment.CourseId == courseId)
+            .ToListAsync();
     }
 
-    public Task<List<Submission>> GetSubmissionsByStudentId(Guid studentId)
+    public async Task<List<Submission>> GetSubmissionsByAssignmentId(Guid assignmentId)
     {
-        throw new NotImplementedException();
+        return await  _dbContext.Submissions
+            .Where(s => s.AssignmentId == assignmentId)
+            .ToListAsync();
     }
 
-    public Task<Submission> CreateSubmission(Guid studentId, Guid submissionId, CreateSubmissionDto request)
+    public async Task<List<Submission>> GetSubmissionsByStudentId(Guid studentId)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Submissions
+            .Where(s => s.StudentId == studentId)
+            .ToListAsync();
     }
 
-    public Task<Submission> UpdateSubmission(Guid studentId, Guid submissionId, UpdateSubmissionDto request)
+    public async Task<Submission> CreateSubmission(Guid studentId, Guid assignmentId, CreateSubmissionDto request)
     {
-        throw new NotImplementedException();
+        var student = await _dbContext.Users
+            .FirstOrDefaultAsync(s => s.Id == studentId)
+            ?? throw new KeyNotFoundException("User not found");
+        
+        var assignment = await _dbContext.Assignments
+            .FirstOrDefaultAsync(a => a.Id == assignmentId)
+            ?? throw new KeyNotFoundException("Assignment not found");
+        
+        var submission = _mapper.Map<Submission>(request);
+        submission.Student = student;
+        submission.Assignment = assignment;
+        _dbContext.Submissions.Add(submission);
+        await _dbContext.SaveChangesAsync();
+        return submission;
     }
 
-    public Task DeleteSubmission(Guid studentId, Guid submissionId)
+    public async Task<Submission> UpdateSubmission(Guid studentId, Guid submissionId, UpdateSubmissionDto request)
     {
-        throw new NotImplementedException();
+        var student = await _dbContext.Users
+            .FirstOrDefaultAsync(s => s.Id == studentId)
+            ?? throw new KeyNotFoundException("User not found");
+        
+        var submission  = await _dbContext.Submissions
+            .FirstOrDefaultAsync(s => s.Id == submissionId)
+            ?? throw new KeyNotFoundException("Submission not found");
+        
+        submission.Comment = request.Comment ?? submission.Comment;
+        submission.Feedback = request.Feedback ?? submission.Feedback;
+        submission.Grade = request.Grade ?? submission.Grade;
+        
+        await _dbContext.SaveChangesAsync();
+        return submission;
+    }
+
+    public async Task DeleteSubmission(Guid studentId, Guid submissionId)
+    {
+        var student = await _dbContext.Users
+            .FirstOrDefaultAsync(s => s.Id == studentId)
+            ?? throw new KeyNotFoundException("User not found");
+        
+        var submission = await _dbContext.Submissions
+            .FirstOrDefaultAsync(s => s.Id == submissionId)
+            ?? throw new KeyNotFoundException("Submission not found");
+        _dbContext.Submissions.Remove(submission);
+        await _dbContext.SaveChangesAsync();
     }
 }
