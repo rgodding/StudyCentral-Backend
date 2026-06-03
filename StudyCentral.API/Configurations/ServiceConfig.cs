@@ -33,6 +33,7 @@ public class ServiceConfig
         services.AddSingleton<IBlobService, BlobService>();
 
         // Services
+        /*
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ICourseService, CourseService>();
@@ -40,6 +41,7 @@ public class ServiceConfig
         services.AddScoped<ISubmissionService, SubmissionService>();
         services.AddScoped<IAnnouncementService, AnnouncementService>();
         services.AddScoped<IStudyFileService, StudyFileService>();
+        */
         
     }
 
