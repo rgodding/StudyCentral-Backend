@@ -38,7 +38,8 @@ public class TeacherCourseController : BaseTeacherController
     public async Task<IActionResult> UpdateCourse(Guid courseId, [FromBody] UpdateCourseDto request)
     {
         var result = await _courseService.UpdateCourse(courseId, request);
-        return Ok(result);   
+        var respone = _mapper.Map<CourseDto>(result);
+        return Ok(respone);
     }
     
     [HttpGet]

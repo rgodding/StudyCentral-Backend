@@ -11,16 +11,16 @@ public interface ICourseService
 {
     Task<List<Course>> GetAllCourses();
     Task<Course> GetCourse(Guid id);
-    
+
     Task<Course> CreateCourse(CreateCourseDto request);
     Task<Course> UpdateCourse(Guid id, UpdateCourseDto request);
     Task DeleteCourse(Guid id);
-    
+
     Task<List<Course>> GetCoursesByTeacherId(Guid teacherId);
     Task<List<Course>> GetCoursesByStudentId(Guid studentId);
-    
+
     Task<List<User>> GetEnrolledStudents(Guid courseId);
-    
+
     Task EnrollStudent(Guid courseId, Guid studentId);
     Task UnenrollStudent(Guid courseId, Guid studentId);
 }
@@ -40,31 +40,32 @@ public class CourseService : ICourseService
     {
         var result = await _dbContext.Courses
             .Include(c => c.Teacher)
+            .ThenInclude(t => t!.ProfilePicture)
             .ToListAsync();
         return result;
     }
 
     public async Task<Course> GetCourse(Guid id)
     {
-        var result = await  _dbContext.Courses
-            .Include(c => c.Teacher)
-            .FirstOrDefaultAsync(c => c.Id == id)
-            ?? throw new KeyNotFoundException("Course not found");
+        var result = await _dbContext.Courses
+                         .Include(c => c.Teacher)
+                         .FirstOrDefaultAsync(c => c.Id == id)
+                     ?? throw new KeyNotFoundException($"Course with id {id} was not found");
         return result;
     }
 
     public async Task<Course> CreateCourse(CreateCourseDto request)
     {
         // Check if duplicate title
-        var existingCourse = await  _dbContext.Courses
+        var existingCourse = await _dbContext.Courses
             .FirstOrDefaultAsync(c => c.Title == request.Title);
 
         if (existingCourse != null)
         {
             throw new ExceptionMiddleware.ConflictException("Course with the same title already exists");
         }
-        
-        var  course = _mapper.Map<Course>(request);
+
+        var course = _mapper.Map<Course>(request);
         _dbContext.Courses.Add(course);
         await _dbContext.SaveChangesAsync();
         return course;
@@ -72,14 +73,14 @@ public class CourseService : ICourseService
 
     public async Task<Course> UpdateCourse(Guid id, UpdateCourseDto request)
     {
-        var existingCourse = await  _dbContext.Courses
-            .FirstOrDefaultAsync(c => c.Id == id)
-            ?? throw new KeyNotFoundException("Course not found");
-        
+        var existingCourse = await _dbContext.Courses
+                                 .Include(c => c.Teacher)
+                                 .FirstOrDefaultAsync(c => c.Id == id)
+                             ?? throw new KeyNotFoundException("Course not found");
         existingCourse.Title = request.Title ?? existingCourse.Title;
         existingCourse.Description = request.Description ?? existingCourse.Description;
-        existingCourse.TeacherId = request.TeacherId ?? existingCourse.TeacherId;
-        
+        // existingCourse.TeacherId = request.TeacherId ?? existingCourse.TeacherId;
+
         await _dbContext.SaveChangesAsync();
         return existingCourse;
     }
@@ -87,9 +88,9 @@ public class CourseService : ICourseService
     public async Task DeleteCourse(Guid id)
     {
         var existingCourse = await _dbContext.Courses
-            .FirstOrDefaultAsync(c => c.Id == id)
-            ?? throw new KeyNotFoundException("Course not found");
-        
+                                 .FirstOrDefaultAsync(c => c.Id == id)
+                             ?? throw new KeyNotFoundException("Course not found");
+
         _dbContext.Courses.Remove(existingCourse);
         await _dbContext.SaveChangesAsync();
     }
@@ -114,25 +115,25 @@ public class CourseService : ICourseService
 
     public async Task<List<User>> GetEnrolledStudents(Guid courseId)
     {
-        var result = await  _dbContext.Courses
+        var result = await _dbContext.Courses
             .Include(c => c.Teacher)
             .Include(c => c.Students)
             .Where(c => c.Id == courseId)
             .ToListAsync();
-        
+
         return result.SelectMany(c => c.Students).ToList();
     }
 
     public async Task EnrollStudent(Guid courseId, Guid studentId)
     {
         var course = await _dbContext.Courses
-            .FirstOrDefaultAsync(c => c.Id == courseId)
-            ?? throw new KeyNotFoundException("Course not found");
-        
+                         .FirstOrDefaultAsync(c => c.Id == courseId)
+                     ?? throw new KeyNotFoundException("Course not found");
+
         var student = await _dbContext.Users
-            .FirstOrDefaultAsync(u => u.Id == studentId)
-            ?? throw new KeyNotFoundException("Student not found");
-        
+                          .FirstOrDefaultAsync(u => u.Id == studentId)
+                      ?? throw new KeyNotFoundException("Student not found");
+
         course.Students.Add(student);
         await _dbContext.SaveChangesAsync();
     }
@@ -140,13 +141,13 @@ public class CourseService : ICourseService
     public async Task UnenrollStudent(Guid courseId, Guid studentId)
     {
         var course = await _dbContext.Courses
-            .FirstOrDefaultAsync(c => c.Id == courseId)
-            ?? throw new KeyNotFoundException("Course not found");
-        
+                         .FirstOrDefaultAsync(c => c.Id == courseId)
+                     ?? throw new KeyNotFoundException("Course not found");
+
         var student = await _dbContext.Users
-            .FirstOrDefaultAsync(u => u.Id == studentId)
-            ?? throw new KeyNotFoundException("Student not found");
-        
+                          .FirstOrDefaultAsync(u => u.Id == studentId)
+                      ?? throw new KeyNotFoundException("Student not found");
+
         course.Students.Remove(student);
         await _dbContext.SaveChangesAsync();
     }
