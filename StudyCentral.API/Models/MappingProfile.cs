@@ -22,6 +22,8 @@ public class MappingProfile : Profile
                     src.ProfilePicture == null
                         ? null
                         : src.ProfilePicture.BlobName));
+        CreateMap<CreateUserDto, User>();
+        CreateMap<UpdateUserDto, User>();
 
         // Course
         CreateMap<Course, CourseDto>()
@@ -34,7 +36,9 @@ public class MappingProfile : Profile
             .ForMember(
                 dest => dest.StudentCount,
                 opt => opt.MapFrom(src => src.Students.Count));
-        
+        CreateMap<CreateCourseDto, Course>();
+        CreateMap<UpdateCourseDto, Course>();
+
         // Assignment
         CreateMap<Assignment, AssignmentDto>()
             .ForMember(
@@ -43,7 +47,9 @@ public class MappingProfile : Profile
             .ForMember(
                 dest => dest.FileCount,
                 opt => opt.MapFrom(src => src.Files.Count));
-        
+        CreateMap<CreateAssignmentDto, Assignment>();
+        CreateMap<UpdateAssignmentDto, Assignment>();
+
         // Announcement
         CreateMap<Announcement, AnnouncementDto>()
             .ForMember(
@@ -52,7 +58,9 @@ public class MappingProfile : Profile
             .ForMember(
                 dest => dest.FileCount,
                 opt => opt.MapFrom(src => src.Files.Count));
-        
+        CreateMap<CreateAnnouncementDto, Announcement>();
+        CreateMap<UpdateAnnouncementDto, Announcement>();
+
         // Submission
         CreateMap<Submission, SubmissionDto>()
             .ForMember(
@@ -65,7 +73,10 @@ public class MappingProfile : Profile
             .ForMember(
                 dest => dest.FileCount,
                 opt => opt.MapFrom(src => src.Files.Count));
-        
+        CreateMap<Submission, SubmissionDto>();
+        CreateMap<CreateSubmissionDto, Submission>();
+        CreateMap<UpdateSubmissionDto, Submission>();
+
         // StudyFolder
         CreateMap<StudyFolder, StudyFolderDto>()
             .ForMember(
@@ -77,7 +88,9 @@ public class MappingProfile : Profile
             .ForMember(
                 dest => dest.FileCount,
                 opt => opt.MapFrom(src => src.Files.Count));
-        
+        CreateMap<CreateStudyFolderDto, StudyFolder>();
+        CreateMap<UpdateStudyFolderDto, StudyFolder>();
+
         // StudyFile
         CreateMap<StudyFile, StudyFileDto>()
             .ForMember(
@@ -87,5 +100,6 @@ public class MappingProfile : Profile
                 dest => dest.UploadedByName,
                 opt => opt.MapFrom(src =>
                     $"{src.UploadedBy.FirstName} {src.UploadedBy.LastName}"));
+        CreateMap<UpdateStudyFileDto, StudyFile>();
     }
 }
