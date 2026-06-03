@@ -6,16 +6,11 @@ public class Assignment
 
     public string Title { get; set; } = null!;
     public string? Description { get; set; }
-
-    public DateTime Deadline { get; set; }
+    public DateTime? Deadline { get; set; }
 
     // Course
     public Guid CourseId { get; set; }
     public Course Course { get; set; } = null!;
-
-    // Teacher
-    public Guid CreatedById { get; set; }
-    public User CreatedBy { get; set; } = null!;
 
     // Files
     public ICollection<StudyFile> Files { get; set; }
@@ -24,8 +19,4 @@ public class Assignment
     // Student submissions
     public ICollection<Submission> Submissions { get; set; }
         = new List<Submission>();
-
-    // Audit
-    public DateTime CreatedAt { get; set; }
-        = DateTime.UtcNow;
 }

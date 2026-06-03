@@ -9,7 +9,7 @@ public class Course
 
     // Teacher
     public Guid? TeacherId { get; set; }
-    public User? Teacher { get; set; } = null!;
+    public User? Teacher { get; set; }
     
     // Students
     public ICollection<User> Students { get; set; }
@@ -21,11 +21,7 @@ public class Course
 
     public ICollection<Announcement> Announcements { get; set; }
         = new List<Announcement>();
-    
-    public ICollection<StudyFile> Files { get; set; }
-        = new List<StudyFile>();
-
-    // Audit
-    public DateTime CreatedAt { get; set; }
-        = DateTime.UtcNow;
+   
+    public ICollection<StudyFolder> Folders { get; set; }
+        = new List<StudyFolder>();
 }
