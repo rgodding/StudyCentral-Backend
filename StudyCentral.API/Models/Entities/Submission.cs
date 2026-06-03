@@ -23,4 +23,8 @@ public class Submission
     // Student
     public Guid StudentId { get; set; }
     public User Student { get; set; } = null!;
+    
+    // Audit
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
 }

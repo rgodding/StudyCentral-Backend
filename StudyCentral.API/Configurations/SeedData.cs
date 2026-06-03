@@ -14,12 +14,12 @@ public static class SeedData
     private static readonly Guid Student3Id = Guid.Parse("66666666-6666-6666-6666-666666666666");
     private static readonly Guid Student4Id = Guid.Parse("77777777-7777-7777-7777-777777777777");
     private static readonly Guid Student5Id = Guid.Parse("88888888-8888-8888-8888-888888888888");
-    
+
     // Courses
     private static readonly Guid Course1Id = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
     private static readonly Guid Course2Id = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
     private static readonly Guid Course3Id = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
-    
+
     // Announcements
     private static readonly Guid Announcement1Id = Guid.Parse("11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
     private static readonly Guid Announcement2Id = Guid.Parse("22222222-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
@@ -27,7 +27,7 @@ public static class SeedData
     private static readonly Guid Announcement4Id = Guid.Parse("44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
     private static readonly Guid Announcement5Id = Guid.Parse("55555555-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
     private static readonly Guid Announcement6Id = Guid.Parse("66666666-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
-    
+
     // Assignments
     private static readonly Guid Assignment1Id = Guid.Parse("aaaaaaaa-1111-1111-1111-111111111111");
     private static readonly Guid Assignment2Id = Guid.Parse("aaaaaaaa-2222-2222-2222-222222222222");
@@ -35,7 +35,7 @@ public static class SeedData
     private static readonly Guid Assignment4Id = Guid.Parse("aaaaaaaa-4444-4444-4444-444444444444");
     private static readonly Guid Assignment5Id = Guid.Parse("aaaaaaaa-5555-5555-5555-555555555555");
     private static readonly Guid Assignment6Id = Guid.Parse("aaaaaaaa-6666-6666-6666-666666666666");
-    
+
     // Submissions
     private static readonly Guid Submission1Id = Guid.Parse("aaaaaaaa-7777-7777-7777-777777777777");
     private static readonly Guid Submission2Id = Guid.Parse("aaaaaaaa-8888-8888-8888-888888888888");
@@ -43,8 +43,8 @@ public static class SeedData
     private static readonly Guid Submission4Id = Guid.Parse("bbbbbbbb-1111-1111-1111-111111111111");
     private static readonly Guid Submission5Id = Guid.Parse("bbbbbbbb-2222-2222-2222-222222222222");
     private static readonly Guid Submission6Id = Guid.Parse("bbbbbbbb-3333-3333-3333-333333333333");
-    
-    
+
+
     public static void Seed(ModelBuilder modelBuilder)
     {
         SeedUsers(modelBuilder);
@@ -179,7 +179,6 @@ public static class SeedData
                 EnrolledCoursesId = Course1Id,
                 StudentsId = Student3Id
             },
-
             new
             {
                 EnrolledCoursesId = Course2Id,
@@ -190,7 +189,6 @@ public static class SeedData
                 EnrolledCoursesId = Course2Id,
                 StudentsId = Student4Id
             },
-
             new
             {
                 EnrolledCoursesId = Course3Id,
@@ -218,7 +216,6 @@ public static class SeedData
                 Title = "Welcome to Web Development",
                 Content = "Welcome to the course. Please review the syllabus and course materials.",
                 CourseId = Course1Id,
-                CreatedById = Teacher1Id
             },
             new Announcement
             {
@@ -226,7 +223,6 @@ public static class SeedData
                 Title = "First Assignment Released",
                 Content = "The HTML Portfolio assignment is now available.",
                 CourseId = Course1Id,
-                CreatedById = Teacher1Id
             },
             new Announcement
             {
@@ -234,7 +230,6 @@ public static class SeedData
                 Title = "Database Project Information",
                 Content = "Project requirements and grading criteria have been uploaded.",
                 CourseId = Course2Id,
-                CreatedById = Teacher1Id
             },
             new Announcement
             {
@@ -242,7 +237,6 @@ public static class SeedData
                 Title = "Exam Preparation",
                 Content = "Review SQL joins, normalization and indexing before the exam.",
                 CourseId = Course2Id,
-                CreatedById = Teacher1Id
             },
             new Announcement
             {
@@ -250,7 +244,6 @@ public static class SeedData
                 Title = "Docker Setup Guide",
                 Content = "Please install Docker Desktop before next week's exercises.",
                 CourseId = Course3Id,
-                CreatedById = Teacher2Id
             },
             new Announcement
             {
@@ -258,70 +251,63 @@ public static class SeedData
                 Title = "Azure Assignment Released",
                 Content = "The Azure Blob Storage assignment is now available.",
                 CourseId = Course3Id,
-                CreatedById = Teacher2Id
             }
         );
     }
 
-    private static void SeedAssignments(ModelBuilder modelBuilder) 
+    private static void SeedAssignments(ModelBuilder modelBuilder)
     {
-    modelBuilder.Entity<Assignment>().HasData(
-        new Assignment
-        {
-            Id = Assignment1Id,
-            Title = "HTML Portfolio",
-            Description = "Create a personal portfolio website using HTML and CSS.",
-            Deadline = new DateTime(2026, 10, 1),
-            CourseId = Course1Id,
-            CreatedById = Teacher1Id
-        },
-        new Assignment
-        {
-            Id = Assignment2Id,
-            Title = "ASP.NET Web API",
-            Description = "Develop a RESTful API using ASP.NET Core.",
-            Deadline = new DateTime(2026, 10, 15),
-            CourseId = Course1Id,
-            CreatedById = Teacher1Id
-        },
-        new Assignment
-        {
-            Id = Assignment3Id,
-            Title = "ER Diagram Design",
-            Description = "Design an ER diagram for the provided business case.",
-            Deadline = new DateTime(2026, 10, 5),
-            CourseId = Course2Id,
-            CreatedById = Teacher1Id
-        },
-        new Assignment
-        {
-            Id = Assignment4Id,
-            Title = "SQL Query Assignment",
-            Description = "Write SQL queries to solve the provided tasks.",
-            Deadline = new DateTime(2026, 10, 20),
-            CourseId = Course2Id,
-            CreatedById = Teacher1Id
-        },
-        new Assignment
-        {
-            Id = Assignment5Id,
-            Title = "Docker Deployment",
-            Description = "Containerize and deploy the application using Docker.",
-            Deadline = new DateTime(2026, 10, 10),
-            CourseId = Course3Id,
-            CreatedById = Teacher2Id
-        },
-        new Assignment
-        {
-            Id = Assignment6Id,
-            Title = "Azure Blob Storage",
-            Description = "Implement file upload and storage using Azure Blob Storage.",
-            Deadline = new DateTime(2026, 10, 25),
-            CourseId = Course3Id,
-            CreatedById = Teacher2Id
-        }
-    );
-}
+        modelBuilder.Entity<Assignment>().HasData(
+            new Assignment
+            {
+                Id = Assignment1Id,
+                Title = "HTML Portfolio",
+                Description = "Create a personal portfolio website using HTML and CSS.",
+                Deadline = new DateTime(2026, 10, 1),
+                CourseId = Course1Id,
+            },
+            new Assignment
+            {
+                Id = Assignment2Id,
+                Title = "ASP.NET Web API",
+                Description = "Develop a RESTful API using ASP.NET Core.",
+                Deadline = new DateTime(2026, 10, 15),
+                CourseId = Course1Id,
+            },
+            new Assignment
+            {
+                Id = Assignment3Id,
+                Title = "ER Diagram Design",
+                Description = "Design an ER diagram for the provided business case.",
+                Deadline = new DateTime(2026, 10, 5),
+                CourseId = Course2Id,
+            },
+            new Assignment
+            {
+                Id = Assignment4Id,
+                Title = "SQL Query Assignment",
+                Description = "Write SQL queries to solve the provided tasks.",
+                Deadline = new DateTime(2026, 10, 20),
+                CourseId = Course2Id,
+            },
+            new Assignment
+            {
+                Id = Assignment5Id,
+                Title = "Docker Deployment",
+                Description = "Containerize and deploy the application using Docker.",
+                Deadline = new DateTime(2026, 10, 10),
+                CourseId = Course3Id,
+            },
+            new Assignment
+            {
+                Id = Assignment6Id,
+                Title = "Azure Blob Storage",
+                Description = "Implement file upload and storage using Azure Blob Storage.",
+                Deadline = new DateTime(2026, 10, 25),
+                CourseId = Course3Id,
+            }
+        );
+    }
 
     private static void SeedSubmissions(ModelBuilder modelBuilder)
     {
@@ -386,5 +372,4 @@ public static class SeedData
     private static void SeedStudyFiles(ModelBuilder modelBuilder)
     {
     }
-    
 }

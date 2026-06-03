@@ -13,4 +13,8 @@ public class Announcement
     
     // Attachments
     public ICollection<StudyFile> Files { get; set; } = new List<StudyFile>();
+    
+    // Audit
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
 }

@@ -23,8 +23,6 @@ public static class TestUserFactory
             FirstName = firstName ?? "John",
             LastName = lastName ?? "Doe",
             Role = role ?? UserRole.Student,
-            CreatedAt = createdAt ?? DateTime.UtcNow,
-            UpdatedAt = updatedAt ?? DateTime.UtcNow
             
         };
     }

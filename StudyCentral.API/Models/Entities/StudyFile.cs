@@ -16,6 +16,10 @@ public class StudyFile
 
     public Guid UploadedById { get; set; }
     public User UploadedBy { get; set; } = null!;
+    
+    // Audit
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
 }
 
 public enum FileType

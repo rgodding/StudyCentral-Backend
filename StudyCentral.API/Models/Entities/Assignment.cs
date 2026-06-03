@@ -19,4 +19,8 @@ public class Assignment
     // Student submissions
     public ICollection<Submission> Submissions { get; set; }
         = new List<Submission>();
+    
+    // Audit
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
 }

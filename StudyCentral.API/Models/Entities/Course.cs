@@ -24,4 +24,8 @@ public class Course
    
     public ICollection<StudyFolder> Folders { get; set; }
         = new List<StudyFolder>();
+    
+    // Audit
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
 }

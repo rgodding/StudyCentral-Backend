@@ -23,6 +23,10 @@ public class User
     
     // Teacher relationships
     public ICollection<Course> TeachingCourses { get; set; } = new List<Course>();
+    
+    // Audit
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
 }
 
 public enum UserRole
