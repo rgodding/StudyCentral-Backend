@@ -18,12 +18,8 @@ dotnet user-secrets set "Azurite:Container" "studycentralcontainer"
 
 ## Setup Coverage tool
 ```bash
-dotnet tool install -g dotnet-reportgenerator-globaltool
-
-dotnet test --collect:"XPlat Code Coverage" - run tests
-
-reportgenerator -reports:".\TestResults\*\coverage.cobertura.xml" -targetdir:"coveragereport"
-
-ii .\coveragereport\index.html
+dotnet test --collect:"XPlat Code Coverage"
+reportgenerator -reports:"**/coverage.cobertura.xml" -targetdir:"coveragereport" -reporttypes:Html
+start coveragereport/index.html
 ```
 

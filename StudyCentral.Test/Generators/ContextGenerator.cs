@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Models;
 
-namespace StudyCentral.Test;
+namespace StudyCentral.Test.Generators;
 
 public class ContextGenerator
 {

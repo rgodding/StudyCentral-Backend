@@ -7,10 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="ControllerTests\"/>
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\StudyCentral.API\StudyCentral.API.csproj"/>
     </ItemGroup>
 
@@ -18,6 +14,7 @@
         <PackageReference Include="coverlet.collector" Version="10.0.1">
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
+        
         <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.27"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.27"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.6.0"/>

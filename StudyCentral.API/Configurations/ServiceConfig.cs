@@ -27,11 +27,15 @@ public class ServiceConfig
     {
         // AutoMapper
         services.AddAutoMapper(typeof(MappingProfile));
+        
         // JWT
-        services.AddScoped<JwtHelper>();
+        services.AddScoped<IJwtService, JwtService>();
+        
         // Blob
         services.AddSingleton<IBlobService, BlobService>();
 
+        
+        
         // Services
         /*
         services.AddScoped<IAuthService, AuthService>();

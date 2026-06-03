@@ -3,9 +3,9 @@ using StudyCentral.API.Authentication;
 
 namespace StudyCentral.Test.Generators;
 
-public static class JwtHelperGenerator
+public static class JwtServiceGenerator
 {
-    public static JwtHelper GetJwtHelper()
+    public static JwtService GetJwtService()
     {
         var config = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string>
@@ -16,6 +16,6 @@ public static class JwtHelperGenerator
             }!)
             .Build();
 
-        return new JwtHelper(config);
+        return new JwtService(config);
     }
 }
