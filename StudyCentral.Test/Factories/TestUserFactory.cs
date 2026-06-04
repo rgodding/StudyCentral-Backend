@@ -18,7 +18,7 @@ public static class TestUserFactory
         return new User
         {
             Id = id ?? Guid.NewGuid(),
-            Email = email ?? "user@mail.com",
+            Email = email ?? $"{Guid.NewGuid()}@mail.com",
             PasswordHash = hashedPassword ?? "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6",
             FirstName = firstName ?? "John",
             LastName = lastName ?? "Doe",
