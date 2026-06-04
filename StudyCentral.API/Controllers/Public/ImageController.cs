@@ -19,7 +19,8 @@ public class ImageController : BaseController
     [Route("{blobName}")]
     public async Task<IActionResult> GetImage(string blobName)
     {
-        var (stream, contentType) = await _blobService.GetFile(blobName);
-        return File(stream, contentType);
+        var file = await _blobService.GetFile(blobName);
+        
+        return File(file.Content, file.ContentType);
     }
 }

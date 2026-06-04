@@ -33,10 +33,12 @@ public class ServiceConfig
         
         // Blob
         services.AddSingleton<IBlobService, BlobService>();
-
-        
         
         // Services
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IUserService, UserService>();
+        
+        
         /*
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();

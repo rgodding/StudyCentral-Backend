@@ -1,126 +1,139 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
-using StudyCentral.API.Middleware;
+using StudyCentral.API.Models.DTOs.StudyFile;
 
 namespace StudyCentral.API.Services;
 
 public interface IBlobService
 {
-    // Image functions
-    Task<(Stream, string)> GetFile(string url);
-    Task<(string, string)> UploadFile(string fileName, IFormFile file);
-    Task DeleteFile(string url);
-    Task<bool> FileExists(string filename);
+    // Core operations
+    Task<BlobFileResult> GetFile(string blobName);
+    Task<BlobUploadResult> UploadFile(string fileName, IFormFile file);
+    Task DeleteFile(string blobName);
+
+    // Utilities
+    Task<bool> FileExists(string blobName);
+
     Task<int> GetBlobCount();
+
     Task<bool> Wipe();
 }
-
 public class BlobService : IBlobService
 {
-    
-    private readonly IConfiguration _configuration;
+    private readonly BlobContainerClient _containerClient;
 
     public BlobService(IConfiguration configuration)
     {
-        _configuration = configuration;
+        var connectionString = configuration["Azurite:ConnectionString"];
+        var containerName = configuration["Azurite:Container"];
+        
+        var client = new BlobServiceClient(connectionString);
+        _containerClient = client.GetBlobContainerClient(containerName);
+        
+        _containerClient.CreateIfNotExists();
     }
 
-
-    public async Task<(Stream, string)> GetFile(string url)
+    public async Task<BlobFileResult> GetFile(string blobName)
     {
-        if (url == null)
+        var blobClient = _containerClient.GetBlobClient(blobName);
+        
+        var exists = await blobClient.ExistsAsync();
+        if (!exists)
         {
-            throw new Exception("Image URL is null");
+            throw new FileNotFoundException($"Blob with name '{blobName}' not found");
         }
         
-        var containerClient = GetBlobContainerClient();
+        var download = await blobClient.DownloadAsync();
 
-        try
+        return new BlobFileResult
         {
-            var blobClient = containerClient.GetBlobClient(url);
-            var response = await blobClient.DownloadAsync();
-            return (response.Value.Content, response.Value.ContentType);
-        }
-        catch (Exception ex)
-        {
-            var defaultImage = await File.ReadAllBytesAsync("wwwroot/images/default-image.png");
-            return (new MemoryStream(defaultImage), "image/png");
-        }
-    }
-
-    public async Task<(string, string)> UploadFile(string fileName, IFormFile file)
-    {
-        using var memoryStream = new MemoryStream();
-        await file.CopyToAsync(memoryStream);
-        var fileBytes = memoryStream.ToArray();
-        
-        var imageExists = await FileExists(fileName);
-        if (imageExists)
-        {
-            throw new ExceptionMiddleware.ConflictException($"Image with name {fileName} already exists");
-        }
-        
-        var containerClient = GetBlobContainerClient();
-        var blobClient = containerClient.GetBlobClient(fileName);
-        var blobHttpHeader = new BlobHttpHeaders
-        {
-            ContentType = file.ContentType,
+            Content = download.Value.Content,
+            ContentType = download.Value.ContentType,
+            FileName = blobClient.Name
         };
-        await blobClient.UploadAsync(new MemoryStream(fileBytes), blobHttpHeader);
-        return (fileName, file.ContentType);
     }
 
-    public async Task DeleteFile(string url)
+    public async Task<BlobUploadResult> UploadFile(string fileName, IFormFile file)
     {
-        try
+        if (file == null || file.Length == 0)
+            throw new ArgumentException("File is null or empty");
+        
+        if (string.IsNullOrWhiteSpace(fileName))
+            throw new ArgumentException("File name is null or empty");
+
+        // Prevents path injection
+        var safeFileName = Path.GetFileName(fileName);
+        
+        // Unique blob name
+        var blobName = $"{Guid.NewGuid()}_{safeFileName.Replace(" ", "_")}";
+        
+        var blobClient = _containerClient.GetBlobClient(blobName);
+        
+        var httpHeaders = new BlobHttpHeaders
         {
-            var containerClient = GetBlobContainerClient();
-            var blobClient = containerClient.GetBlobClient(url);
-            var response = await blobClient.DeleteIfExistsAsync();
-        } catch (Exception ex)
+            ContentType = file.ContentType
+        };
+
+        using var stream = file.OpenReadStream();
+        
+        await blobClient.UploadAsync(stream, httpHeaders);
+
+        return new BlobUploadResult
         {
-            throw new Exception("Image not found");
-        }
+            FileName = safeFileName,
+            BlobName = blobName,
+            ContentType = file.ContentType
+        };
     }
-    
-    
-    public async Task<bool> FileExists(string filename)
+
+    public async Task DeleteFile(string blobName)
     {
-        var containerClient = GetBlobContainerClient();
-        var blobClient = containerClient.GetBlobClient(filename);
-        return await blobClient.ExistsAsync();
+        if (string.IsNullOrWhiteSpace(blobName))
+            throw new ArgumentException("Blob name is null or empty");
+
+        var blobClient = _containerClient.GetBlobClient(blobName);
+
+        await blobClient.DeleteIfExistsAsync();
+    }
+
+    public async Task<bool> FileExists(string blobName)
+    {
+        if (string.IsNullOrWhiteSpace(blobName))
+            throw new ArgumentException("Blob name is null or empty");
+
+        var blobClient = _containerClient.GetBlobClient(blobName);
+
+        var response = await blobClient.ExistsAsync();
+
+        return response.Value;
     }
 
     public async Task<int> GetBlobCount()
     {
-        var containerClient = GetBlobContainerClient();
-        var blobs =  containerClient.GetBlobs();
-        return await Task.FromResult(blobs.Count());
-    }
+        int count = 0;
 
-    public Task<bool> Wipe()
-    {
-        var containerClient = GetBlobContainerClient();
-        var blobs = containerClient.GetBlobs();
-        foreach (var blob in blobs)
+        await foreach (var blob in _containerClient.GetBlobsAsync())
         {
-            var blobClient = containerClient.GetBlobClient(blob.Name);
-            blobClient.DeleteIfExists();
+            count++;
         }
 
-        return Task.FromResult(true);
+        return count;
     }
-    
-    private BlobContainerClient GetBlobContainerClient()
+
+    public async Task<bool> Wipe()
     {
-        var connectionString = _configuration["Azurite:ConnectionString"];
-        var containerName = _configuration["Azurite:Container"];
-        Console.WriteLine("Connecting to Azure Blob Storage");
-        Console.WriteLine($"Container: {containerName}");
-        Console.WriteLine($"Connection String: {connectionString}");
-        var blobServiceClient = new BlobServiceClient(connectionString);
-        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-        containerClient.CreateIfNotExists();
-        return containerClient;
+        try
+        {
+            await foreach (var blob in _containerClient.GetBlobsAsync())
+            {
+                await _containerClient.DeleteBlobIfExistsAsync(blob.Name);
+            }
+
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 }

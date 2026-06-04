@@ -22,6 +22,15 @@ public class MappingProfile : Profile
                     src.ProfilePicture == null
                         ? null
                         : src.ProfilePicture.BlobName));
+        
+        CreateMap<User, UserPreviewDto>()
+            .ForMember(
+                dest => dest.ProfilePictureUrl,
+                opt => opt.MapFrom(src =>
+                    src.ProfilePicture != null
+                        ? src.ProfilePicture.BlobName
+                        : null));
+        
         CreateMap<CreateUserDto, User>();
         CreateMap<UpdateUserDto, User>();
 
