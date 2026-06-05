@@ -1,223 +1,277 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using StudyCentral.API.Models;
+﻿using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Models.DTOs.Course;
 using StudyCentral.API.Models.Entities;
 using StudyCentral.API.Models.Entities.Relationship;
+using StudyCentral.API.Services;
+using StudyCentral.Test.Factories;
+using StudyCentral.Test.Generators;
+using Xunit;
 
-namespace StudyCentral.API.Services;
+namespace StudyCentral.Test.ServiceTests;
 
-public class CourseService : ICourseService
+public class CourseServiceTests
 {
-    private readonly StudyDbContext _dbContext;
-    private readonly IMapper _mapper;
-
-    public CourseService(StudyDbContext dbContext, IMapper mapper)
-    {
-        _dbContext = dbContext;
-        _mapper = mapper;
-    }
-
     // -----------------
-    // CORE CRUD
+    // CreateCourse tests
     // -----------------
 
-    public async Task<List<CoursePreviewDto>> GetAllCourses()
+    [Fact]
+    public async Task CreateCourse_ValidData_ReturnsCourse()
     {
-        var courses = await _dbContext.Courses
-            .Include(c => c.Teacher)
-            .ToListAsync();
+        // Arrange
+        var dbContext = ContextGenerator.GetStudyDbContext();
+        var mapper = MapperGenerator.GetMapper();
+        var service = new CourseService(dbContext, mapper);
 
-        return _mapper.Map<List<CoursePreviewDto>>(courses);
-    }
+        var teacher = TestUserFactory.Create(role: UserRole.Teacher);
+        dbContext.Users.Add(teacher);
+        await dbContext.SaveChangesAsync();
 
-    public async Task<CourseDto> GetCourseById(Guid courseId)
-    {
-        var course = await _dbContext.Courses
-            .Include(c => c.Teacher)
-            .FirstOrDefaultAsync(c => c.Id == courseId);
-
-        if (course == null)
-            throw new KeyNotFoundException("Course not found");
-
-        return _mapper.Map<CourseDto>(course);
-    }
-
-    public async Task<CourseDto> CreateCourse(Guid teacherId, CreateCourseDto dto)
-    {
-        var exists = await _dbContext.Courses
-            .AnyAsync(c => c.Title == dto.Title);
-
-        if (exists)
-            throw new InvalidOperationException("Course with the same title already exists");
-
-        var teacherExists = await _dbContext.Users
-            .AnyAsync(u => u.Id == teacherId);
-
-        if (!teacherExists)
-            throw new KeyNotFoundException("Teacher not found");
-
-        var course = _mapper.Map<Course>(dto);
-        course.TeacherId = teacherId;
-
-        _dbContext.Courses.Add(course);
-        await _dbContext.SaveChangesAsync();
-
-        return _mapper.Map<CourseDto>(course);
-    }
-
-    public async Task<CourseDto> UpdateCourse(Guid courseId, UpdateCourseDto dto)
-    {
-        var course = await _dbContext.Courses
-            .FirstOrDefaultAsync(c => c.Id == courseId);
-
-        if (course == null)
-            throw new KeyNotFoundException("Course not found");
-
-        if (!string.IsNullOrWhiteSpace(dto.Title))
+        var dto = new CreateCourseDto
         {
-            var titleExists = await _dbContext.Courses
-                .AnyAsync(c => c.Title == dto.Title && c.Id != courseId);
+            Title = "Web Dev",
+            Description = "Learn ASP.NET"
+        };
 
-            if (titleExists)
-                throw new InvalidOperationException("Course with the same title already exists");
+        // Act
+        var result = await service.CreateCourse(teacher.Id, dto);
 
-            course.Title = dto.Title;
-        }
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(dto.Title, result.Title);
 
-        if (!string.IsNullOrWhiteSpace(dto.Description))
-            course.Description = dto.Description;
-
-        course.UpdatedAt = DateTime.UtcNow;
-
-        await _dbContext.SaveChangesAsync();
-
-        return _mapper.Map<CourseDto>(course);
+        var dbCourse = await dbContext.Courses.FirstOrDefaultAsync(c => c.Title == dto.Title);
+        Assert.NotNull(dbCourse);
     }
 
-    public async Task DeleteCourse(Guid courseId)
+    [Fact]
+    public async Task CreateCourse_DuplicateTitle_ThrowsException()
     {
-        var course = await _dbContext.Courses
-            .FirstOrDefaultAsync(c => c.Id == courseId);
+        // Arrange
+        var dbContext = ContextGenerator.GetStudyDbContext();
+        var mapper = MapperGenerator.GetMapper();
+        var service = new CourseService(dbContext, mapper);
 
-        if (course == null)
-            throw new KeyNotFoundException("Course not found");
+        var teacher = TestUserFactory.Create(role: UserRole.Teacher);
+        dbContext.Users.Add(teacher);
 
-        _dbContext.Courses.Remove(course);
-        await _dbContext.SaveChangesAsync();
-    }
+        var existingCourse = TestCourseFactory.Create(title: "Web Dev");
+        dbContext.Courses.Add(existingCourse);
 
-    // -----------------
-    // GENERAL FUNCTIONS
-    // -----------------
+        await dbContext.SaveChangesAsync();
 
-    public async Task<List<CoursePreviewDto>> GetCoursesByUserId(Guid userId)
-    {
-        var courses = await _dbContext.Courses
-            .Include(c => c.Teacher)
-            .Where(c =>
-                c.TeacherId == userId ||
-                c.CourseStudents.Any(cs => cs.StudentId == userId))
-            .ToListAsync();
-
-        return _mapper.Map<List<CoursePreviewDto>>(courses);
-    }
-
-    public async Task<List<CoursePreviewDto>> GetCoursesByTeacherId(Guid teacherId)
-    {
-        var courses = await _dbContext.Courses
-            .Include(c => c.Teacher)
-            .Where(c => c.TeacherId == teacherId)
-            .ToListAsync();
-
-        return _mapper.Map<List<CoursePreviewDto>>(courses);
-    }
-
-    public async Task<List<CoursePreviewDto>> GetCoursesByStudentId(Guid studentId)
-    {
-        var courses = await _dbContext.Courses
-            .Include(c => c.Teacher)
-            .Where(c => c.CourseStudents.Any(cs => cs.StudentId == studentId))
-            .ToListAsync();
-
-        return _mapper.Map<List<CoursePreviewDto>>(courses);
-    }
-
-    // -----------------
-    // TEACHER FUNCTIONS
-    // -----------------
-
-    public async Task AddStudentToCourse(Guid teacherId, Guid courseId, Guid studentId)
-    {
-        var course = await _dbContext.Courses
-            .FirstOrDefaultAsync(c => c.Id == courseId);
-
-        if (course == null)
-            throw new KeyNotFoundException("Course not found");
-
-        if (course.TeacherId != teacherId)
-            throw new UnauthorizedAccessException("Not allowed");
-
-        var studentExists = await _dbContext.Users
-            .AnyAsync(u => u.Id == studentId && u.Role == UserRole.Student);
-
-        if (!studentExists)
-            throw new KeyNotFoundException("Student not found");
-
-        var alreadyEnrolled = await _dbContext.CourseStudents
-            .AnyAsync(cs => cs.CourseId == courseId && cs.StudentId == studentId);
-
-        if (alreadyEnrolled)
-            throw new InvalidOperationException("Student already enrolled");
-
-        _dbContext.CourseStudents.Add(new CourseStudent
+        var dto = new CreateCourseDto
         {
-            CourseId = courseId,
-            StudentId = studentId
+            Title = "Web Dev"
+        };
+
+        // Act & Assert
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            service.CreateCourse(teacher.Id, dto));
+    }
+
+    // -----------------
+    // GetCourse tests
+    // -----------------
+
+    [Fact]
+    public async Task GetCourseById_ExistingCourse_ReturnsCourse()
+    {
+        // Arrange
+        var dbContext = ContextGenerator.GetStudyDbContext();
+        var mapper = MapperGenerator.GetMapper();
+        var service = new CourseService(dbContext, mapper);
+
+        var course = TestCourseFactory.Create();
+        dbContext.Courses.Add(course);
+        await dbContext.SaveChangesAsync();
+
+        // Act
+        var result = await service.GetCourseById(course.Id);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(course.Id, result.Id);
+    }
+
+    [Fact]
+    public async Task GetCourseById_NotFound_ThrowsException()
+    {
+        // Arrange
+        var dbContext = ContextGenerator.GetStudyDbContext();
+        var mapper = MapperGenerator.GetMapper();
+        var service = new CourseService(dbContext, mapper);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<KeyNotFoundException>(() =>
+            service.GetCourseById(Guid.NewGuid()));
+    }
+
+    // -----------------
+    // AddStudent tests
+    // -----------------
+
+    [Fact]
+    public async Task AddStudentToCourse_Valid_AddsStudent()
+    {
+        // Arrange
+        var dbContext = ContextGenerator.GetStudyDbContext();
+        var mapper = MapperGenerator.GetMapper();
+        var service = new CourseService(dbContext, mapper);
+
+        var teacher = TestUserFactory.Create(role: UserRole.Teacher);
+        var student = TestUserFactory.Create(role: UserRole.Student);
+        var course = TestCourseFactory.Create();
+
+        dbContext.Users.AddRange(student);
+        course.TeacherId = teacher.Id;
+        dbContext.Courses.Add(course);
+        await dbContext.SaveChangesAsync();
+
+        // Act
+        await service.AddStudentToCourse(teacher.Id, course.Id, student.Id);
+
+        // Assert
+        var exists = await dbContext.CourseStudents
+            .AnyAsync(cs => cs.CourseId == course.Id && cs.StudentId == student.Id);
+
+        Assert.True(exists);
+    }
+
+    [Fact]
+    public async Task AddStudentToCourse_Duplicate_ThrowsException()
+    {
+        // Arrange
+        var dbContext = ContextGenerator.GetStudyDbContext();
+        var mapper = MapperGenerator.GetMapper();
+        var service = new CourseService(dbContext, mapper);
+
+        var teacher = TestUserFactory.Create(role: UserRole.Teacher);
+        var student = TestUserFactory.Create(role: UserRole.Student);
+        var course = TestCourseFactory.Create();
+        
+        dbContext.Users.AddRange(teacher, student);
+        dbContext.Courses.Add(course);
+        
+        course.TeacherId = teacher.Id;
+
+        dbContext.CourseStudents.Add(new CourseStudent
+        {
+            CourseId = course.Id,
+            StudentId = student.Id
         });
 
-        await _dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync();
+
+        // Act & Assert
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            service.AddStudentToCourse(teacher.Id, course.Id, student.Id));
     }
 
-    public async Task RemoveStudentFromCourse(Guid teacherId, Guid courseId, Guid studentId)
+    // -----------------
+    // RemoveStudent tests
+    // -----------------
+
+    [Fact]
+    public async Task RemoveStudentFromCourse_Valid_RemovesStudent()
     {
-        var course = await _dbContext.Courses
-            .FirstOrDefaultAsync(c => c.Id == courseId);
+        // Arrange
+        var dbContext = ContextGenerator.GetStudyDbContext();
+        var mapper = MapperGenerator.GetMapper();
+        var service = new CourseService(dbContext, mapper);
 
-        if (course == null)
-            throw new KeyNotFoundException("Course not found");
+        var teacher = TestUserFactory.Create(role: UserRole.Teacher);
+        var student = TestUserFactory.Create(role: UserRole.Student);
+        var course = TestCourseFactory.Create();
 
-        if (course.TeacherId != teacherId)
-            throw new UnauthorizedAccessException("Not allowed");
+        dbContext.Users.AddRange(student);
+        course.TeacherId = teacher.Id;
+        dbContext.Courses.Add(course);
 
-        var relation = await _dbContext.CourseStudents
-            .FirstOrDefaultAsync(cs =>
-                cs.CourseId == courseId &&
-                cs.StudentId == studentId);
+        dbContext.CourseStudents.Add(new CourseStudent
+        {
+            CourseId = course.Id,
+            StudentId = student.Id
+        });
 
-        if (relation == null)
-            throw new InvalidOperationException("Student not enrolled");
+        await dbContext.SaveChangesAsync();
 
-        _dbContext.CourseStudents.Remove(relation);
+        // Act
+        await service.RemoveStudentFromCourse(teacher.Id, course.Id, student.Id);
 
-        await _dbContext.SaveChangesAsync();
+        // Assert
+        var exists = await dbContext.CourseStudents
+            .AnyAsync(cs => cs.CourseId == course.Id && cs.StudentId == student.Id);
+
+        Assert.False(exists);
     }
 
-    public async Task<bool> IsStudentEnrolled(Guid courseId, Guid studentId)
+    // -----------------
+    // IsStudentEnrolled tests
+    // -----------------
+
+    [Fact]
+    public async Task IsStudentEnrolled_ReturnsTrue_WhenEnrolled()
     {
-        return await _dbContext.CourseStudents
-            .AnyAsync(cs =>
-                cs.CourseId == courseId &&
-                cs.StudentId == studentId);
+        // Arrange
+        var dbContext = ContextGenerator.GetStudyDbContext();
+        var mapper = MapperGenerator.GetMapper();
+        var service = new CourseService(dbContext, mapper);
+
+        var student = TestUserFactory.Create(role: UserRole.Student);
+        var course = TestCourseFactory.Create();
+
+        dbContext.Users.Add(student);
+        dbContext.Courses.Add(course);
+
+        dbContext.CourseStudents.Add(new CourseStudent
+        {
+            CourseId = course.Id,
+            StudentId = student.Id
+        });
+
+        await dbContext.SaveChangesAsync();
+
+        // Act
+        var result = await service.IsStudentEnrolled(course.Id, student.Id);
+
+        // Assert
+        Assert.True(result);
     }
 
-    public async Task ClearCourseStudents(Guid courseId)
+    // -----------------
+    // ClearCourseStudents tests
+    // -----------------
+
+    [Fact]
+    public async Task ClearCourseStudents_RemovesAllStudents()
     {
-        var relations = _dbContext.CourseStudents
-            .Where(cs => cs.CourseId == courseId);
+        // Arrange
+        var dbContext = ContextGenerator.GetStudyDbContext();
+        var mapper = MapperGenerator.GetMapper();
+        var service = new CourseService(dbContext, mapper);
 
-        _dbContext.CourseStudents.RemoveRange(relations);
+        var student1 = TestUserFactory.Create(role: UserRole.Student);
+        var student2 = TestUserFactory.Create(role: UserRole.Student);
+        var course = TestCourseFactory.Create();
 
-        await _dbContext.SaveChangesAsync();
+        dbContext.Users.AddRange(student1, student2);
+        dbContext.Courses.Add(course);
+
+        dbContext.CourseStudents.AddRange(
+            new CourseStudent { CourseId = course.Id, StudentId = student1.Id },
+            new CourseStudent { CourseId = course.Id, StudentId = student2.Id }
+        );
+
+        await dbContext.SaveChangesAsync();
+
+        // Act
+        await service.ClearCourseStudents(course.Id);
+
+        // Assert
+        var count = await dbContext.CourseStudents
+            .CountAsync(cs => cs.CourseId == course.Id);
+
+        Assert.Equal(0, count);
     }
 }

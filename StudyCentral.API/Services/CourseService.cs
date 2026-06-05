@@ -81,6 +81,9 @@ public class CourseService : ICourseService
         if (teacher == null)
             throw new KeyNotFoundException("Teacher not found");
 
+        if (teacher.Role != UserRole.Teacher)
+            throw new InvalidOperationException("Only teachers can be assigned to courses");
+
         var course = _mapper.Map<Course>(dto);
         course.TeacherId = teacher.Id;
 

@@ -144,21 +144,19 @@ public class UserService : IUserService
     public async Task ChangePassword(Guid userId, ChangePasswordDto dto)
     {
         var user = await _dbContext.Users
-            .FirstOrDefaultAsync(u => u.Id == userId)
-            ?? throw new KeyNotFoundException("User not found");
-        
-        // Verify the current password
+                       .FirstOrDefaultAsync(u => u.Id == userId)
+                   ?? throw new KeyNotFoundException("User not found");
+
+        if (dto.NewPassword == dto.CurrentPassword)
+            throw new ArgumentException("New password cannot be the same as current password");
+
         var isValidPassword = PasswordHelper.VerifyHash(dto.CurrentPassword, user.PasswordHash);
-        
+
         if (!isValidPassword)
-            throw new InvalidOperationException("Invalid password");
-        
-        if (dto.NewPassword != dto.CurrentPassword)
-            throw new InvalidOperationException("New password cannot be the same as the current password");
-        
-        // Has new password
+            throw new UnauthorizedAccessException("Invalid password");
+
         user.PasswordHash = PasswordHelper.HashPassword(dto.NewPassword);
-        
+
         await _dbContext.SaveChangesAsync();
     }
 

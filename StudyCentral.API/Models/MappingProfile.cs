@@ -50,7 +50,10 @@ public class MappingProfile : Profile
             .ForMember(
                 dest => dest.StudentCount,
                 opt => opt.MapFrom(src => src.CourseStudents.Count()));
-
+        CreateMap<CreateCourseDto, Course>();
+        CreateMap<UpdateCourseDto, Course>();
+        
+        
         // Assignment
         CreateMap<Assignment, AssignmentDto>()
             .ForMember(

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using StudyCentral.API.Authentication;
 using StudyCentral.API.Models.DTOs.User;
 using StudyCentral.API.Models.Entities;
 using StudyCentral.API.Services;
@@ -534,10 +535,9 @@ public class UserServiceTests
         var blobService = new FakeBlobService();
         var userService = new UserService(dbContext, mapper, blobService);
 
-        var password = "SamePassword123!";
+        const string password = "SamePassword123!";
 
-        var user = TestUserFactory.Create();
-        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
+        var user = TestUserFactory.Create(passwordHash: PasswordHelper.HashPassword(password));
 
         dbContext.Users.Add(user);
         await dbContext.SaveChangesAsync();

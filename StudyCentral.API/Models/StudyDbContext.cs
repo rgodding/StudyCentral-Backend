@@ -61,19 +61,16 @@ public class StudyDbContext : DbContext
 
     private static void ConfigureUser(ModelBuilder modelBuilder)
     {
-        // Unique email
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Email)
             .IsUnique();
 
-        // One-to-one profile picture
         modelBuilder.Entity<User>()
             .HasOne(u => u.ProfilePicture)
             .WithMany()
             .HasForeignKey(u => u.ProfilePictureId)
             .OnDelete(DeleteBehavior.SetNull);
 
-        // CourseStudent (inverse side)
         modelBuilder.Entity<User>()
             .HasMany(u => u.EnrolledCourses)
             .WithOne(cs => cs.Student)
@@ -82,22 +79,11 @@ public class StudyDbContext : DbContext
     private static void ConfigureCourse(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Course>()
-            .Property(c => c.Title)
-            .IsRequired()
-            .HasMaxLength(100);
-
-        modelBuilder.Entity<Course>()
-            .Property(c => c.Description)
-            .HasMaxLength(1000);
-
-        // Teacher (1-to-many)
-        modelBuilder.Entity<Course>()
             .HasOne(c => c.Teacher)
             .WithMany(u => u.TeachingCourses)
             .HasForeignKey(c => c.TeacherId)
             .OnDelete(DeleteBehavior.SetNull);
 
-        // CourseStudent (1-to-many instead of many-to-many)
         modelBuilder.Entity<Course>()
             .HasMany(c => c.CourseStudents)
             .WithOne(cs => cs.Course)
@@ -257,17 +243,22 @@ public class StudyDbContext : DbContext
 
     private static void ConfigureCourseStudent(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<CourseStudent>()
-            .HasKey(cs => new { cs.CourseId, cs.StudentId });
+        modelBuilder.Entity<CourseStudent>(entity =>
+        {
+            entity.ToTable("CourseStudent");
 
-        modelBuilder.Entity<CourseStudent>()
-            .HasOne(cs => cs.Course)
-            .WithMany(c => c.CourseStudents)
-            .HasForeignKey(cs => cs.CourseId);
+            entity.HasKey(cs => new { cs.CourseId, cs.StudentId });
 
-        modelBuilder.Entity<CourseStudent>()
-            .HasOne(cs => cs.Student)
-            .WithMany(u => u.EnrolledCourses)
-            .HasForeignKey(cs => cs.StudentId);
+            entity.Property(cs => cs.CourseId).IsRequired();
+            entity.Property(cs => cs.StudentId).IsRequired();
+
+            entity.HasOne(cs => cs.Course)
+                .WithMany(c => c.CourseStudents)
+                .HasForeignKey(cs => cs.CourseId);
+
+            entity.HasOne(cs => cs.Student)
+                .WithMany(u => u.EnrolledCourses)
+                .HasForeignKey(cs => cs.StudentId);
+        });
     }
 }

@@ -13,7 +13,7 @@ dotnet user-secrets set "Azurite:Container" "studycentralcontainer"
 
 ## Start Azurite
 ```bash
-
+azurite --silent --location azurite --debug azurite-debug.log
 ```
 
 ## Setup Coverage tool
@@ -23,3 +23,10 @@ reportgenerator -reports:"**/coverage.cobertura.xml" -targetdir:"coveragereport"
 start coveragereport/index.html
 ```
 
+## Update EF Core migration
+```bash
+dotnet ef migrations remove
+dotnet ef database drop
+dotnet ef migrations add Init
+dotnet ef database update
+```

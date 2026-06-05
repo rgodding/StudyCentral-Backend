@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Models.Entities;
+using StudyCentral.API.Models.Entities.Relationship;
 
 namespace StudyCentral.API.Configurations;
 
@@ -163,46 +164,46 @@ public static class SeedData
 
     private static void SeedEnrollments(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity("CourseUser").HasData(
-            new
+        modelBuilder.Entity<CourseStudent>().HasData(
+            new CourseStudent
             {
-                EnrolledCoursesId = Course1Id,
-                StudentsId = Student1Id
+                CourseId = Course1Id,
+                StudentId = Student1Id
             },
-            new
+            new CourseStudent
             {
-                EnrolledCoursesId = Course1Id,
-                StudentsId = Student2Id
+                CourseId = Course1Id,
+                StudentId = Student2Id
             },
-            new
+            new CourseStudent
             {
-                EnrolledCoursesId = Course1Id,
-                StudentsId = Student3Id
+                CourseId = Course1Id,
+                StudentId = Student3Id
             },
-            new
+            new CourseStudent
             {
-                EnrolledCoursesId = Course2Id,
-                StudentsId = Student1Id
+                CourseId = Course2Id,
+                StudentId = Student1Id
             },
-            new
+            new CourseStudent
             {
-                EnrolledCoursesId = Course2Id,
-                StudentsId = Student4Id
+                CourseId = Course2Id,
+                StudentId = Student4Id
             },
-            new
+            new CourseStudent
             {
-                EnrolledCoursesId = Course3Id,
-                StudentsId = Student2Id
+                CourseId = Course3Id,
+                StudentId = Student2Id
             },
-            new
+            new CourseStudent
             {
-                EnrolledCoursesId = Course3Id,
-                StudentsId = Student3Id
+                CourseId = Course3Id,
+                StudentId = Student3Id
             },
-            new
+            new CourseStudent
             {
-                EnrolledCoursesId = Course3Id,
-                StudentsId = Student5Id
+                CourseId = Course3Id,
+                StudentId = Student5Id
             }
         );
     }
