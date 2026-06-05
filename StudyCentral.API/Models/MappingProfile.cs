@@ -7,6 +7,7 @@ using StudyCentral.API.Models.DTOs.StudyFolder;
 using StudyCentral.API.Models.DTOs.Submission;
 using StudyCentral.API.Models.DTOs.User;
 using StudyCentral.API.Models.Entities;
+using StudyCentral.API.Services;
 
 namespace StudyCentral.API.Models;
 
@@ -52,18 +53,24 @@ public class MappingProfile : Profile
                 opt => opt.MapFrom(src => src.CourseStudents.Count()));
         CreateMap<CreateCourseDto, Course>();
         CreateMap<UpdateCourseDto, Course>();
-        
-        
+
+
         // Assignment
         CreateMap<Assignment, AssignmentDto>()
-            .ForMember(
-                dest => dest.CourseTitle,
+            .ForMember(dest => dest.CourseTitle,
                 opt => opt.MapFrom(src => src.Course.Title))
-            .ForMember(
-                dest => dest.FileCount,
+            .ForMember(dest => dest.CourseId,
+                opt => opt.MapFrom(src => src.CourseId))
+            .ForMember(dest => dest.FileCount,
+                opt => opt.MapFrom(src => src.Files.Count));
+        CreateMap<Assignment, AssignmentPreviewDto>()
+            .ForMember(dest => dest.CourseTitle,
+                opt => opt.MapFrom(src => src.Course.Title))
+            .ForMember(dest => dest.FileCount,
                 opt => opt.MapFrom(src => src.Files.Count));
         CreateMap<CreateAssignmentDto, Assignment>();
         CreateMap<UpdateAssignmentDto, Assignment>();
+
 
         // Announcement
         CreateMap<Announcement, AnnouncementDto>()
