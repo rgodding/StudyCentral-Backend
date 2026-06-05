@@ -19,6 +19,9 @@ public class MappingProfile : Profile
         CreateCourseMappings();
         CreateAssignmentMappings();
         CreateSubmissionMappings();
+        CreateAnnouncementMappings();
+        CreateStudyFolderMappings();
+        CreateStudyFileMappings();
     }
 
     private void CreateUserMappings()
@@ -82,5 +85,20 @@ public class MappingProfile : Profile
                 opt => opt.MapFrom(src => src.UpdatedAt));
 
         CreateMap<CreateSubmissionDto, Submission>();
+    }
+    private void CreateAnnouncementMappings()
+    {
+        CreateMap<Announcement, AnnouncementDto>();
+        CreateMap<CreateAnnouncementDto, Announcement>();
+    }
+    private void CreateStudyFolderMappings()
+    {
+        CreateMap<StudyFolder, StudyFolderDto>();
+        CreateMap<CreateStudyFolderDto, StudyFolder>();
+    }
+
+    private void CreateStudyFileMappings()
+    {
+        CreateMap<StudyFile, StudyFileDto>();
     }
 }
