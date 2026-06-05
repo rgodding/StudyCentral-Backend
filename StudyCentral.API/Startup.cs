@@ -72,6 +72,7 @@ public class Startup
         app.UseRouting();
 
         app.UseMiddleware<ExceptionMiddleware>();
+        app.UseMiddleware<TestRunMiddleware>();
         app.UseCors("Frontend");
 
         app.UseAuthentication();

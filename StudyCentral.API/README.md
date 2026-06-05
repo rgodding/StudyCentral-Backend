@@ -1,11 +1,11 @@
 ﻿# Study Central
 
 ## Login Credentials
-| Email             | Password |
-|-------------------|----------|
-| admin@mail.com    | password |
-| teacher1@mail.com | password |
-| student1@mail.com | password |
+| Email                      | Password |
+|----------------------------|----------|
+| admin@studycentral.dk      | password |
+| teacher@studycentral.dk    | password |
+| student@studycentral.dk    | password |
 
 ## Setup user-secrets
 ```csharp

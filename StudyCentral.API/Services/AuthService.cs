@@ -80,6 +80,7 @@ public class AuthService : IAuthService
         return new AuthResponseDto
         {
             Token = _jwtService.GenerateToken(_mapper.Map<UserDto>(user)),
+            User = _mapper.Map<UserDto>(user)
         };
     }
 }
