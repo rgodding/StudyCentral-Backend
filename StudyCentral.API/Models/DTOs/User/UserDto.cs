@@ -14,3 +14,4 @@ public class UserDto
 
     public string? ProfilePictureUrl { get; set; }
 }
+

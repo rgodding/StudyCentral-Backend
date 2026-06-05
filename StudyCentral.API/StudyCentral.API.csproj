@@ -27,7 +27,6 @@
 
     <ItemGroup>
       <Folder Include="Azurite\" />
-      <Folder Include="Migrations\" />
     </ItemGroup>
 
 </Project>

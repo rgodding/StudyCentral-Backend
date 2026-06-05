@@ -113,7 +113,7 @@ namespace StudyCentral.API.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Folders",
+                name: "StudyFolders",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
@@ -126,17 +126,17 @@ namespace StudyCentral.API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Folders", x => x.Id);
+                    table.PrimaryKey("PK_StudyFolders", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Folders_Courses_CourseId",
+                        name: "FK_StudyFolders_Courses_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Courses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Folders_Folders_ParentFolderId",
+                        name: "FK_StudyFolders_StudyFolders_ParentFolderId",
                         column: x => x.ParentFolderId,
-                        principalTable: "Folders",
+                        principalTable: "StudyFolders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 })
@@ -162,7 +162,7 @@ namespace StudyCentral.API.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Files",
+                name: "StudyFiles",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
@@ -182,7 +182,7 @@ namespace StudyCentral.API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Files", x => x.Id);
+                    table.PrimaryKey("PK_StudyFiles", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -197,15 +197,15 @@ namespace StudyCentral.API.Migrations
                 {
                     table.PrimaryKey("PK_StudyFileStudyFolder", x => new { x.FilesId, x.StudyFolderId });
                     table.ForeignKey(
-                        name: "FK_StudyFileStudyFolder_Files_FilesId",
+                        name: "FK_StudyFileStudyFolder_StudyFiles_FilesId",
                         column: x => x.FilesId,
-                        principalTable: "Files",
+                        principalTable: "StudyFiles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_StudyFileStudyFolder_Folders_StudyFolderId",
+                        name: "FK_StudyFileStudyFolder_StudyFolders_StudyFolderId",
                         column: x => x.StudyFolderId,
-                        principalTable: "Folders",
+                        principalTable: "StudyFolders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -233,9 +233,9 @@ namespace StudyCentral.API.Migrations
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Users_Files_ProfilePictureId",
+                        name: "FK_Users_StudyFiles_ProfilePictureId",
                         column: x => x.ProfilePictureId,
-                        principalTable: "Files",
+                        principalTable: "StudyFiles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
                 })
@@ -288,9 +288,9 @@ namespace StudyCentral.API.Migrations
                 {
                     table.PrimaryKey("PK_StudyFileSubmission", x => new { x.FilesId, x.SubmissionId });
                     table.ForeignKey(
-                        name: "FK_StudyFileSubmission_Files_FilesId",
+                        name: "FK_StudyFileSubmission_StudyFiles_FilesId",
                         column: x => x.FilesId,
-                        principalTable: "Files",
+                        principalTable: "StudyFiles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -307,14 +307,14 @@ namespace StudyCentral.API.Migrations
                 columns: new[] { "Id", "CreatedAt", "Email", "FirstName", "LastName", "PasswordHash", "ProfilePictureId", "Role", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { new Guid("11111111-1111-1111-1111-111111111111"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3662), "admin@mail.com", "Mister", "Admin", "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6", null, 2, null },
-                    { new Guid("22222222-2222-2222-2222-222222222222"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3666), "teacher1@mail.com", "Alice", "Smith", "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6", null, 1, null },
-                    { new Guid("33333333-3333-3333-3333-333333333333"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3668), "teacher2@mail.com", "Bob", "Johnson", "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6", null, 1, null },
-                    { new Guid("44444444-4444-4444-4444-444444444444"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3669), "student1@mail.com", "Charlie", "Brown", "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6", null, 0, null },
-                    { new Guid("55555555-5555-5555-5555-555555555555"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3671), "student2@mail.com", "David", "Wilson", "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6", null, 0, null },
-                    { new Guid("66666666-6666-6666-6666-666666666666"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3672), "student3@mail.com", "Emma", "Johnson", "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6", null, 0, null },
-                    { new Guid("77777777-7777-7777-7777-777777777777"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3673), "student4@mail.com", "Frank", "Miller", "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6", null, 0, null },
-                    { new Guid("88888888-8888-8888-8888-888888888888"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3674), "student5@mail.com", "Grace", "Taylor", "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6", null, 0, null }
+                    { new Guid("11111111-1111-1111-1111-111111111111"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1418), "admin@mail.com", "Mister", "Admin", "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6", null, 2, null },
+                    { new Guid("22222222-2222-2222-2222-222222222222"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1422), "teacher1@mail.com", "Alice", "Smith", "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6", null, 1, null },
+                    { new Guid("33333333-3333-3333-3333-333333333333"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1424), "teacher2@mail.com", "Bob", "Johnson", "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6", null, 1, null },
+                    { new Guid("44444444-4444-4444-4444-444444444444"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1425), "student1@mail.com", "Charlie", "Brown", "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6", null, 0, null },
+                    { new Guid("55555555-5555-5555-5555-555555555555"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1427), "student2@mail.com", "David", "Wilson", "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6", null, 0, null },
+                    { new Guid("66666666-6666-6666-6666-666666666666"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1428), "student3@mail.com", "Emma", "Johnson", "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6", null, 0, null },
+                    { new Guid("77777777-7777-7777-7777-777777777777"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1448), "student4@mail.com", "Frank", "Miller", "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6", null, 0, null },
+                    { new Guid("88888888-8888-8888-8888-888888888888"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1449), "student5@mail.com", "Grace", "Taylor", "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6", null, 0, null }
                 });
 
             migrationBuilder.InsertData(
@@ -322,9 +322,9 @@ namespace StudyCentral.API.Migrations
                 columns: new[] { "Id", "CreatedAt", "Description", "Name", "TeacherId", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3761), "Learn HTML, CSS, JavaScript and ASP.NET development.", "Web Development", new Guid("22222222-2222-2222-2222-222222222222"), null },
-                    { new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3764), "Learn relational databases, SQL and data modelling.", "Database Systems", new Guid("22222222-2222-2222-2222-222222222222"), null },
-                    { new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3765), "Learn APIs, Docker, Azure and distributed systems.", "System Integration", new Guid("33333333-3333-3333-3333-333333333333"), null }
+                    { new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1529), "Learn HTML, CSS, JavaScript and ASP.NET development.", "Web Development", new Guid("22222222-2222-2222-2222-222222222222"), null },
+                    { new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1532), "Learn relational databases, SQL and data modelling.", "Database Systems", new Guid("22222222-2222-2222-2222-222222222222"), null },
+                    { new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1534), "Learn APIs, Docker, Azure and distributed systems.", "System Integration", new Guid("33333333-3333-3333-3333-333333333333"), null }
                 });
 
             migrationBuilder.InsertData(
@@ -332,12 +332,12 @@ namespace StudyCentral.API.Migrations
                 columns: new[] { "Id", "Content", "CourseId", "CreatedAt", "Name", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { new Guid("11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), "Welcome to the course. Please review the syllabus and course materials.", new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3797), "Welcome to Web Development", null },
-                    { new Guid("22222222-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), "The HTML Portfolio assignment is now available.", new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3799), "First Assignment Released", null },
-                    { new Guid("33333333-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), "Project requirements and grading criteria have been uploaded.", new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3801), "Database Project Information", null },
-                    { new Guid("44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), "Review SQL joins, normalization and indexing before the exam.", new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3802), "Exam Preparation", null },
-                    { new Guid("55555555-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), "Please install Docker Desktop before next week's exercises.", new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3802), "Docker Setup Guide", null },
-                    { new Guid("66666666-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), "The Azure Blob Storage assignment is now available.", new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3803), "Azure Assignment Released", null }
+                    { new Guid("11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), "Welcome to the course. Please review the syllabus and course materials.", new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1568), "Welcome to Web Development", null },
+                    { new Guid("22222222-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), "The HTML Portfolio assignment is now available.", new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1570), "First Assignment Released", null },
+                    { new Guid("33333333-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), "Project requirements and grading criteria have been uploaded.", new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1572), "Database Project Information", null },
+                    { new Guid("44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), "Review SQL joins, normalization and indexing before the exam.", new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1573), "Exam Preparation", null },
+                    { new Guid("55555555-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), "Please install Docker Desktop before next week's exercises.", new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1573), "Docker Setup Guide", null },
+                    { new Guid("66666666-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), "The Azure Blob Storage assignment is now available.", new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1574), "Azure Assignment Released", null }
                 });
 
             migrationBuilder.InsertData(
@@ -345,12 +345,12 @@ namespace StudyCentral.API.Migrations
                 columns: new[] { "Id", "CourseId", "CreatedAt", "Deadline", "Description", "Name", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { new Guid("aaaaaaaa-1111-1111-1111-111111111111"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3820), new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Create a personal portfolio website using HTML and CSS.", "HTML Portfolio", null },
-                    { new Guid("aaaaaaaa-2222-2222-2222-222222222222"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3825), new DateTime(2026, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Develop a RESTful API using ASP.NET Core.", "ASP.NET Web API", null },
-                    { new Guid("aaaaaaaa-3333-3333-3333-333333333333"), new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3826), new DateTime(2026, 10, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), "Design an ER diagram for the provided business case.", "ER Diagram Design", null },
-                    { new Guid("aaaaaaaa-4444-4444-4444-444444444444"), new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3827), new DateTime(2026, 10, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "Write SQL queries to solve the provided tasks.", "SQL Query Assignment", null },
-                    { new Guid("aaaaaaaa-5555-5555-5555-555555555555"), new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3828), new DateTime(2026, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), "Containerize and deploy the application using Docker.", "Docker Deployment", null },
-                    { new Guid("aaaaaaaa-6666-6666-6666-666666666666"), new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3829), new DateTime(2026, 10, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), "Implement file upload and storage using Azure Blob Storage.", "Azure Blob Storage", null }
+                    { new Guid("aaaaaaaa-1111-1111-1111-111111111111"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1590), new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Create a personal portfolio website using HTML and CSS.", "HTML Portfolio", null },
+                    { new Guid("aaaaaaaa-2222-2222-2222-222222222222"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1594), new DateTime(2026, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Develop a RESTful API using ASP.NET Core.", "ASP.NET Web API", null },
+                    { new Guid("aaaaaaaa-3333-3333-3333-333333333333"), new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1595), new DateTime(2026, 10, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), "Design an ER diagram for the provided business case.", "ER Diagram Design", null },
+                    { new Guid("aaaaaaaa-4444-4444-4444-444444444444"), new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1597), new DateTime(2026, 10, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "Write SQL queries to solve the provided tasks.", "SQL Query Assignment", null },
+                    { new Guid("aaaaaaaa-5555-5555-5555-555555555555"), new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1598), new DateTime(2026, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), "Containerize and deploy the application using Docker.", "Docker Deployment", null },
+                    { new Guid("aaaaaaaa-6666-6666-6666-666666666666"), new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1599), new DateTime(2026, 10, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), "Implement file upload and storage using Azure Blob Storage.", "Azure Blob Storage", null }
                 });
 
             migrationBuilder.InsertData(
@@ -373,12 +373,12 @@ namespace StudyCentral.API.Migrations
                 columns: new[] { "Id", "AssignmentId", "Comment", "CreatedAt", "Feedback", "Grade", "GradedAt", "Status", "StudentId", "SubmittedAt", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { new Guid("aaaaaaaa-7777-7777-7777-777777777777"), new Guid("aaaaaaaa-1111-1111-1111-111111111111"), "My HTML portfolio submission.", new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3846), "Excellent work.", 0, null, 0, new Guid("44444444-4444-4444-4444-444444444444"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3846), null },
-                    { new Guid("aaaaaaaa-8888-8888-8888-888888888888"), new Guid("aaaaaaaa-1111-1111-1111-111111111111"), "Portfolio assignment completed.", new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3850), "Good structure and styling.", 1, null, 0, new Guid("55555555-5555-5555-5555-555555555555"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3850), null },
-                    { new Guid("aaaaaaaa-9999-9999-9999-999999999999"), new Guid("aaaaaaaa-1111-1111-1111-111111111111"), "My submission.", new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3852), null, 2, null, 0, new Guid("66666666-6666-6666-6666-666666666666"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3851), null },
-                    { new Guid("bbbbbbbb-1111-1111-1111-111111111111"), new Guid("aaaaaaaa-2222-2222-2222-222222222222"), "ASP.NET API project.", new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3875), "Well implemented API.", 3, null, 0, new Guid("44444444-4444-4444-4444-444444444444"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3874), null },
-                    { new Guid("bbbbbbbb-2222-2222-2222-222222222222"), new Guid("aaaaaaaa-3333-3333-3333-333333333333"), "ER diagram attached.", new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3876), "Good normalization.", 4, null, 0, new Guid("77777777-7777-7777-7777-777777777777"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3876), null },
-                    { new Guid("bbbbbbbb-3333-3333-3333-333333333333"), new Guid("aaaaaaaa-5555-5555-5555-555555555555"), "Docker deployment completed.", new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3878), null, null, null, 0, new Guid("88888888-8888-8888-8888-888888888888"), new DateTime(2026, 6, 5, 18, 4, 48, 945, DateTimeKind.Utc).AddTicks(3877), null }
+                    { new Guid("aaaaaaaa-7777-7777-7777-777777777777"), new Guid("aaaaaaaa-1111-1111-1111-111111111111"), "My HTML portfolio submission.", new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1615), "Excellent work.", 0, null, 0, new Guid("44444444-4444-4444-4444-444444444444"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1615), null },
+                    { new Guid("aaaaaaaa-8888-8888-8888-888888888888"), new Guid("aaaaaaaa-1111-1111-1111-111111111111"), "Portfolio assignment completed.", new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1619), "Good structure and styling.", 1, null, 0, new Guid("55555555-5555-5555-5555-555555555555"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1618), null },
+                    { new Guid("aaaaaaaa-9999-9999-9999-999999999999"), new Guid("aaaaaaaa-1111-1111-1111-111111111111"), "My submission.", new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1620), null, 2, null, 0, new Guid("66666666-6666-6666-6666-666666666666"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1620), null },
+                    { new Guid("bbbbbbbb-1111-1111-1111-111111111111"), new Guid("aaaaaaaa-2222-2222-2222-222222222222"), "ASP.NET API project.", new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1622), "Well implemented API.", 3, null, 0, new Guid("44444444-4444-4444-4444-444444444444"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1621), null },
+                    { new Guid("bbbbbbbb-2222-2222-2222-222222222222"), new Guid("aaaaaaaa-3333-3333-3333-333333333333"), "ER diagram attached.", new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1623), "Good normalization.", 4, null, 0, new Guid("77777777-7777-7777-7777-777777777777"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1623), null },
+                    { new Guid("bbbbbbbb-3333-3333-3333-333333333333"), new Guid("aaaaaaaa-5555-5555-5555-555555555555"), "Docker deployment completed.", new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1624), null, null, null, 0, new Guid("88888888-8888-8888-8888-888888888888"), new DateTime(2026, 6, 5, 20, 17, 28, 228, DateTimeKind.Utc).AddTicks(1624), null }
                 });
 
             migrationBuilder.CreateIndex(
@@ -412,19 +412,9 @@ namespace StudyCentral.API.Migrations
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Files_UploadedById",
-                table: "Files",
+                name: "IX_StudyFiles_UploadedById",
+                table: "StudyFiles",
                 column: "UploadedById");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Folders_CourseId",
-                table: "Folders",
-                column: "CourseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Folders_ParentFolderId",
-                table: "Folders",
-                column: "ParentFolderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StudyFileStudyFolder_StudyFolderId",
@@ -435,6 +425,16 @@ namespace StudyCentral.API.Migrations
                 name: "IX_StudyFileSubmission_SubmissionId",
                 table: "StudyFileSubmission",
                 column: "SubmissionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudyFolders_CourseId",
+                table: "StudyFolders",
+                column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudyFolders_ParentFolderId",
+                table: "StudyFolders",
+                column: "ParentFolderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Submissions_AssignmentId_StudentId",
@@ -467,10 +467,10 @@ namespace StudyCentral.API.Migrations
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_AnnouncementStudyFile_Files_FilesId",
+                name: "FK_AnnouncementStudyFile_StudyFiles_FilesId",
                 table: "AnnouncementStudyFile",
                 column: "FilesId",
-                principalTable: "Files",
+                principalTable: "StudyFiles",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
@@ -483,10 +483,10 @@ namespace StudyCentral.API.Migrations
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_AssignmentStudyFile_Files_FilesId",
+                name: "FK_AssignmentStudyFile_StudyFiles_FilesId",
                 table: "AssignmentStudyFile",
                 column: "FilesId",
-                principalTable: "Files",
+                principalTable: "StudyFiles",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
@@ -507,8 +507,8 @@ namespace StudyCentral.API.Migrations
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Files_Users_UploadedById",
-                table: "Files",
+                name: "FK_StudyFiles_Users_UploadedById",
+                table: "StudyFiles",
                 column: "UploadedById",
                 principalTable: "Users",
                 principalColumn: "Id",
@@ -519,7 +519,7 @@ namespace StudyCentral.API.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Users_Files_ProfilePictureId",
+                name: "FK_Users_StudyFiles_ProfilePictureId",
                 table: "Users");
 
             migrationBuilder.DropTable(
@@ -541,7 +541,7 @@ namespace StudyCentral.API.Migrations
                 name: "Announcements");
 
             migrationBuilder.DropTable(
-                name: "Folders");
+                name: "StudyFolders");
 
             migrationBuilder.DropTable(
                 name: "Submissions");
@@ -553,7 +553,7 @@ namespace StudyCentral.API.Migrations
                 name: "Courses");
 
             migrationBuilder.DropTable(
-                name: "Files");
+                name: "StudyFiles");
 
             migrationBuilder.DropTable(
                 name: "Users");

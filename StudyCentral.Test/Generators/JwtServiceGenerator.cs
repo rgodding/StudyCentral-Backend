@@ -8,12 +8,13 @@ public static class JwtServiceGenerator
     public static JwtService GetJwtService()
     {
         var config = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string>
+            .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                { "Jwt:Key", "SZBNheG6DYChL2oyIo6Q3dAiK4sREZGPX6orWfH2Mk=" },
-                { "Jwt:Issuer", "StudyCental.dk" },
-                { "Jwt:Audience", "StudyCentral.dk" }
-            }!)
+                { "JWT:Key", "SZBNheG6DYChL2oyIo6Q3dAiK4sREZGPX6orWfH2Mk=" },
+                { "JWT:Issuer", "StudyCentral.dk" },
+                { "JWT:Audience", "StudyCentral.dk" },
+                { "JWT:ExpirationDays", "30" }
+            })
             .Build();
 
         return new JwtService(config);

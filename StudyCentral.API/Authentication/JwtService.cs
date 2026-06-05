@@ -2,13 +2,13 @@
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using StudyCentral.API.Models.Entities;
+using UserDto = StudyCentral.API.Models.DTOs.User.UserDto;
 
 namespace StudyCentral.API.Authentication;
 
 public interface IJwtService
 {
-    string GenerateToken(User user);
+    string GenerateToken(UserDto userDto);
 }
 
 public class JwtService : IJwtService
@@ -19,30 +19,39 @@ public class JwtService : IJwtService
     {
         _configuration = configuration;
     }
-    
-    /// <summary>
-    /// Generates a token based on the user
-    /// </summary>
-    public string GenerateToken(User user)
+
+    public string GenerateToken(UserDto userDto)
     {
+        var jwtKey = _configuration["JWT:Key"]
+                     ?? throw new InvalidOperationException("JWT:Key not configured");
+
+        var issuer = _configuration["JWT:Issuer"]
+                     ?? throw new InvalidOperationException("JWT:Issuer not configured");
+
+        var audience = _configuration["JWT:Audience"]
+                       ?? throw new InvalidOperationException("JWT:Audience not configured");
+
+        var expirationDays = int.Parse(
+            _configuration["JWT:ExpirationDays"]
+            ?? throw new InvalidOperationException("JWT:ExpirationDays not configured"));
+
         var claims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(ClaimTypes.Email, user.Email),
-            new(ClaimTypes.Role, user.Role.ToString())
+            new(ClaimTypes.NameIdentifier, userDto.Id.ToString()),
+            new(ClaimTypes.Email, userDto.Email),
+            new(ClaimTypes.Role, userDto.Role.ToString()),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
         
-        var jwtKey = _configuration["JWT:Key"]
-            ?? throw new Exception("JWT Key not set");
-        
-        var key =  new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+        var key = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwtKey));
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.Now.AddDays(30),
-            Issuer = _configuration["JWT:Issuer"],
-            Audience = _configuration["JWT:Audience"],
+            Expires = DateTime.UtcNow.AddDays(expirationDays),
+            Issuer = issuer,
+            Audience = audience,
             SigningCredentials = new SigningCredentials(
                 key,
                 SecurityAlgorithms.HmacSha256)
@@ -50,6 +59,7 @@ public class JwtService : IJwtService
         
         var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.CreateToken(tokenDescriptor);
+        
         return tokenHandler.WriteToken(token);
     }
 }

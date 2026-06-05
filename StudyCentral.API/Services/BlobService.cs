@@ -12,6 +12,7 @@ public interface IBlobService
     Task DeleteFile(string blobName);
 
     // Utilities
+    Task<string> GetBlobUrl(string blobName);
     Task<bool> FileExists(string blobName);
 
     Task<int> GetBlobCount();
@@ -96,6 +97,21 @@ public class BlobService : IBlobService
         await blobClient.DeleteIfExistsAsync();
     }
 
+    public async Task<string> GetBlobUrl(string blobName)
+    {
+        if (string.IsNullOrWhiteSpace(blobName))
+            throw new ArgumentException("Blob name is null or empty");
+
+        var blobClient = _containerClient.GetBlobClient(blobName);
+
+        var exists = await blobClient.ExistsAsync();
+        
+        if (!exists)
+            throw new FileNotFoundException($"Blob '{blobName}' not found");
+
+        return blobClient.Uri.ToString();
+    }
+    
     public async Task<bool> FileExists(string blobName)
     {
         if (string.IsNullOrWhiteSpace(blobName))

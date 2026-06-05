@@ -8,13 +8,16 @@ public class ExceptionMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionMiddleware> _logger;
+    private readonly IWebHostEnvironment _env;
 
     public ExceptionMiddleware(
         RequestDelegate next,
-        ILogger<ExceptionMiddleware> logger)
+        ILogger<ExceptionMiddleware> logger,
+        IWebHostEnvironment env)
     {
         _next = next;
         _logger = logger;
+        _env = env;
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -25,38 +28,52 @@ public class ExceptionMiddleware
         }
         catch (Exception ex)
         {
-            var statusCode = GetStatusCode(ex);
+            var statusCode = MapExceptionToStatusCode(ex);
 
-            if ((int)statusCode >= 500)
-            {
-                _logger.LogError(ex, ex.Message);
-            }
-            else
-            {
-                _logger.LogWarning(ex.Message);
-            }
+            LogException(ex, statusCode);
 
-            await HandleExceptionAsync(context, ex, statusCode);
+            await WriteResponseAsync(context, ex, statusCode);
         }
     }
 
-    private static HttpStatusCode GetStatusCode(Exception exception)
+    // -------------------------
+    // Exception → HTTP mapping
+    // -------------------------
+    private static HttpStatusCode MapExceptionToStatusCode(Exception exception)
     {
         return exception switch
         {
             ConflictException => HttpStatusCode.Conflict, // 409
-            TimeoutException => HttpStatusCode.RequestTimeout, // 408
             KeyNotFoundException => HttpStatusCode.NotFound, // 404
             SecurityException => HttpStatusCode.Forbidden, // 403
             UnauthorizedAccessException => HttpStatusCode.Unauthorized, // 401
             ArgumentException => HttpStatusCode.BadRequest, // 400
-            InternalException => HttpStatusCode.InternalServerError, // 500
+            TimeoutException => HttpStatusCode.RequestTimeout, // 408
             NotImplementedException => HttpStatusCode.NotImplemented, // 501
-            _ => HttpStatusCode.InternalServerError // 500
+            InternalException => HttpStatusCode.InternalServerError, // 500
+            _ => HttpStatusCode.InternalServerError
         };
     }
 
-    private static Task HandleExceptionAsync(
+    // -------------------------
+    // Logging
+    // -------------------------
+    private void LogException(Exception ex, HttpStatusCode statusCode)
+    {
+        if ((int)statusCode >= 500)
+        {
+            _logger.LogError(ex, "Unhandled server exception");
+        }
+        else
+        {
+            _logger.LogWarning("Handled exception: {Message}", ex.Message);
+        }
+    }
+
+    // -------------------------
+    // Response formatting
+    // -------------------------
+    private async Task WriteResponseAsync(
         HttpContext context,
         Exception exception,
         HttpStatusCode statusCode)
@@ -67,24 +84,44 @@ public class ExceptionMiddleware
         var response = new
         {
             statusCode = (int)statusCode,
-            message = exception.Message
+            message = GetSafeMessage(exception, statusCode),
+            errorType = exception.GetType().Name,
+            traceId = context.TraceIdentifier
         };
 
-        return context.Response.WriteAsync(
-            JsonSerializer.Serialize(response));
+        var json = JsonSerializer.Serialize(response);
+
+        await context.Response.WriteAsync(json);
     }
 
+    // -------------------------
+    // Safe message handling
+    // -------------------------
+    private string GetSafeMessage(Exception exception, HttpStatusCode statusCode)
+    {
+        // In production hide internal errors
+        if (!_env.IsDevelopment() && (int)statusCode >= 500)
+            return "An unexpected error occurred.";
+
+        return exception.Message;
+    }
+
+    // -------------------------
+    // Custom exceptions
+    // -------------------------
     public class ConflictException : Exception
     {
-        public ConflictException(string message) : base(message)
-        {
-        }
+        public ConflictException(string message) : base(message) { }
+
+        public ConflictException(string message, Exception innerException)
+            : base(message, innerException) { }
     }
 
     public class InternalException : Exception
     {
-        public InternalException(string message) : base(message)
-        {
-        }
+        public InternalException(string message) : base(message) { }
+
+        public InternalException(string message, Exception innerException)
+            : base(message, innerException) { }
     }
 }

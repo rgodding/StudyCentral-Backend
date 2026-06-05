@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using StudyCentral.API.Configurations;
 using StudyCentral.API.Models.Entities;
@@ -39,8 +40,8 @@ public class StudyDbContext : DbContext
     public DbSet<Assignment> Assignments { get; set; } = null!;
     public DbSet<Submission> Submissions { get; set; } = null!;
     public DbSet<Announcement> Announcements { get; set; } = null!;
-    public DbSet<StudyFolder> Folders { get; set; } = null!;
-    public DbSet<StudyFile> Files { get; set; } = null!;
+    public DbSet<StudyFolder> StudyFolders { get; set; } = null!;
+    public DbSet<StudyFile> StudyFiles { get; set; } = null!;
     public DbSet<CourseStudent> CourseStudents { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

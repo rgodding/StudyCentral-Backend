@@ -15,22 +15,28 @@ public interface IUserService
     Task<UserDto> Create(CreateUserDto dto);
     Task<UserDto> Update(Guid userId, UpdateUserDto dto);
     Task Delete(Guid userId);
+    
+    // File Management
+    Task AddProfilePicture(Guid userId, IFormFile file);
+    Task DeleteProfilePicture(Guid userId);
 }
 
 public class UserService : IUserService
 {
     private readonly StudyDbContext _dbContext;
     private readonly IMapper _mapper;
+    private readonly IStudyFileService _studyFileService;
 
-    public UserService(StudyDbContext dbContext, IMapper mapper)
+    public UserService(StudyDbContext dbContext, IMapper mapper, IStudyFileService studyFileService)
     {
         _dbContext = dbContext;
         _mapper = mapper;
+        _studyFileService = studyFileService;
     }
 
-    /// --------------
-    ///  CRUD METHODS
-    /// --------------
+    // --------------
+    //  CRUD METHODS
+    // --------------
     
     public async Task<List<UserDto>> GetAll()
     {
@@ -109,5 +115,56 @@ public class UserService : IUserService
         
         _dbContext.Users.Remove(user);
         await _dbContext.SaveChangesAsync();
+    }
+
+    // --------------
+    //  FILE METHODS
+    // --------------
+    public async Task AddProfilePicture(Guid userId, IFormFile file)
+    {
+        var user = await _dbContext.Users
+            .Include(u => u.ProfilePicture)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null)
+            throw new KeyNotFoundException("User not found");
+
+        // Remove existing profile picture
+        if (user.ProfilePicture != null)
+        {
+            await _studyFileService.DeleteFile(user.ProfilePicture.Id);
+
+            user.ProfilePicture = null;
+            user.ProfilePictureId = null;
+        }
+
+        var profilePicture = await _studyFileService.UploadFile(file, userId, FileType.Image);
+
+        user.ProfilePicture = profilePicture;
+        user.ProfilePictureId = profilePicture.Id;
+
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteProfilePicture(Guid userId)
+    {
+        var user = await _dbContext.Users
+            .Include(u => u.ProfilePicture)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null)
+            throw new KeyNotFoundException("User not found");
+
+        if (user.ProfilePicture == null)
+            throw new InvalidOperationException("User does not have a profile picture");
+
+        var profilePictureId = user.ProfilePicture.Id;
+
+        user.ProfilePicture = null;
+        user.ProfilePictureId = null;
+
+        await _dbContext.SaveChangesAsync();
+
+        await _studyFileService.DeleteFile(profilePictureId);
     }
 }

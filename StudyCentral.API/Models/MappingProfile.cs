@@ -26,7 +26,7 @@ public class MappingProfile : Profile
 
     private void CreateUserMappings()
     {
-        CreateMap<User, UserDto>();
+        CreateMap<User, DTOs.User.UserDto>();
         CreateMap<CreateUserDto, User>();
     }
     private void CreateCourseMappings()

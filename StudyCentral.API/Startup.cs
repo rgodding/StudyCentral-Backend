@@ -57,36 +57,30 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, StudyDbContext dbContext)
     {
-        // Apply EF Core migrations if database doesn't exist
         dbContext.Database.Migrate();
 
-        // Middleware
-        app.UseMiddleware<ExceptionMiddleware>();
-
-        // Is in development environment
         if (env.IsDevelopment())
         {
-            // Middleware for Testing
-            // app.UseMiddleware<TestRunMiddleware>();
-
-            // app.UseDeveloperExceptionPage();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "studycentral-backend v1");
-
-                // Persist Bearer token between requests & refreshes
                 c.ConfigObject.AdditionalItems["persistAuthorization"] = true;
             });
         }
 
-        Console.WriteLine("okay almost there");
         app.UseHttpsRedirection();
         app.UseRouting();
+
+        app.UseMiddleware<ExceptionMiddleware>();
         app.UseCors("Frontend");
-        
-        app.UseAuthorization();
+
         app.UseAuthentication();
-        app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        app.UseAuthorization();
+        
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+        });
     }
 }

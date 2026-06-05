@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using MySqlConnector;
 using StudyCentral.API.Models;
 using StudyCentral.API.Models.DTOs.User;
 using StudyCentral.API.Models.Entities;
@@ -16,12 +15,15 @@ public class UserServiceTests
     private readonly StudyDbContext _dbContext;
     private readonly IMapper _mapper;
     private readonly UserService _service;
-
+    
     public UserServiceTests()
     {
         _dbContext = ContextGenerator.GetStudyDbContext();
         _mapper = MapperGenerator.GetMapper();
-        _service = new UserService(_dbContext, _mapper);
+        _service = new UserService(
+            _dbContext,
+            _mapper,
+            new StudyFileServiceGenerator());
     }
 
     // ----------------

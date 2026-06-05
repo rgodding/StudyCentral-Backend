@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace StudyCentral.API.Models.DTOs.User;
+namespace StudyCentral.API.Models.DTOs.Auth;
 
 public class RegisterDto
 {

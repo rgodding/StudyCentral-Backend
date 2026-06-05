@@ -1,6 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Authentication;
-using StudyCentral.API.Models.DTOs.User;
+using StudyCentral.API.Middleware;
+using StudyCentral.API.Models;
+using StudyCentral.API.Models.DTOs.Auth;
 using StudyCentral.API.Models.Entities;
 using StudyCentral.API.Services;
 using StudyCentral.Test.Generators;
@@ -10,7 +13,23 @@ namespace StudyCentral.Test.ServiceTests;
 
 public class AuthServiceTests
 {
-    
+    private readonly StudyDbContext _dbContext;
+    private readonly IMapper _mapper;
+    private readonly AuthService _service;
+
+    public AuthServiceTests()
+    {
+        _dbContext = ContextGenerator.GetStudyDbContext();
+        _mapper = MapperGenerator.GetMapper();
+        var jwtService = JwtServiceGenerator.GetJwtService();
+
+        _service = new AuthService(
+            _dbContext,
+            jwtService,
+            _mapper
+        );
+    }
+
     /// -----------------
     /// Register tests
     /// -----------------
@@ -18,14 +37,10 @@ public class AuthServiceTests
     // Functional test
     // This tests that a user can successfully register with valid data
     // It verifies that a user is created and a token is returned
-    [Fact] 
+    [Fact]
     public async Task Register_ValidData_ReturnsSuccess()
     {
         // Arrange
-        var dbContext = ContextGenerator.GetStudyDbContext();
-        var jwtService = JwtServiceGenerator.GetJwtService();
-        var authService = new AuthService(dbContext, jwtService);
-
         var dto = new RegisterDto
         {
             Email = "test@test.com",
@@ -35,24 +50,24 @@ public class AuthServiceTests
         };
 
         // Act
-        var result = await authService.Register(dto);
-        
-        var user = await dbContext.Users
+        var result = await _service.Register(dto);
+
+        var user = await _dbContext.Users
             .SingleOrDefaultAsync(u => u.Email == dto.Email);
 
         // Assert
         Assert.NotNull(result);
         Assert.NotNull(result.Token);
-        
+
         Assert.NotNull(user);
         Assert.Equal(dto.FirstName, user.FirstName);
         Assert.Equal(dto.LastName, user.LastName);
         Assert.Equal(UserRole.Student, user.Role);
-        
+
         Assert.NotEqual(dto.Password, user.PasswordHash);
         Assert.True(PasswordHelper.VerifyHash(dto.Password, user.PasswordHash));
     }
-    
+
     // Functional test
     // This tests that a user cannot register with an email that already exists
     // It verifies that the service throws an InvalidOperationException when duplicate email is used
@@ -60,10 +75,6 @@ public class AuthServiceTests
     public async Task Register_ExistingEmail_ThrowsInvalidOperationException()
     {
         // Arrange
-        var dbContext = ContextGenerator.GetStudyDbContext();
-        var jwtService = JwtServiceGenerator.GetJwtService();
-        var authService = new AuthService(dbContext, jwtService);
-
         var existingUser = new User
         {
             Email = "test@test.com",
@@ -73,8 +84,8 @@ public class AuthServiceTests
             PasswordHash = PasswordHelper.HashPassword("password123")
         };
 
-        dbContext.Users.Add(existingUser);
-        await dbContext.SaveChangesAsync();
+        _dbContext.Users.Add(existingUser);
+        await _dbContext.SaveChangesAsync();
 
         var dto = new RegisterDto
         {
@@ -85,14 +96,14 @@ public class AuthServiceTests
         };
 
         // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            authService.Register(dto));
+        await Assert.ThrowsAsync<ExceptionMiddleware.ConflictException>(() =>
+            _service.Register(dto));
     }
-    
+
     /// -----------------
     /// Login tests
     /// -----------------
-    
+
     // Functional test
     // This tests that a user can successfully log in with valid credentials
     // It verifies that a valid token is returned when credentials match an existing user
@@ -100,9 +111,7 @@ public class AuthServiceTests
     public async Task Login_ValidCredentials_ReturnsSuccess()
     {
         // Arrange
-        var dbContext = ContextGenerator.GetStudyDbContext();
-        var jwtService = JwtServiceGenerator.GetJwtService();
-        var authService = new AuthService(dbContext, jwtService);
+
 
         var user = new User
         {
@@ -113,8 +122,8 @@ public class AuthServiceTests
             PasswordHash = PasswordHelper.HashPassword("testPassword")
         };
 
-        dbContext.Users.Add(user);
-        await dbContext.SaveChangesAsync();
+        _dbContext.Users.Add(user);
+        await _dbContext.SaveChangesAsync();
 
         var dto = new LoginDto
         {
@@ -123,13 +132,13 @@ public class AuthServiceTests
         };
 
         // Act
-        var result = await authService.Login(dto);
+        var result = await _service.Login(dto);
 
         // Assert
         Assert.NotNull(result);
         Assert.NotNull(result.Token);
     }
-    
+
     // Functional test
     // This tests that login fails when password is incorrect
     // It verifies that an UnauthorizedAccessException is thrown
@@ -137,10 +146,6 @@ public class AuthServiceTests
     public async Task Login_InvalidPassword_ThrowsUnauthorizedAccessException()
     {
         // Arrange
-        var dbContext = ContextGenerator.GetStudyDbContext();
-        var jwtService = JwtServiceGenerator.GetJwtService();
-        var authService = new AuthService(dbContext, jwtService);
-
         var user = new User
         {
             Email = "test@test.com",
@@ -150,8 +155,8 @@ public class AuthServiceTests
             PasswordHash = PasswordHelper.HashPassword("correctPassword")
         };
 
-        dbContext.Users.Add(user);
-        await dbContext.SaveChangesAsync();
+        _dbContext.Users.Add(user);
+        await _dbContext.SaveChangesAsync();
 
         var dto = new LoginDto
         {
@@ -161,9 +166,9 @@ public class AuthServiceTests
 
         // Act & Assert
         await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
-            authService.Login(dto));
+            _service.Login(dto));
     }
-    
+
     // Functional test
     // This tests that login fails when user does not exist
     // It verifies that an UnauthorizedAccessException is thrown
@@ -171,9 +176,7 @@ public class AuthServiceTests
     public async Task Login_UserNotFound_ThrowsUnauthorizedAccessException()
     {
         // Arrange
-        var dbContext = ContextGenerator.GetStudyDbContext();
-        var jwtService = JwtServiceGenerator.GetJwtService();
-        var authService = new AuthService(dbContext, jwtService);
+
 
         var dto = new LoginDto
         {
@@ -183,7 +186,6 @@ public class AuthServiceTests
 
         // Act & Assert
         await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
-            authService.Login(dto));
+            _service.Login(dto));
     }
-    
 }

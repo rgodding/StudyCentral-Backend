@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using StudyCentral.API.Authentication;
 
 namespace StudyCentral.API.Controllers;
 
-public class BaseController : ControllerBase
+public abstract class BaseController : ControllerBase
 {
     protected readonly IMapper _mapper;
     
@@ -12,4 +13,5 @@ public class BaseController : ControllerBase
         _mapper = mapper;
     }
     
+    protected UserPrincipal CurrentUser => User.GetUser();
 }
