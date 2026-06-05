@@ -36,6 +36,7 @@ public class AuthServiceTests
 
         // Act
         var result = await authService.Register(dto);
+        
         var user = await dbContext.Users
             .SingleOrDefaultAsync(u => u.Email == dto.Email);
 

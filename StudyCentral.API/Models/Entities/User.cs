@@ -1,4 +1,6 @@
-﻿namespace StudyCentral.API.Models.Entities;
+﻿using StudyCentral.API.Models.Entities.Relationship;
+
+namespace StudyCentral.API.Models.Entities;
 
 public class User
 {
@@ -18,7 +20,7 @@ public class User
     public ICollection<StudyFile> UploadedFiles { get; set; } = new List<StudyFile>();
     
     // Student relationships
-    public ICollection<Course> EnrolledCourses { get; set; } = new List<Course>();
+    public ICollection<CourseStudent> EnrolledCourses { get; set; } = new List<CourseStudent>();
     public ICollection<Submission> Submissions { get; set; } = new List<Submission>();
     
     // Teacher relationships

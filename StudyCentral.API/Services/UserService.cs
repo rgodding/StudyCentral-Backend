@@ -66,16 +66,9 @@ public class UserService : IUserService
         if (exists)
             throw new InvalidOperationException("Email already exists");
 
-        var user = new User
-        {
-            Id = Guid.NewGuid(),
-            Email = dto.Email,
-            FirstName = dto.FirstName,
-            LastName = dto.LastName,
-            Role = dto.Role,
-            PasswordHash = PasswordHelper.HashPassword(dto.Password)
-        };
-
+        var user = _mapper.Map<User>(dto);
+        user.PasswordHash = PasswordHelper.HashPassword(dto.Password);
+        
         _dbContext.Users.Add(user);
         await _dbContext.SaveChangesAsync();
 

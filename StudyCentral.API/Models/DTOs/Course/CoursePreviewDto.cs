@@ -2,7 +2,7 @@
 
 namespace StudyCentral.API.Models.DTOs.Course;
 
-public class CourseDto
+public class CoursePreviewDto
 {
     public Guid Id { get; set; }
     public string Title { get; set; } = null!;

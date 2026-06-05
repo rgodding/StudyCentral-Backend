@@ -1,4 +1,6 @@
-﻿namespace StudyCentral.API.Models.Entities;
+﻿using StudyCentral.API.Models.Entities.Relationship;
+
+namespace StudyCentral.API.Models.Entities;
 
 public class Course
 {
@@ -12,8 +14,8 @@ public class Course
     public User? Teacher { get; set; }
     
     // Students
-    public ICollection<User> Students { get; set; }
-        = new List<User>();
+    public ICollection<CourseStudent> CourseStudents { get; set; }
+        = new List<CourseStudent>();
 
     // Course content
     public ICollection<Assignment> Assignments { get; set; }

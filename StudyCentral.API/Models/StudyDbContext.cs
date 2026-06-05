@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Design;
 using StudyCentral.API.Configurations;
 using StudyCentral.API.Models.Entities;
+using StudyCentral.API.Models.Entities.Relationship;
 
 namespace StudyCentral.API.Models;
 
@@ -40,6 +41,7 @@ public class StudyDbContext : DbContext
     public DbSet<Announcement> Announcements { get; set; } = null!;
     public DbSet<StudyFolder> Folders { get; set; } = null!;
     public DbSet<StudyFile> Files { get; set; } = null!;
+    public DbSet<CourseStudent> CourseStudents { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -51,6 +53,7 @@ public class StudyDbContext : DbContext
         ConfigureAnnouncement(modelBuilder);
         ConfigureStudyFolder(modelBuilder);
         ConfigureStudyFile(modelBuilder);
+        ConfigureCourseStudent(modelBuilder);
 
         // Seed Data
         SeedData.Seed(modelBuilder);
@@ -63,15 +66,19 @@ public class StudyDbContext : DbContext
             .HasIndex(u => u.Email)
             .IsUnique();
 
-        // One-to-one
-        // If profile picture is deleted, remove the reference from the user
+        // One-to-one profile picture
         modelBuilder.Entity<User>()
             .HasOne(u => u.ProfilePicture)
             .WithMany()
             .HasForeignKey(u => u.ProfilePictureId)
             .OnDelete(DeleteBehavior.SetNull);
-    }
 
+        // CourseStudent (inverse side)
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.EnrolledCourses)
+            .WithOne(cs => cs.Student)
+            .HasForeignKey(cs => cs.StudentId);
+    }
     private static void ConfigureCourse(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Course>()
@@ -83,19 +90,18 @@ public class StudyDbContext : DbContext
             .Property(c => c.Description)
             .HasMaxLength(1000);
 
-        // One-to-many
-        // A teacher can teach many courses and a course has at most one teacher
+        // Teacher (1-to-many)
         modelBuilder.Entity<Course>()
             .HasOne(c => c.Teacher)
             .WithMany(u => u.TeachingCourses)
             .HasForeignKey(c => c.TeacherId)
             .OnDelete(DeleteBehavior.SetNull);
 
-        // Many-to-many
-        // A course can have many students and a student can enroll in many courses
+        // CourseStudent (1-to-many instead of many-to-many)
         modelBuilder.Entity<Course>()
-            .HasMany(c => c.Students)
-            .WithMany(u => u.EnrolledCourses);
+            .HasMany(c => c.CourseStudents)
+            .WithOne(cs => cs.Course)
+            .HasForeignKey(cs => cs.CourseId);
     }
 
     private static void ConfigureAssignment(ModelBuilder modelBuilder)
@@ -247,5 +253,21 @@ public class StudyDbContext : DbContext
         modelBuilder.Entity<StudyFolder>()
             .HasMany(f => f.Files)
             .WithMany();
+    }
+
+    private static void ConfigureCourseStudent(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<CourseStudent>()
+            .HasKey(cs => new { cs.CourseId, cs.StudentId });
+
+        modelBuilder.Entity<CourseStudent>()
+            .HasOne(cs => cs.Course)
+            .WithMany(c => c.CourseStudents)
+            .HasForeignKey(cs => cs.CourseId);
+
+        modelBuilder.Entity<CourseStudent>()
+            .HasOne(cs => cs.Student)
+            .WithMany(u => u.EnrolledCourses)
+            .HasForeignKey(cs => cs.StudentId);
     }
 }

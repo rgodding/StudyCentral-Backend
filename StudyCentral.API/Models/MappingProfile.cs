@@ -22,7 +22,7 @@ public class MappingProfile : Profile
                     src.ProfilePicture == null
                         ? null
                         : src.ProfilePicture.BlobName));
-        
+
         CreateMap<User, UserPreviewDto>()
             .ForMember(
                 dest => dest.ProfilePictureUrl,
@@ -30,23 +30,26 @@ public class MappingProfile : Profile
                     src.ProfilePicture != null
                         ? src.ProfilePicture.BlobName
                         : null));
-        
+
         CreateMap<CreateUserDto, User>();
         CreateMap<UpdateUserDto, User>();
 
         // Course
-        CreateMap<Course, CourseDto>()
+        CreateMap<Course, CoursePreviewDto>()
             .ForMember(
-                dest => dest.TeacherName,
-                opt => opt.MapFrom(src =>
-                    src.Teacher != null
-                        ? $"{src.Teacher.FirstName} {src.Teacher.LastName}"
-                        : null))
+                dest => dest.Teacher,
+                opt => opt.MapFrom(src => src.Teacher))
             .ForMember(
                 dest => dest.StudentCount,
-                opt => opt.MapFrom(src => src.Students.Count));
-        CreateMap<CreateCourseDto, Course>();
-        CreateMap<UpdateCourseDto, Course>();
+                opt => opt.MapFrom(src => src.CourseStudents.Count()));
+
+        CreateMap<Course, CourseDto>()
+            .ForMember(
+                dest => dest.Teacher,
+                opt => opt.MapFrom(src => src.Teacher))
+            .ForMember(
+                dest => dest.StudentCount,
+                opt => opt.MapFrom(src => src.CourseStudents.Count()));
 
         // Assignment
         CreateMap<Assignment, AssignmentDto>()
