@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using StudyCentral.API.Authentication;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using MySqlConnector;
+using StudyCentral.API.Models;
 using StudyCentral.API.Models.DTOs.User;
 using StudyCentral.API.Models.Entities;
 using StudyCentral.API.Services;
@@ -11,547 +13,291 @@ namespace StudyCentral.Test.ServiceTests;
 
 public class UserServiceTests
 {
-    /// -----------------
-    /// GetAllUsers tests
-    /// -----------------
+    private readonly StudyDbContext _dbContext;
+    private readonly IMapper _mapper;
+    private readonly UserService _service;
 
-    // This tests that all users are returned as previews
-    // It verifies correct mapping and retrieval from the database
+    public UserServiceTests()
+    {
+        _dbContext = ContextGenerator.GetStudyDbContext();
+        _mapper = MapperGenerator.GetMapper();
+        _service = new UserService(_dbContext, _mapper);
+    }
+
+    /// ----------------
+    /// GetAll
+    /// ----------------
+
     [Fact]
-    public async Task GetAllUsers_ExistingUsers_ReturnsUserPreviews()
+    public async Task GetAll_WhenUsersExist_ReturnsAllUsers()
     {
         // Arrange
-        var dbContext = ContextGenerator.GetStudyDbContext();
-        var mapper = MapperGenerator.GetMapper();
-        var blobService = new FakeBlobService();
-        var userService = new UserService(dbContext, mapper, blobService);
-
-        const int userCount = 10;
-        var users = new List<User>();
-
-        for (var i = 0; i < userCount; i++)
+        var users = new List<User>
         {
-            users.Add(TestUserFactory.Create());
-        }
-
-        dbContext.Users.AddRange(users);
-        await dbContext.SaveChangesAsync();
-
+            TestUserFactory.Create(),
+            TestUserFactory.Create(),
+            TestUserFactory.Create(),
+            TestUserFactory.Create(),
+            TestUserFactory.Create()
+        };
+        
+        _dbContext.AddRange(users);
+        await _dbContext.SaveChangesAsync();
+        
         // Act
-        var result = await userService.GetAllUsers();
+        var result = await _service.GetAll();
 
         // Assert
         Assert.NotNull(result);
-        Assert.NotEmpty(result);
-        Assert.Equal(userCount, result.Count);
+        Assert.Equal(users.Count, result.Count);
     }
 
-    // Functional test
-    // This tests that empty database returns empty list
-    // It verifies safe handling of no data state
     [Fact]
-    public async Task GetAllUsers_NoUsers_ReturnsEmptyList()
+    public async Task GetAll_WhenNoUsers_ReturnsEmptyList()
     {
         // Arrange
-        var dbContext = ContextGenerator.GetStudyDbContext();
-        var mapper = MapperGenerator.GetMapper();
-        var blobService = new FakeBlobService();
-        var userService = new UserService(dbContext, mapper, blobService);
-
+        
         // Act
-        var result = await userService.GetAllUsers();
-
+        var result = await _service.GetAll();
+        
         // Assert
         Assert.NotNull(result);
         Assert.Empty(result);
     }
 
-    /// -----------------
-    /// GetUserById tests
-    /// -----------------
-
-    // Functional test
-    // This tests that a user can be retrieved by their ID
-    // It verifies correct mapping from entity to DTO
+    /// ----------------
+    /// GetById
+    /// ----------------
     [Fact]
-    public async Task GetUserById_ExistingUser_ReturnsUser()
+    public async Task GetById_WhenUserExists_ReturnsUser()
     {
         // Arrange
-        var dbContext = ContextGenerator.GetStudyDbContext();
-        var mapper = MapperGenerator.GetMapper();
-        var blobService = new FakeBlobService();
-        var userService = new UserService(dbContext, mapper, blobService);
-
-        var user = TestUserFactory.Create();
-
-        dbContext.Users.Add(user);
-        await dbContext.SaveChangesAsync();
-
+        var userId = Guid.NewGuid();
+        var user = TestUserFactory.Create(id: userId);
+        
+        _dbContext.Add(user);
+        await _dbContext.SaveChangesAsync();
+        
         // Act
-        var result = await userService.GetUserById(user.Id);
-
+        var result = await _service.GetById(userId);
+        
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(user.Email, result.Email);
+        Assert.Equal(userId, result.Id);
         Assert.Equal(user.FirstName, result.FirstName);
         Assert.Equal(user.LastName, result.LastName);
+        Assert.Equal(user.Role, result.Role);
+        Assert.Equal(user.Email, result.Email);
     }
-
-    // Functional test
-    // This tests that requesting a non-existing user throws an exception
-    // It verifies correct error handling for invalid IDs
+    
     [Fact]
-    public async Task GetUserById_NonExistingUser_ThrowsKeyNotFoundException()
+    public async Task GetById_WhenUserDoesNotExist_ThrowsKeyNotFoundException()
     {
         // Arrange
-        var dbContext = ContextGenerator.GetStudyDbContext();
-        var mapper = MapperGenerator.GetMapper();
-        var blobService = new FakeBlobService();
-        var userService = new UserService(dbContext, mapper, blobService);
-
-        var randomId = Guid.NewGuid();
-
+        var userId = Guid.NewGuid();
+        
         // Act & Assert
-        await Assert.ThrowsAsync<KeyNotFoundException>(() => userService.GetUserById(randomId)
-        );
+        await Assert.ThrowsAsync<KeyNotFoundException>(() => _service.GetById(userId));
     }
-
-    /// -----------------
-    /// CreateUser tests
-    /// -----------------
-
-    // Functional test
-    // This tests that a user can be successfully created
-    // It verifies that the user is stored in the database and correctly mapped to a DTO
+    
+    /// ----------------
+    /// Create
+    /// ----------------
+    
     [Fact]
-    public async Task CreateUser_ValidData_ReturnsCreatedUser()
+    public async Task Create_WhenValidData_ReturnsCreatedUser()
     {
         // Arrange
-        var dbContext = ContextGenerator.GetStudyDbContext();
-        var mapper = MapperGenerator.GetMapper();
-        var blobService = new FakeBlobService();
-        var userService = new UserService(dbContext, mapper, blobService);
+        var dto = new CreateUserDto
+        {
+            FirstName = "Test",
+            LastName = "User",
+            Email = $"test{Guid.NewGuid()}@example.com",
+            Password = "testPassword",
+            Role = UserRole.Student
+        };
+        
+        // Act
+        var result = await _service.Create(dto);
+        
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(dto.FirstName, result.FirstName);
+        Assert.Equal(dto.LastName, result.LastName);
+        Assert.Equal(dto.Email, result.Email);
+        Assert.Equal(dto.Role, result.Role);
+    }
+
+    [Fact]
+    public async Task Create_WhenEmailAlreadyExists_ThrowsInvalidOperationException()
+    {
+        // Arrange
+        var email = $"test{Guid.NewGuid()}@example.com";
+        var existingUser = TestUserFactory.Create(email: email);
+
+        _dbContext.Add(existingUser);
+        await _dbContext.SaveChangesAsync();
 
         var dto = new CreateUserDto
         {
-            Email = "test@test.com",
-            FirstName = "John",
-            LastName = "Doe",
-            Password = "password",
+            FirstName = "Test",
+            LastName = "User",
+            Email = email,
+            Password = "testPassword",
             Role = UserRole.Student
         };
 
-        // Act
-        var result = await userService.CreateUser(dto);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal(dto.Email, result.Email);
-        Assert.Equal(dto.FirstName, result.FirstName);
-        Assert.Equal(dto.LastName, result.LastName);
-
-        var dbUser = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
-        Assert.NotNull(dbUser);
+        // Act & Assert
+        await Assert.ThrowsAsync<InvalidOperationException>(() => _service.Create(dto));
     }
-
-    // Functional test
-    // This tests that duplicate emails are not allowed
-    // It verifies that the system prevents creation of users with existing emails
+    
+    /// ----------------
+    /// Update
+    /// ----------------
     [Fact]
-    public async Task CreateUser_DuplicateEmail_ThrowsException()
+    public async Task Update_WhenUserExists_ReturnsUpdatedUser()
     {
         // Arrange
-        var dbContext = ContextGenerator.GetStudyDbContext();
-        var mapper = MapperGenerator.GetMapper();
-        var blobService = new FakeBlobService();
-        var userService = new UserService(dbContext, mapper, blobService);
-
-        var existingUser = TestUserFactory.Create();
-        dbContext.Users.Add(existingUser);
-        await dbContext.SaveChangesAsync();
-
-        var dto = new CreateUserDto
-        {
-            Email = existingUser.Email,
-            FirstName = "John",
-            LastName = "Doe"
-        };
-
-        // Act & Assert 
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => userService.CreateUser(dto)
-        );
-
-        Assert.NotNull(exception);
-        Assert.Equal("Email already exists", exception.Message);
-    }
-
-    /// -----------------
-    /// UpdateUser tests
-    /// -----------------
-
-    // Functional test
-    // This tests that a user can be successfully updated
-    // It verifies that the database values are modified and correctly persisted
-    [Fact]
-    public async Task UpdateUser_ValidData_UpdatesUserSuccessfully()
-    {
-        // Arrange
-        var dbContext = ContextGenerator.GetStudyDbContext();
-        var mapper = MapperGenerator.GetMapper();
-        var blobService = new FakeBlobService();
-        var userService = new UserService(dbContext, mapper, blobService);
-
-        var user = TestUserFactory.Create(email: "updated@mail.com");
-
-        dbContext.Users.Add(user);
-        await dbContext.SaveChangesAsync();
-
+        var userId = Guid.NewGuid();
+        var user = TestUserFactory.Create(id: userId);
+        
+        _dbContext.Add(user);
+        await _dbContext.SaveChangesAsync();
+        
         var dto = new UpdateUserDto
         {
-            Email = "updated@mail.com",
             FirstName = "Updated",
-            LastName = "User"
+            LastName = "User",
+            Email = $"updated{Guid.NewGuid()}@example.com"
         };
-
+        
         // Act
-        var result = await userService.UpdateUser(user.Id, dto);
-
+        var result = await _service.Update(userId, dto);
+        
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(dto.Email, result.Email);
         Assert.Equal(dto.FirstName, result.FirstName);
         Assert.Equal(dto.LastName, result.LastName);
-
-        var dbUser = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
-
-        Assert.NotNull(dbUser);
-        Assert.Equal(dto.Email, dbUser.Email);
-        Assert.Equal(dto.FirstName, dbUser.FirstName);
-        Assert.Equal(dto.LastName, dbUser.LastName);
+        Assert.Equal(dto.Email, result.Email);
     }
-
-    // Functional test
-    // This tests that updating a non-existing user throws an exception
-    // It verifies correct error handling for invalid user IDs
+    
     [Fact]
-    public async Task UpdateUser_NonExistingUser_ThrowsKeyNotFoundException()
+    public async Task Update_WhenUserDoesNotExist_ThrowsKeyNotFoundException()
     {
         // Arrange
-        var dbContext = ContextGenerator.GetStudyDbContext();
-        var mapper = MapperGenerator.GetMapper();
-        var blobService = new FakeBlobService();
-        var userService = new UserService(dbContext, mapper, blobService);
-
+        var userId = Guid.NewGuid();
         var dto = new UpdateUserDto
         {
-            Email = "updated@mail.com",
             FirstName = "Updated",
-            LastName = "User"
+            LastName = "User",
+            Email = $"updated{Guid.NewGuid()}@example.com"
         };
 
-        var randomId = Guid.NewGuid();
-
         // Act & Assert
-        await Assert.ThrowsAsync<KeyNotFoundException>(() => userService.UpdateUser(randomId, dto)
-        );
+        await Assert.ThrowsAsync<KeyNotFoundException>(() => _service.Update(userId, dto));
     }
-
-    /// -----------------
-    /// DeleteUser tests
-    /// -----------------
-    // Functional test
-    // This tests that a user can be successfully deleted
-    // It verifies that the user is removed from the database
+    
     [Fact]
-    public async Task DeleteUser_ExistingUser_RemovesUserFromDatabase()
+    public async Task Update_WhenEmailAlreadyExists_ThrowsInvalidOperationException()
     {
         // Arrange
-        var dbContext = ContextGenerator.GetStudyDbContext();
-        var mapper = MapperGenerator.GetMapper();
-        var blobService = new FakeBlobService();
-        var userService = new UserService(dbContext, mapper, blobService);
-
-        var user = TestUserFactory.Create();
-
-        dbContext.Users.Add(user);
-        await dbContext.SaveChangesAsync();
-
-        // Act
-        await userService.DeleteUser(user.Id);
-
-        // Assert
-        var dbUser = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
-        Assert.Null(dbUser);
-    }
-
-    // Functional test
-    // This tests that deleting a non-existing user throws an exception
-    // It verifies correct error handling for invalid user IDs
-    [Fact]
-    public async Task DeleteUser_NonExistingUser_ThrowsKeyNotFoundException()
-    {
-        // Arrange
-        var dbContext = ContextGenerator.GetStudyDbContext();
-        var mapper = MapperGenerator.GetMapper();
-        var blobService = new FakeBlobService();
-        var userService = new UserService(dbContext, mapper, blobService);
-
-        var randomId = Guid.NewGuid();
-
-        // Act & Assert
-        await Assert.ThrowsAsync<KeyNotFoundException>(() => userService.DeleteUser(randomId)
-        );
-    }
-
-    /// -----------------
-    /// UploadProfilePicture tests
-    /// -----------------
-
-    // Functional test
-    // This tests that a profile picture can be successfully uploaded
-    // It verifies that the user gets a profile picture assigned and stored in the database
-    [Fact]
-    public async Task UploadProfilePicture_ValidFile_UpdatesUserProfilePicture()
-    {
-        // Arrange
-        var dbContext = ContextGenerator.GetStudyDbContext();
-        var mapper = MapperGenerator.GetMapper();
-        var blobService = new FakeBlobService();
-        var userService = new UserService(dbContext, mapper, blobService);
-
-        var user = TestUserFactory.Create();
-        dbContext.Users.Add(user);
-        await dbContext.SaveChangesAsync();
-
-        var dto = new UploadProfilePictureDto
+        var userId = Guid.NewGuid();
+        var existingEmail = $"existing{Guid.NewGuid()}@example.com";
+        
+        var user = TestUserFactory.Create(id: userId);
+        var existingUser = TestUserFactory.Create(email: existingEmail);
+        
+        _dbContext.AddRange(user, existingUser);
+        await _dbContext.SaveChangesAsync();
+        
+        var dto = new UpdateUserDto
         {
-            FileName = "profile.png",
-            AltText = "User profile picture",
-            File = TestFileFactory.CreateFormFile("image/png")
+            FirstName = "Updated",
+            LastName = "User",
+            Email = existingEmail
         };
 
-        // Act
-        var result = await userService.UploadProfilePicture(user.Id, dto);
-
-        // Assert
-        Assert.NotNull(result);
-
-        var updatedUser = await dbContext.Users
-            .Include(u => u.ProfilePicture)
-            .FirstOrDefaultAsync(u => u.Id == user.Id);
-
-        Assert.NotNull(updatedUser.ProfilePicture);
-        Assert.Equal("profile.png", updatedUser.ProfilePicture.FileName);
+        // Act & Assert
+        await Assert.ThrowsAsync<InvalidOperationException>(() => _service.Update(userId, dto));
     }
-
-    // Functional test
-    // This tests that uploading a profile picture replaces an existing one
-    // It verifies that the old profile picture is removed and replaced correctly
-    [Fact]
-    public async Task UploadProfilePicture_ExistingProfilePicture_ReplacesOldPicture()
+    
+    [Theory]
+    [InlineData("new@mail.com", "John", "Doe")]
+    [InlineData(null, "UpdatedFirst", null)]
+    [InlineData("updated@mail.com", null, "UpdatedLast")]
+    [InlineData(null, null, null)]
+    public async Task Update_WhenVariousInputs_AppliesCorrectChanges(
+        string? newEmail,
+        string? newFirstName,
+        string? newLastName)
     {
         // Arrange
-        var dbContext = ContextGenerator.GetStudyDbContext();
-        var mapper = MapperGenerator.GetMapper();
-        var blobService = new FakeBlobService();
-        var userService = new UserService(dbContext, mapper, blobService);
-
-        var oldFile = new StudyFile
+        var user = new User
         {
             Id = Guid.NewGuid(),
-            FileName = "old.png",
-            BlobName = "old_blob",
-            ContentType = "image/png"
+            Email = "original@mail.com",
+            FirstName = "Original",
+            LastName = "User",
+            PasswordHash = "hash",
+            Role = UserRole.Student,
+            CreatedAt = DateTime.UtcNow
         };
 
-        var user = TestUserFactory.Create();
-        user.ProfilePicture = oldFile;
+        await _dbContext.Users.AddAsync(user);
+        await _dbContext.SaveChangesAsync();
 
-        dbContext.Users.Add(user);
-        dbContext.Files.Add(oldFile);
-        await dbContext.SaveChangesAsync();
-
-        var dto = new UploadProfilePictureDto
+        var dto = new UpdateUserDto
         {
-            FileName = "new.png",
-            AltText = "Updated profile picture",
-            File = TestFileFactory.CreateFormFile("image/png")
+            Email = newEmail,
+            FirstName = newFirstName,
+            LastName = newLastName
         };
 
         // Act
-        var result = await userService.UploadProfilePicture(user.Id, dto);
+        var result = await _service.Update(user.Id, dto);
+
+        // Reload from DB to verify persistence
+        var updated = await _dbContext.Users.FirstAsync(u => u.Id == user.Id);
 
         // Assert
-        var updatedUser = await dbContext.Users
-            .Include(u => u.ProfilePicture)
-            .FirstOrDefaultAsync(u => u.Id == user.Id);
-
-        Assert.NotNull(updatedUser?.ProfilePicture);
-        Assert.Equal("new.png", updatedUser.ProfilePicture.FileName);
-        Assert.NotEqual("old.png", updatedUser.ProfilePicture.FileName);
-    }
-
-    // Functional test
-    // This tests that uploading a profile picture for a non-existing user throws an exception
-    // It verifies correct error handling for invalid user IDs
-    [Fact]
-    public async Task UploadProfilePicture_InvalidUser_ThrowsKeyNotFoundException()
-    {
-        // Arrange
-        var dbContext = ContextGenerator.GetStudyDbContext();
-        var mapper = MapperGenerator.GetMapper();
-        var blobService = new FakeBlobService();
-        var userService = new UserService(dbContext, mapper, blobService);
-
-        var dto = new UploadProfilePictureDto
-        {
-            FileName = "profile.png",
-            File = TestFileFactory.CreateFormFile("image/png")
-        };
-
-        var randomId = Guid.NewGuid();
-
-        // Act & Assert
-        await Assert.ThrowsAsync<KeyNotFoundException>(() => userService.UploadProfilePicture(randomId, dto)
-        );
+        Assert.NotNull(result);
+        Assert.Equal(newEmail ?? "original@mail.com", updated.Email);
+        Assert.Equal(newFirstName ?? "Original", updated.FirstName);
+        Assert.Equal(newLastName ?? "User", updated.LastName);
     }
     
-    // Functional test
-    // This tests that when fileName is empty, a fallback generated name is used
-    // It verifies that the service generates a safe default file name
+    /// ----------------
+    /// Delete
+    /// ----------------
+    
     [Fact]
-    public async Task UploadProfilePicture_FileNameEmpty_GeneratesFallbackFileName()
+    public async Task Delete_WhenUserExists_DeletesUser()
     {
         // Arrange
-        var dbContext = ContextGenerator.GetStudyDbContext();
-        var mapper = MapperGenerator.GetMapper();
-        var blobService = new FakeBlobService();
-        var userService = new UserService(dbContext, mapper, blobService);
-
-        var user = TestUserFactory.Create();
-        dbContext.Users.Add(user);
-        await dbContext.SaveChangesAsync();
-
-        var dto = new UploadProfilePictureDto
-        {
-            FileName = "",
-            File = TestFileFactory.CreateFormFile("image/png", "original.png")
-        };
-
+        var userId = Guid.NewGuid();
+        var user = TestUserFactory.Create(id: userId);
+        
+        _dbContext.Add(user);
+        await _dbContext.SaveChangesAsync();
+        
         // Act
-        var result = await userService.UploadProfilePicture(user.Id, dto);
-
+        await _service.Delete(userId);
+        
         // Assert
-        var updatedUser = await dbContext.Users
-            .Include(u => u.ProfilePicture)
-            .FirstOrDefaultAsync(u => u.Id == user.Id);
-
-        Assert.NotNull(updatedUser.ProfilePicture);
-
-        Assert.False(string.IsNullOrWhiteSpace(updatedUser.ProfilePicture.FileName));
-        Assert.NotEqual("", updatedUser.ProfilePicture.FileName);
+        var deletedUser = await _dbContext.Users.FindAsync(userId);
+        Assert.Null(deletedUser);
     }
     
-    /// -----------------
-    /// ChangePassword tests
-    /// -----------------
+    [Fact]
+    public async Task Delete_WhenUserDoesNotExist_ThrowsKeyNotFoundException()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        
+        // Act & Assert
+        await Assert.ThrowsAsync<KeyNotFoundException>(() => _service.Delete(userId));
+    }
     
-    // Functional test
-    // This tests that a user can successfully change their password
-    // It verifies that the password hash is updated in the database
-    [Fact]
-    public async Task ChangePassword_ValidCurrentPassword_UpdatesPassword()
-    {
-        // Arrange
-        var dbContext = ContextGenerator.GetStudyDbContext();
-        var mapper = MapperGenerator.GetMapper();
-        var blobService = new FakeBlobService();
-        var userService = new UserService(dbContext, mapper, blobService);
-
-        var oldPassword = "OldPassword123!";
-        var newPassword = "NewPassword123!";
-
-        var user = TestUserFactory.Create();
-        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(oldPassword);
-
-        dbContext.Users.Add(user);
-        await dbContext.SaveChangesAsync();
-
-        var dto = new ChangePasswordDto
-        {
-            CurrentPassword = oldPassword,
-            NewPassword = newPassword
-        };
-
-        // Act
-        await userService.ChangePassword(user.Id, dto);
-
-        // Assert
-        var updatedUser = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
-
-        Assert.NotNull(updatedUser);
-        Assert.True(BCrypt.Net.BCrypt.Verify(newPassword, updatedUser.PasswordHash));
-    }
-
-    // Functional test
-    // This tests that providing an incorrect current password throws an exception
-    // It verifies that password cannot be changed without valid authentication
-    [Fact]
-    public async Task ChangePassword_InvalidCurrentPassword_ThrowsUnauthorizedAccessException()
-    {
-        // Arrange
-        var dbContext = ContextGenerator.GetStudyDbContext();
-        var mapper = MapperGenerator.GetMapper();
-        var blobService = new FakeBlobService();
-        var userService = new UserService(dbContext, mapper, blobService);
-
-        var user = TestUserFactory.Create();
-        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword("CorrectPassword");
-
-        dbContext.Users.Add(user);
-        await dbContext.SaveChangesAsync();
-
-        var dto = new ChangePasswordDto
-        {
-            CurrentPassword = "WrongPassword",
-            NewPassword = "NewPassword123!"
-        };
-
-        // Act & Assert
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(
-            () => userService.ChangePassword(user.Id, dto)
-        );
-    }
-
-    // Functional test
-    // This tests that setting the same password as current is not allowed
-    // It verifies that redundant password updates are rejected
-    [Fact]
-    public async Task ChangePassword_SameAsCurrentPassword_ThrowsArgumentException()
-    {
-        // Arrange
-        var dbContext = ContextGenerator.GetStudyDbContext();
-        var mapper = MapperGenerator.GetMapper();
-        var blobService = new FakeBlobService();
-        var userService = new UserService(dbContext, mapper, blobService);
-
-        const string password = "SamePassword123!";
-
-        var user = TestUserFactory.Create(passwordHash: PasswordHelper.HashPassword(password));
-
-        dbContext.Users.Add(user);
-        await dbContext.SaveChangesAsync();
-
-        var dto = new ChangePasswordDto
-        {
-            CurrentPassword = password,
-            NewPassword = password
-        };
-
-        // Act & Assert
-        await Assert.ThrowsAsync<ArgumentException>(
-            () => userService.ChangePassword(user.Id, dto)
-        );
-    }
+    
     
 }

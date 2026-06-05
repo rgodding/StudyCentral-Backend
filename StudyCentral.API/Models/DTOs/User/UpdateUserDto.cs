@@ -4,16 +4,16 @@ namespace StudyCentral.API.Models.DTOs.User;
 
 public class UpdateUserDto
 {
-    [Required]
     [EmailAddress]
     [MaxLength(255)]
-    public string Email { get; set; } = null!;
+    [MinLength(5)]
+    public string? Email { get; set; }
 
-    [Required]
     [MaxLength(50)]
-    public string FirstName { get; set; } = null!;
+    [MinLength(2)]
+    public string? FirstName { get; set; }
 
-    [Required]
     [MaxLength(50)]
-    public string LastName { get; set; } = null!;
+    [MinLength(2)]
+    public string? LastName { get; set; }
 }
