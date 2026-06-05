@@ -1,5 +1,11 @@
 ﻿# Study Central
 
+## Login Credentials
+| Email             | Password |
+|-------------------|----------|
+| admin@mail.com    | password |
+| teacher1@mail.com | password |
+| student1@mail.com | password |
 
 ## Setup user-secrets
 ```csharp
@@ -28,6 +34,9 @@ start coveragereport/index.html
 
 
 ## Update EF Core migration
+```bash
+dotnet ef migrations add InitialCreate
+```
 ```bash
 dotnet ef migrations remove
 dotnet ef database drop

@@ -1,12 +1,16 @@
-﻿using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace StudyCentral.API.Configurations;
 
 public static class AuthenticationConfig
 {
-    public static void Configure(IServiceCollection services, string issuer, string audience, string key)
+    public static void Configure(
+        IServiceCollection services,
+        string issuer,
+        string audience,
+        string key)
     {
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
@@ -15,9 +19,25 @@ public static class AuthenticationConfig
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+
                     ValidIssuer = issuer,
                     ValidAudience = audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
+                    IssuerSigningKey =
+                        new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(key))
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        context.Token =
+                            context.Request.Cookies["access_token"];
+
+                        return Task.CompletedTask;
+                    }
                 };
             });
     }

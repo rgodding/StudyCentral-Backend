@@ -64,7 +64,7 @@ public static class SeedData
             {
                 Id = AdminId,
                 Email = "admin@mail.com",
-                PasswordHash = "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6",
+                PasswordHash = "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2",
                 FirstName = "Mister",
                 LastName = "Admin",
                 Role = UserRole.Admin
@@ -73,7 +73,7 @@ public static class SeedData
             {
                 Id = Teacher1Id,
                 Email = "teacher1@mail.com",
-                PasswordHash = "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6",
+                PasswordHash = "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2",
                 FirstName = "Alice",
                 LastName = "Smith",
                 Role = UserRole.Teacher
@@ -82,7 +82,7 @@ public static class SeedData
             {
                 Id = Teacher2Id,
                 Email = "teacher2@mail.com",
-                PasswordHash = "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6",
+                PasswordHash = "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2",
                 FirstName = "Bob",
                 LastName = "Johnson",
                 Role = UserRole.Teacher
@@ -91,7 +91,7 @@ public static class SeedData
             {
                 Id = Student1Id,
                 Email = "student1@mail.com",
-                PasswordHash = "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6",
+                PasswordHash = "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2",
                 FirstName = "Charlie",
                 LastName = "Brown",
                 Role = UserRole.Student
@@ -100,7 +100,7 @@ public static class SeedData
             {
                 Id = Student2Id,
                 Email = "student2@mail.com",
-                PasswordHash = "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6",
+                PasswordHash = "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2",
                 FirstName = "David",
                 LastName = "Wilson",
                 Role = UserRole.Student
@@ -109,7 +109,7 @@ public static class SeedData
             {
                 Id = Student3Id,
                 Email = "student3@mail.com",
-                PasswordHash = "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6",
+                PasswordHash = "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2",
                 FirstName = "Emma",
                 LastName = "Johnson",
                 Role = UserRole.Student
@@ -118,7 +118,7 @@ public static class SeedData
             {
                 Id = Student4Id,
                 Email = "student4@mail.com",
-                PasswordHash = "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6",
+                PasswordHash = "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2",
                 FirstName = "Frank",
                 LastName = "Miller",
                 Role = UserRole.Student
@@ -127,7 +127,7 @@ public static class SeedData
             {
                 Id = Student5Id,
                 Email = "student5@mail.com",
-                PasswordHash = "$2a$11$ZZdlueio8rsj67q/d/ZiBe03uM1mX0Y9JfFjwcP/X0KSRiE5G4Ke6",
+                PasswordHash = "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2",
                 FirstName = "Grace",
                 LastName = "Taylor",
                 Role = UserRole.Student

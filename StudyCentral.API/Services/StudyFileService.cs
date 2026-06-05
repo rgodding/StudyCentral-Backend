@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Middleware;
 using StudyCentral.API.Models;
+using StudyCentral.API.Models.DTOs.StudyFile;
 using StudyCentral.API.Models.Entities;
 
 namespace StudyCentral.API.Services;
@@ -26,35 +27,50 @@ public class StudyFileService : IStudyFileService
         _blobService = blobService;
     }
 
-    public async Task<StudyFile> UploadFile(IFormFile file, Guid userId, FileType type, string? altText = null)
+    public async Task<StudyFile> UploadFile(
+        IFormFile file,
+        Guid userId,
+        FileType type,
+        string? altText = null)
     {
         var userExists = await _dbContext.Users
             .AnyAsync(u => u.Id == userId);
-        
+
         if (!userExists)
             throw new KeyNotFoundException("User not found");
-        
-        if(file == null || file.Length == 0)
+
+        if (file == null || file.Length == 0)
             throw new InvalidOperationException("Invalid file");
-        
-        var uploadResult = await _blobService.UploadFile(file.FileName, file);
+
+        BlobUploadResult uploadResult;
+
+        try
+        {
+            uploadResult = await _blobService.UploadFile(
+                file.FileName,
+                file);
+        }
+        catch (Exception ex)
+        {
+            throw new ExceptionMiddleware.InternalException(
+                "Failed to upload file to blob storage",
+                ex);
+        }
 
         var studyFile = new StudyFile
         {
             FileName = uploadResult.FileName,
             BlobName = uploadResult.BlobName,
-
             ContentType = uploadResult.ContentType,
             Size = file.Length,
-
             FileType = type,
             AltText = altText,
             UploadedById = userId
         };
-        
+
         _dbContext.StudyFiles.Add(studyFile);
         await _dbContext.SaveChangesAsync();
-        
+
         return studyFile;
     }
 
@@ -66,7 +82,6 @@ public class StudyFileService : IStudyFileService
         if (file == null)
             throw new KeyNotFoundException("File not found");
 
-        // 1. Delete blob first (external dependency)
         try
         {
             await _blobService.DeleteFile(file.BlobName);
@@ -74,12 +89,10 @@ public class StudyFileService : IStudyFileService
         catch (Exception ex)
         {
             throw new ExceptionMiddleware.InternalException(
-                $"Failed to delete blob '{file.BlobName}'",
-                ex
-            );
+                "Failed to delete file from blob storage",
+                ex);
         }
 
-        // 2. Only delete DB if blob succeeded
         _dbContext.StudyFiles.Remove(file);
         await _dbContext.SaveChangesAsync();
     }
@@ -92,6 +105,15 @@ public class StudyFileService : IStudyFileService
         if (file == null)
             throw new KeyNotFoundException("File not found");
 
-        return await _blobService.GetBlobUrl(file.BlobName);
+        try
+        {
+            return await _blobService.GetBlobUrl(file.BlobName);
+        }
+        catch (Exception ex)
+        {
+            throw new ExceptionMiddleware.InternalException(
+                $"Failed to retrieve URL for file '{file.Id}'",
+                ex);
+        }
     }
 }

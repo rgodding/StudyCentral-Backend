@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using StudyCentral.API.Authentication;
-using StudyCentral.API.Authentication.Policies;
 using StudyCentral.API.Models;
 using StudyCentral.API.Services;
 
@@ -10,18 +9,10 @@ public class ServiceConfig
 {
     public static void Configure(IServiceCollection services)
     {
-        AuthorizationHandlers(services);
         ServiceClasses(services);
         JsonConfig(services);
     }
-
-    private static void AuthorizationHandlers(IServiceCollection services)
-    {
-        services.AddSingleton<IAuthorizationHandler, IsAdminHandler>();
-        services.AddSingleton<IAuthorizationHandler, IsTeacherHandler>();
-        services.AddSingleton<IAuthorizationHandler, IsStudentHandler>();
-        
-    }
+    
 
     private static void ServiceClasses(IServiceCollection services)
     {
@@ -34,21 +25,16 @@ public class ServiceConfig
         // Blob
         services.AddSingleton<IBlobService, BlobService>();
         
+        // File Services
+        services.AddScoped<IStudyFileService, StudyFileService>();
+        
         // Services
-        services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<IUserService, UserService>();
-        
-        
-        /*
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ICourseService, CourseService>();
         services.AddScoped<IAssignmentService, AssignmentService>();
         services.AddScoped<ISubmissionService, SubmissionService>();
         services.AddScoped<IAnnouncementService, AnnouncementService>();
-        services.AddScoped<IStudyFileService, StudyFileService>();
-        */
-        
     }
 
     private static void JsonConfig(IServiceCollection services)

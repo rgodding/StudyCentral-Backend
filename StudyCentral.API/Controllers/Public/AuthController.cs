@@ -52,6 +52,12 @@ public class AuthController : BaseController
         return NoContent();
     }
     
+    [HttpGet("generator-hash")]
+    public ActionResult<string> GenerateHash(string value)
+    {
+        var hash = PasswordHelper.HashPassword(value);
+        return Ok(hash);
+    }
     private void SetAuthCookie(string token)
     {
         Response.Cookies.Append(

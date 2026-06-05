@@ -33,7 +33,6 @@ public class Startup
 
 
         AuthenticationConfig.Configure(services, issuer, audience, key);
-        AuthorizationConfig.Configure(services);
         ServiceConfig.Configure(services);
         DatabaseConfig.Configure(services, connectionString);
         SwaggerConfig.Configure(services);
