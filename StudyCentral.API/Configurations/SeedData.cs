@@ -141,21 +141,21 @@ public static class SeedData
             new Course
             {
                 Id = Course1Id,
-                Title = "Web Development",
+                Name = "Web Development",
                 Description = "Learn HTML, CSS, JavaScript and ASP.NET development.",
                 TeacherId = Teacher1Id
             },
             new Course
             {
                 Id = Course2Id,
-                Title = "Database Systems",
+                Name = "Database Systems",
                 Description = "Learn relational databases, SQL and data modelling.",
                 TeacherId = Teacher1Id
             },
             new Course
             {
                 Id = Course3Id,
-                Title = "System Integration",
+                Name = "System Integration",
                 Description = "Learn APIs, Docker, Azure and distributed systems.",
                 TeacherId = Teacher2Id
             }
@@ -214,42 +214,42 @@ public static class SeedData
             new Announcement
             {
                 Id = Announcement1Id,
-                Title = "Welcome to Web Development",
+                Name = "Welcome to Web Development",
                 Content = "Welcome to the course. Please review the syllabus and course materials.",
                 CourseId = Course1Id,
             },
             new Announcement
             {
                 Id = Announcement2Id,
-                Title = "First Assignment Released",
+                Name = "First Assignment Released",
                 Content = "The HTML Portfolio assignment is now available.",
                 CourseId = Course1Id,
             },
             new Announcement
             {
                 Id = Announcement3Id,
-                Title = "Database Project Information",
+                Name = "Database Project Information",
                 Content = "Project requirements and grading criteria have been uploaded.",
                 CourseId = Course2Id,
             },
             new Announcement
             {
                 Id = Announcement4Id,
-                Title = "Exam Preparation",
+                Name = "Exam Preparation",
                 Content = "Review SQL joins, normalization and indexing before the exam.",
                 CourseId = Course2Id,
             },
             new Announcement
             {
                 Id = Announcement5Id,
-                Title = "Docker Setup Guide",
+                Name = "Docker Setup Guide",
                 Content = "Please install Docker Desktop before next week's exercises.",
                 CourseId = Course3Id,
             },
             new Announcement
             {
                 Id = Announcement6Id,
-                Title = "Azure Assignment Released",
+                Name = "Azure Assignment Released",
                 Content = "The Azure Blob Storage assignment is now available.",
                 CourseId = Course3Id,
             }
@@ -262,7 +262,7 @@ public static class SeedData
             new Assignment
             {
                 Id = Assignment1Id,
-                Title = "HTML Portfolio",
+                Name = "HTML Portfolio",
                 Description = "Create a personal portfolio website using HTML and CSS.",
                 Deadline = new DateTime(2026, 10, 1),
                 CourseId = Course1Id,
@@ -270,7 +270,7 @@ public static class SeedData
             new Assignment
             {
                 Id = Assignment2Id,
-                Title = "ASP.NET Web API",
+                Name = "ASP.NET Web API",
                 Description = "Develop a RESTful API using ASP.NET Core.",
                 Deadline = new DateTime(2026, 10, 15),
                 CourseId = Course1Id,
@@ -278,7 +278,7 @@ public static class SeedData
             new Assignment
             {
                 Id = Assignment3Id,
-                Title = "ER Diagram Design",
+                Name = "ER Diagram Design",
                 Description = "Design an ER diagram for the provided business case.",
                 Deadline = new DateTime(2026, 10, 5),
                 CourseId = Course2Id,
@@ -286,7 +286,7 @@ public static class SeedData
             new Assignment
             {
                 Id = Assignment4Id,
-                Title = "SQL Query Assignment",
+                Name = "SQL Query Assignment",
                 Description = "Write SQL queries to solve the provided tasks.",
                 Deadline = new DateTime(2026, 10, 20),
                 CourseId = Course2Id,
@@ -294,7 +294,7 @@ public static class SeedData
             new Assignment
             {
                 Id = Assignment5Id,
-                Title = "Docker Deployment",
+                Name = "Docker Deployment",
                 Description = "Containerize and deploy the application using Docker.",
                 Deadline = new DateTime(2026, 10, 10),
                 CourseId = Course3Id,
@@ -302,7 +302,7 @@ public static class SeedData
             new Assignment
             {
                 Id = Assignment6Id,
-                Title = "Azure Blob Storage",
+                Name = "Azure Blob Storage",
                 Description = "Implement file upload and storage using Azure Blob Storage.",
                 Deadline = new DateTime(2026, 10, 25),
                 CourseId = Course3Id,

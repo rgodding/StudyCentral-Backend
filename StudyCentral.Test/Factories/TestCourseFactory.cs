@@ -6,7 +6,7 @@ public static class TestCourseFactory
 {
     public static Course Create(
         Guid? id = null,
-        string? title = null,
+        string? name = null,
         string? description = null,
         DateTime? createdAt = null,
         DateTime? updatedAt = null
@@ -15,7 +15,7 @@ public static class TestCourseFactory
         return new Course
         {
             Id = id ?? Guid.NewGuid(),
-            Title = title ?? $"TITLE_${Guid.NewGuid()}",
+            Name = name ?? $"NAME_${Guid.NewGuid()}",
             Description = description,
             CreatedAt = createdAt ?? DateTime.UtcNow,
             UpdatedAt = updatedAt

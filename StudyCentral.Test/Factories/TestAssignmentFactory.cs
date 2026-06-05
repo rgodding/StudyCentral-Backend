@@ -6,7 +6,7 @@ public static class TestAssignmentFactory
 {
     public static Assignment Create(
         Guid? id = null,
-        string? title = null,
+        string? name = null,
         string? description = null,
         Guid? courseId = null,
         DateTime? deadline = null,
@@ -17,7 +17,7 @@ public static class TestAssignmentFactory
         return new Assignment
         {
             Id = id ?? Guid.NewGuid(),
-            Title = title ?? $"TITLE_{Guid.NewGuid()}",
+            Name = name ?? $"NAME_{Guid.NewGuid()}",
             Description = description,
             CourseId = courseId ?? Guid.NewGuid(),
             Deadline  = deadline ?? DateTime.UtcNow.AddDays(7),

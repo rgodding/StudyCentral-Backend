@@ -6,7 +6,7 @@ public class CreateAnnouncementDto
 {
     [Required]
     [MaxLength(100)]
-    public string Title { get; set; } = null!;
+    public string Name { get; set; } = null!;
 
     [Required]
     [MaxLength(5000)]

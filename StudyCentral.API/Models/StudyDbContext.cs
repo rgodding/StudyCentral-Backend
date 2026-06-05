@@ -93,7 +93,7 @@ public class StudyDbContext : DbContext
     private static void ConfigureAssignment(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Assignment>()
-            .Property(a => a.Title)
+            .Property(a => a.Name)
             .IsRequired()
             .HasMaxLength(100);
 
@@ -145,7 +145,7 @@ public class StudyDbContext : DbContext
     private static void ConfigureAnnouncement(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Announcement>()
-            .Property(a => a.Title)
+            .Property(a => a.Name)
             .IsRequired()
             .HasMaxLength(100);
 

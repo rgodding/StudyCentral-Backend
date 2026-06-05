@@ -24,9 +24,9 @@ public class UserServiceTests
         _service = new UserService(_dbContext, _mapper);
     }
 
-    /// ----------------
-    /// GetAll
-    /// ----------------
+    // ----------------
+    // GetAll
+    // ----------------
 
     [Fact]
     public async Task GetAll_WhenUsersExist_ReturnsAllUsers()
@@ -65,9 +65,9 @@ public class UserServiceTests
         Assert.Empty(result);
     }
 
-    /// ----------------
-    /// GetById
-    /// ----------------
+    // ----------------
+    // GetById
+    // ----------------
     [Fact]
     public async Task GetById_WhenUserExists_ReturnsUser()
     {
@@ -100,9 +100,9 @@ public class UserServiceTests
         await Assert.ThrowsAsync<KeyNotFoundException>(() => _service.GetById(userId));
     }
     
-    /// ----------------
-    /// Create
-    /// ----------------
+    // ----------------
+    // Create
+    // ----------------
     
     [Fact]
     public async Task Create_WhenValidData_ReturnsCreatedUser()
@@ -151,9 +151,9 @@ public class UserServiceTests
         await Assert.ThrowsAsync<InvalidOperationException>(() => _service.Create(dto));
     }
     
-    /// ----------------
-    /// Update
-    /// ----------------
+    // ----------------
+    // Update
+    // ----------------
     [Fact]
     public async Task Update_WhenUserExists_ReturnsUpdatedUser()
     {
@@ -234,7 +234,6 @@ public class UserServiceTests
         // Arrange
         var user = new User
         {
-            Id = Guid.NewGuid(),
             Email = "original@mail.com",
             FirstName = "Original",
             LastName = "User",
@@ -266,9 +265,9 @@ public class UserServiceTests
         Assert.Equal(newLastName ?? "User", updated.LastName);
     }
     
-    /// ----------------
-    /// Delete
-    /// ----------------
+    // ----------------
+    // Delete
+    // ----------------
     
     [Fact]
     public async Task Delete_WhenUserExists_DeletesUser()

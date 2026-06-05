@@ -6,7 +6,7 @@ public class StudyFolderDto
     public string Name { get; set; } = null!;
     
     public Guid CourseId { get; set; }
-    public string CourseTitle { get; set; } = null!;
+    public string CourseName { get; set; } = null!;
     
     public Guid? ParentFolderId { get; set; }
     

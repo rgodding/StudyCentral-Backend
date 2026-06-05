@@ -8,7 +8,7 @@ public class SubmissionDto
     public decimal? Grade { get; set; }
     
     public Guid AssignmentId { get; set; }
-    public string AssignmentTitle { get; set; } = null!;
+    public string AssignmentName { get; set; } = null!;
     
     public Guid StudentId { get; set; }
     public string StudentFirstName { get; set; } = null!;

@@ -6,7 +6,7 @@ public class UpdateCourseDto
 {
     [Required]
     [MaxLength(100)]
-    public string? Title { get; set; } = null!;
+    public string? Name { get; set; } = null!;
 
     [MaxLength(1000)]
     public string? Description { get; set; }
