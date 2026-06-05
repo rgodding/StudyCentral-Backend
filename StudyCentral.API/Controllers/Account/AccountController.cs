@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StudyCentral.API.Models.ApiModels.Account;
 using StudyCentral.API.Models.DTOs.User;
 using StudyCentral.API.Services;
 
@@ -22,8 +23,26 @@ public class AccountController : BaseController
     [HttpGet("me")]
     public async Task<ActionResult<UserDto>> GetMe()
     {
-        var response = await _userService.GetById(CurrentUser.Id);
+        var response = await _userService.GetMe(CurrentUser.Id);
         return Ok(response);
+    }
+    
+    [HttpPut("me")]
+    public async Task<ActionResult<UserDto>> UpdateMe([FromBody] UpdateMeRequest request)
+    {
+        var response = await _userService.UpdateMe(CurrentUser.Id, request);
+        return Ok(response);
+    }
+    
+    [HttpPut("password")]
+    public async Task<IActionResult> ChangePassword(
+        [FromBody] ChangePasswordRequest request)
+    {
+        await _userService.ChangePassword(
+            CurrentUser.Id,
+            request);
+
+        return NoContent();
     }
     
     [HttpPost("profile-picture")]

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using StudyCentral.API.Authentication;
-using StudyCentral.API.Models.DTOs.Auth;
+using StudyCentral.API.Models.ApiModels.Auth;
 using StudyCentral.API.Models.DTOs.User;
 using StudyCentral.API.Services;
 
@@ -19,9 +19,9 @@ public class AuthController : BaseController
     }
     
     [HttpPost("register")]
-    public async Task<ActionResult<UserDto>> Register([FromBody] RegisterDto dto)
+    public async Task<ActionResult<UserDto>> Register([FromBody] RegisterRequest request)
     {
-        var result = await _authService.Register(dto);
+        var result = await _authService.Register(request);
         
         SetAuthCookie(result.Token);
         
@@ -29,9 +29,9 @@ public class AuthController : BaseController
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<UserDto>> Login([FromBody] LoginDto dto)
+    public async Task<ActionResult<UserDto>> Login([FromBody] LoginRequest request)
     {
-        var result = await _authService.Login(dto);
+        var result = await _authService.Login(request);
 
         SetAuthCookie(result.Token);
         

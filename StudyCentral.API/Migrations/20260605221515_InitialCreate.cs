@@ -307,15 +307,16 @@ namespace StudyCentral.API.Migrations
                 columns: new[] { "Id", "CreatedAt", "Email", "FirstName", "LastName", "PasswordHash", "ProfilePictureId", "Role", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { new Guid("11111111-1111-1111-1111-111111111111"), new DateTime(2026, 6, 5, 21, 0, 21, 600, DateTimeKind.Utc).AddTicks(610), "admin@studycentral.dk", "Admin", "User", "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2", null, 2, null },
-                    { new Guid("22222222-2222-2222-2222-222222222222"), new DateTime(2026, 6, 5, 21, 0, 21, 600, DateTimeKind.Utc).AddTicks(613), "teacher@studycentral.dk", "Teacher", "User", "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2", null, 1, null },
-                    { new Guid("33333333-3333-3333-3333-333333333333"), new DateTime(2026, 6, 5, 21, 0, 21, 600, DateTimeKind.Utc).AddTicks(614), "student@studycentral.dk", "Student", "User", "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2", null, 0, null }
+                    { new Guid("11111111-1111-1111-1111-111111111111"), new DateTime(2026, 6, 5, 22, 15, 15, 96, DateTimeKind.Utc).AddTicks(1877), "admin@studycentral.dk", "Admin", "User", "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2", null, 2, null },
+                    { new Guid("22222222-2222-2222-2222-222222222222"), new DateTime(2026, 6, 5, 22, 15, 15, 96, DateTimeKind.Utc).AddTicks(1880), "teacher@studycentral.dk", "Teacher", "User", "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2", null, 1, null },
+                    { new Guid("33333333-3333-3333-3333-333333333333"), new DateTime(2026, 6, 5, 22, 15, 15, 96, DateTimeKind.Utc).AddTicks(1882), "student@studycentral.dk", "Student", "User", "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2", null, 0, null },
+                    { new Guid("44444444-4444-4444-4444-444444444444"), new DateTime(2026, 6, 5, 22, 15, 15, 96, DateTimeKind.Utc).AddTicks(1910), "teststudent@studycentral.dk", "Test", "Student", "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2", null, 0, null }
                 });
 
             migrationBuilder.InsertData(
                 table: "Courses",
                 columns: new[] { "Id", "CreatedAt", "Description", "Name", "TeacherId", "UpdatedAt" },
-                values: new object[] { new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 5, 21, 0, 21, 600, DateTimeKind.Utc).AddTicks(711), "StudyCentral demonstration course", "System Integration", new Guid("22222222-2222-2222-2222-222222222222"), null });
+                values: new object[] { new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 5, 22, 15, 15, 96, DateTimeKind.Utc).AddTicks(1993), "StudyCentral demonstration course", "System Integration", new Guid("22222222-2222-2222-2222-222222222222"), null });
 
             migrationBuilder.InsertData(
                 table: "CourseStudent",

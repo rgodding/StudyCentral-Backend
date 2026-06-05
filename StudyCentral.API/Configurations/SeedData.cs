@@ -14,6 +14,8 @@ public static class SeedData
 
     private static readonly Guid StudentId =
         Guid.Parse("33333333-3333-3333-3333-333333333333");
+    private static readonly Guid TestStudentId =
+        Guid.Parse("44444444-4444-4444-4444-444444444444");
 
     private static readonly Guid CourseId =
         Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
@@ -53,6 +55,15 @@ public static class SeedData
                 PasswordHash = "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2",
                 FirstName = "Student",
                 LastName = "User",
+                Role = UserRole.Student
+            },
+            new User
+            {
+                Id = TestStudentId,
+                Email = "teststudent@studycentral.dk",
+                PasswordHash = "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2",
+                FirstName = "Test",
+                LastName = "Student",
                 Role = UserRole.Student
             }
         );

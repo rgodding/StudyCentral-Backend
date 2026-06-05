@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Authentication;
 using StudyCentral.API.Models;
+using StudyCentral.API.Models.ApiModels.Account;
 using StudyCentral.API.Models.DTOs.User;
 using StudyCentral.API.Models.Entities;
 
@@ -15,6 +16,11 @@ public interface IUserService
     Task<UserDto> Create(CreateUserDto dto);
     Task<UserDto> Update(Guid userId, UpdateUserDto dto);
     Task Delete(Guid userId);
+    
+    // User Management
+    Task<UserDto> GetMe(Guid userId);
+    Task<UserDto> UpdateMe(Guid userId, UpdateMeRequest request);
+    Task ChangePassword(Guid userId, ChangePasswordRequest request);
     
     // File Management
     Task AddProfilePicture(Guid userId, IFormFile file);
@@ -114,6 +120,65 @@ public class UserService : IUserService
             throw new KeyNotFoundException("User not found");
         
         _dbContext.Users.Remove(user);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    // --------------
+    //  USER MANAGEMENT METHODS
+    // --------------
+    public async Task<UserDto> GetMe(Guid userId)
+    {
+        var user = await _dbContext.Users
+            .Include(u => u.ProfilePicture)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+        
+        if (user == null)
+            throw new KeyNotFoundException("User not found");
+        
+        return _mapper.Map<UserDto>(user);
+    }
+
+    public async Task<UserDto> UpdateMe(Guid userId, UpdateMeRequest request)
+    {
+        var user = await _dbContext.Users
+            .Include(u => u.ProfilePicture)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null)
+            throw new KeyNotFoundException("User not found");
+
+        user.FirstName = request.FirstName ?? user.FirstName;
+        user.LastName = request.LastName ?? user.LastName;
+        user.Email = request.Email ?? user.Email;
+        user.UpdatedAt = DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync();
+        return _mapper.Map<UserDto>(user);
+    }
+
+    public async Task ChangePassword(
+        Guid userId,
+        ChangePasswordRequest request)
+    {
+        var user = await _dbContext.Users
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null)
+            throw new KeyNotFoundException("User not found");
+
+        if (!PasswordHelper.VerifyHash(
+                request.CurrentPassword,
+                user.PasswordHash))
+        {
+            throw new UnauthorizedAccessException(
+                "Current password is incorrect");
+        }
+
+        user.PasswordHash =
+            PasswordHelper.HashPassword(request.NewPassword);
+
+        user.UpdatedAt = DateTime.UtcNow;
+
         await _dbContext.SaveChangesAsync();
     }
 

@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace StudyCentral.API.Models.DTOs.Auth;
+namespace StudyCentral.API.Models.ApiModels.Auth;
 
-public class LoginDto
+public class LoginRequest
 {
     [Required]
     [EmailAddress]
