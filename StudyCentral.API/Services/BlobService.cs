@@ -1,5 +1,6 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using StudyCentral.API.Middleware;
 using StudyCentral.API.Models.DTOs.StudyFile;
 
 namespace StudyCentral.API.Services;
@@ -40,9 +41,8 @@ public class BlobService : IBlobService
         
         var exists = await blobClient.ExistsAsync();
         if (!exists)
-        {
-            throw new FileNotFoundException($"Blob with name '{blobName}' not found");
-        }
+            throw new KeyNotFoundException(
+                $"Blob with name '{blobName}' not found");
         
         var download = await blobClient.DownloadAsync();
 
