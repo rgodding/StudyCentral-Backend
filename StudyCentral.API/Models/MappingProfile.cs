@@ -22,5 +22,18 @@ public class MappingProfile : Profile
         // Course
         CreateMap<Course, CourseDto>();
         CreateMap<CreateCourseDto, Course>();
+        
+        // Assignment
+        CreateMap<Assignment, AssignmentDto>()
+            .ForMember(dest => dest.Name,
+                opt => opt.MapFrom(src => src.Name))
+            .ForMember(dest => dest.CourseId,
+                opt => opt.MapFrom(src => src.CourseId))
+            .ForMember(dest => dest.CourseName,
+                opt => opt.MapFrom(src => src.Course.Name))
+            .ForMember(dest => dest.FileCount,
+                opt => opt.MapFrom(src => src.Files.Count));
+        CreateMap<Assignment, AssignmentDto>();
+        CreateMap<CreateAssignmentDto, Assignment>();
     }
 }
