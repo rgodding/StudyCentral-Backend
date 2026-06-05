@@ -9,4 +9,7 @@ public class CreateSubmissionDto
     
     [MaxLength(2000)]
     public string? Comment { get; set; }
+    
+    [Required]
+    public Guid StudentId { get; set; }
 }
