@@ -26,7 +26,14 @@ public class MappingProfile : Profile
 
     private void CreateUserMappings()
     {
-        CreateMap<User, DTOs.User.UserDto>();
+        CreateMap<User, UserDto>()
+            .ForMember(
+                dest => dest.ProfilePictureUrl,
+                opt => opt.MapFrom(src =>
+                    src.ProfilePicture != null
+                        ? src.ProfilePicture.BlobName
+                        : null));
+
         CreateMap<CreateUserDto, User>();
     }
     private void CreateCourseMappings()
