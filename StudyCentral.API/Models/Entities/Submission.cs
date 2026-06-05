@@ -7,10 +7,11 @@ public class Submission
     // Submission
     public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
     public string? Comment { get; set; }
+    public SubmissionStatus Status { get; set; } = SubmissionStatus.NotSubmitted;
     
     // Review
     public string? Feedback { get; set; }
-    public decimal? Grade { get; set; }
+    public GradeLetter? Grade { get; set; }
     public DateTime? GradedAt { get; set; }
     
     // Files
@@ -27,4 +28,22 @@ public class Submission
     // Audit
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
+}
+
+public enum GradeLetter
+{
+    A,
+    B,
+    C,
+    D,
+    F
+}
+
+public enum SubmissionStatus
+{
+    NotSubmitted,
+    Submitted,
+    SubmittedLate,
+    Passed,
+    Failed
 }

@@ -1,5 +1,7 @@
-﻿using AutoMapper;
+﻿using System.Security;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using StudyCentral.API.Middleware;
 using StudyCentral.API.Models;
 using StudyCentral.API.Models.DTOs.Course;
 using StudyCentral.API.Models.Entities;
@@ -70,22 +72,24 @@ public class CourseService : ICourseService
 
     public async Task<CourseDto> CreateCourse(Guid teacherId, CreateCourseDto dto)
     {
-        var exists = await _dbContext.Courses
-            .AnyAsync(c => c.Title == dto.Title);
-
-        if (exists)
-            throw new InvalidOperationException("Course with the same title already exists");
-
-        var teacher = await _dbContext.Users.FindAsync(teacherId);
+        var teacher = await _dbContext.Users
+            .FirstOrDefaultAsync(u => u.Id == teacherId);
 
         if (teacher == null)
             throw new KeyNotFoundException("Teacher not found");
 
         if (teacher.Role != UserRole.Teacher)
-            throw new InvalidOperationException("Only teachers can be assigned to courses");
+            throw new SecurityException("Only teachers can create courses");
+
+        var exists = await _dbContext.Courses
+            .AnyAsync(c => c.Title == dto.Title && c.TeacherId == teacherId);
+
+        if (exists)
+            throw new ExceptionMiddleware.ConflictException(
+                "You already have a course with this title");
 
         var course = _mapper.Map<Course>(dto);
-        course.TeacherId = teacher.Id;
+        course.TeacherId = teacherId;
 
         _dbContext.Courses.Add(course);
         await _dbContext.SaveChangesAsync();
@@ -95,20 +99,23 @@ public class CourseService : ICourseService
 
     public async Task<CourseDto> UpdateCourse(Guid courseId, UpdateCourseDto dto)
     {
-        var titleExists = await _dbContext.Courses
-            .AnyAsync(c => c.Title == dto.Title && c.Id != courseId);
-
-        if (titleExists)
-            throw new InvalidOperationException("Course with the same title already exists");
-
         var course = await _dbContext.Courses
             .FirstOrDefaultAsync(c => c.Id == courseId);
 
         if (course == null)
             throw new KeyNotFoundException("Course not found");
 
+        // Only validate if title is being updated
         if (!string.IsNullOrWhiteSpace(dto.Title))
+        {
+            var titleExists = await _dbContext.Courses
+                .AnyAsync(c => c.Title == dto.Title && c.Id != courseId);
+
+            if (titleExists)
+                throw new InvalidOperationException("Course with the same title already exists");
+
             course.Title = dto.Title;
+        }
 
         if (!string.IsNullOrWhiteSpace(dto.Description))
             course.Description = dto.Description;

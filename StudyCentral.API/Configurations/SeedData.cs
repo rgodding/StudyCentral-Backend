@@ -320,7 +320,7 @@ public static class SeedData
                 StudentId = Student1Id,
                 Comment = "My HTML portfolio submission.",
                 Feedback = "Excellent work.",
-                Grade = 95
+                Grade = GradeLetter.A
             },
             new Submission
             {
@@ -329,7 +329,7 @@ public static class SeedData
                 StudentId = Student2Id,
                 Comment = "Portfolio assignment completed.",
                 Feedback = "Good structure and styling.",
-                Grade = 85
+                Grade = GradeLetter.B
             },
             new Submission
             {
@@ -338,7 +338,7 @@ public static class SeedData
                 StudentId = Student3Id,
                 Comment = "My submission.",
                 Feedback = null,
-                Grade = null
+                Grade = GradeLetter.C
             },
             new Submission
             {
@@ -347,7 +347,7 @@ public static class SeedData
                 StudentId = Student1Id,
                 Comment = "ASP.NET API project.",
                 Feedback = "Well implemented API.",
-                Grade = 90
+                Grade = GradeLetter.D
             },
             new Submission
             {
@@ -356,7 +356,7 @@ public static class SeedData
                 StudentId = Student4Id,
                 Comment = "ER diagram attached.",
                 Feedback = "Good normalization.",
-                Grade = 88
+                Grade = GradeLetter.F
             },
             new Submission
             {

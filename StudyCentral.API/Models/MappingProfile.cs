@@ -85,17 +85,28 @@ public class MappingProfile : Profile
 
         // Submission
         CreateMap<Submission, SubmissionDto>()
-            .ForMember(
-                dest => dest.AssignmentTitle,
+            .ForMember(dest => dest.AssignmentTitle,
                 opt => opt.MapFrom(src => src.Assignment.Title))
-            .ForMember(
-                dest => dest.StudentName,
+            .ForMember(dest => dest.StudentFirstName,
+                opt => opt.MapFrom(src => src.Student.FirstName))
+            .ForMember(dest => dest.StudentLastName,
+                opt => opt.MapFrom(src => src.Student.LastName))
+            .ForMember(dest => dest.StudentProfilePictureUrl,
+                opt => opt.MapFrom(src =>
+                    src.Student.ProfilePicture != null
+                        ? src.Student.ProfilePicture.BlobName
+                        : null))
+            .ForMember(dest => dest.FileCount,
+                opt => opt.MapFrom(src => src.Files.Count));
+        
+        CreateMap<Submission, SubmissionPreviewDto>()
+            .ForMember(dest => dest.AssignmentTitle,
+                opt => opt.MapFrom(src => src.Assignment.Title))
+            .ForMember(dest => dest.StudentName,
                 opt => opt.MapFrom(src =>
                     $"{src.Student.FirstName} {src.Student.LastName}"))
-            .ForMember(
-                dest => dest.FileCount,
+            .ForMember(dest => dest.FileCount,
                 opt => opt.MapFrom(src => src.Files.Count));
-        CreateMap<Submission, SubmissionDto>();
         CreateMap<CreateSubmissionDto, Submission>();
         CreateMap<UpdateSubmissionDto, Submission>();
 

@@ -11,7 +11,8 @@ public class SubmissionDto
     public string AssignmentTitle { get; set; } = null!;
     
     public Guid StudentId { get; set; }
-    public string StudentName { get; set; } = null!;
+    public string StudentFirstName { get; set; } = null!;
+    public string? StudentLastName { get; set; } = null!;
     public string? StudentProfilePictureUrl { get; set; }
     
     public int FileCount { get; set; }
