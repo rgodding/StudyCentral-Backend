@@ -2,7 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Models;
 using StudyCentral.API.Models.DTOs.Course;
+using StudyCentral.API.Models.DTOs.User;
 using StudyCentral.API.Models.Entities;
+using StudyCentral.API.Models.Entities.Relationship;
 
 namespace StudyCentral.API.Services;
 
@@ -14,6 +16,14 @@ public interface ICourseService
     Task<CourseDto> Create(CreateCourseDto dto);
     Task<CourseDto> Update(Guid courseId, UpdateCourseDto dto);
     Task Delete(Guid courseId);
+
+    // Teacher Methods
+    Task<List<CourseDto>> GetCoursesByTeacherId(Guid teacherId);
+    Task<CourseDto> GetCourseByTeacherId(Guid teacherId, Guid courseId);
+    Task<CourseDto> UpdateCourseByTeacherId(Guid teacherId, Guid courseId, UpdateCourseDto dto);
+    Task<List<UserDto>> GetStudentsByTeacherId(Guid teacherId, Guid courseId);
+    Task AddStudentByTeacherId(Guid teacherId, Guid courseId, Guid studentId);
+    Task RemoveStudentByTeacherId(Guid teacherId, Guid courseId, Guid studentId);
 }
 
 public class CourseService : ICourseService
@@ -27,10 +37,10 @@ public class CourseService : ICourseService
         _mapper = mapper;
     }
 
-    /// --------------
-    ///  CRUD METHODS
-    /// --------------
-    
+    // --------------
+    //  CRUD METHODS
+    // --------------
+
     public async Task<List<CourseDto>> GetAll()
     {
         var courses = await _dbContext.Courses
@@ -89,6 +99,116 @@ public class CourseService : ICourseService
             throw new KeyNotFoundException("Course not found");
 
         _dbContext.Courses.Remove(course);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    // ----------------
+    // TEACHER METHODS
+    // ----------------
+
+    public async Task<List<CourseDto>> GetCoursesByTeacherId(Guid teacherId)
+    {
+        var courses = await _dbContext.Courses
+            .Where(c => c.TeacherId == teacherId)
+            .ToListAsync();
+        return _mapper.Map<List<CourseDto>>(courses);
+    }
+
+    public async Task<CourseDto> GetCourseByTeacherId(
+        Guid teacherId,
+        Guid courseId)
+    {
+        var course = await _dbContext.Courses
+            .Include(c => c.CourseStudents)
+            .FirstOrDefaultAsync(c =>
+                c.Id == courseId &&
+                c.TeacherId == teacherId);
+
+        if (course == null)
+            throw new KeyNotFoundException("Course not found");
+
+        return _mapper.Map<CourseDto>(course);
+    }
+
+    public async Task<CourseDto> UpdateCourseByTeacherId(
+        Guid teacherId,
+        Guid courseId,
+        UpdateCourseDto dto)
+    {
+        var course = await _dbContext.Courses
+            .FirstOrDefaultAsync(c =>
+                c.Id == courseId &&
+                c.TeacherId == teacherId);
+
+        if (course == null)
+            throw new KeyNotFoundException("Course not found");
+
+        course.Name = dto.Name ?? course.Name;
+        course.Description = dto.Description ?? course.Description;
+        course.UpdatedAt = DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync();
+
+        return _mapper.Map<CourseDto>(course);
+    }
+
+    public async Task<List<UserDto>> GetStudentsByTeacherId(Guid teacherId, Guid courseId)
+    {
+        var students = await _dbContext.CourseStudents
+            .Where(cs => cs.CourseId == courseId)
+            .Select(cs => cs.Student)
+            .ToListAsync();
+        return _mapper.Map<List<UserDto>>(students);
+    }
+
+    public async Task AddStudentByTeacherId(Guid teacherId, Guid courseId, Guid studentId)
+    {
+        var course = await _dbContext.Courses
+            .FirstOrDefaultAsync(c =>
+                c.Id == courseId &&
+                c.TeacherId == teacherId);
+
+        if (course == null)
+            throw new KeyNotFoundException("Course not found");
+        
+        var student = await _dbContext.Users
+            .FirstOrDefaultAsync(u => u.Id == studentId && u.Role == UserRole.Student);
+        
+        if(student == null)
+            throw new KeyNotFoundException("Student not found");
+        
+        var enrollmentExists = await _dbContext.CourseStudents
+            .AnyAsync(cs => cs.CourseId == courseId && cs.StudentId == studentId);
+        
+        if(enrollmentExists)
+            throw new InvalidOperationException("Student is already enrolled in the course");
+        
+        _dbContext.CourseStudents.Add(new CourseStudent
+        {
+            CourseId = courseId,
+            StudentId = studentId
+        });
+        
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task RemoveStudentByTeacherId(Guid teacherId, Guid courseId, Guid studentId)
+    {
+        var course = await _dbContext.Courses
+            .FirstOrDefaultAsync(c =>
+                c.Id == courseId &&
+                c.TeacherId == teacherId);
+        
+        if (course == null)
+            throw new KeyNotFoundException("Course not found");
+        
+        var enrollment = await _dbContext.CourseStudents
+            .FirstOrDefaultAsync(cs => cs.CourseId == courseId && cs.StudentId == studentId);
+        
+        if (enrollment == null)
+            throw new KeyNotFoundException("Student not found");
+        
+        _dbContext.CourseStudents.Remove(enrollment);
         await _dbContext.SaveChangesAsync();
     }
 }

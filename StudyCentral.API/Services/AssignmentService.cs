@@ -14,6 +14,27 @@ public interface IAssignmentService
     Task<AssignmentDto> Create(CreateAssignmentDto dto);
     Task<AssignmentDto> Update(Guid assignmentId, UpdateAssignmentDto dto);
     Task Delete(Guid assignmentId);
+    
+    // Teacher Methods
+    Task<List<AssignmentDto>> GetAssignmentsByTeacherId(
+        Guid teacherId);
+
+    Task<AssignmentDto> GetAssignmentByTeacherId(
+        Guid teacherId,
+        Guid assignmentId);
+
+    Task<AssignmentDto> CreateAssignmentByTeacherId(
+        Guid teacherId,
+        CreateAssignmentDto dto);
+
+    Task<AssignmentDto> UpdateAssignmentByTeacherId(
+        Guid teacherId,
+        Guid assignmentId,
+        UpdateAssignmentDto dto);
+
+    Task DeleteAssignmentByTeacherId(
+        Guid teacherId,
+        Guid assignmentId);
 }
 
 public class AssignmentService : IAssignmentService
@@ -26,6 +47,10 @@ public class AssignmentService : IAssignmentService
         _dbContext = dbContext;
         _mapper = mapper;
     }
+    
+    // --------------
+    //  CRUD METHODS
+    // --------------
     
     public async Task<List<AssignmentDto>> GetAll()
     {
@@ -113,6 +138,80 @@ public class AssignmentService : IAssignmentService
         if (assignment == null)
             throw new KeyNotFoundException("Assignment not found");
 
+        _dbContext.Assignments.Remove(assignment);
+        await _dbContext.SaveChangesAsync();
+    }
+    
+    // --------------
+    //  TEACHER METHODS
+    // --------------
+
+    public async Task<List<AssignmentDto>> GetAssignmentsByTeacherId(Guid teacherId)
+    {
+        var assignments = await _dbContext.Assignments
+            .Where(a => a.Course.TeacherId == teacherId)
+            .ToListAsync();
+
+        return _mapper.Map<List<AssignmentDto>>(assignments);
+    }
+    
+    public async Task<AssignmentDto> GetAssignmentByTeacherId(Guid teacherId, Guid assignmentId)
+    {
+        var assignment = await _dbContext.Assignments
+            .Include(a => a.Course)
+            .FirstOrDefaultAsync(a =>
+                a.Id == assignmentId &&
+                a.Course.TeacherId == teacherId);
+        
+        return _mapper.Map<AssignmentDto>(assignment);
+    }
+
+    public async Task<AssignmentDto> CreateAssignmentByTeacherId(Guid teacherId, CreateAssignmentDto dto)
+    {
+        var courseExists = await _dbContext.Courses
+            .AnyAsync(c => c.Id == dto.CourseId && c.TeacherId == teacherId);
+        
+        if (!courseExists)
+            throw new KeyNotFoundException("Course not found");
+        
+        var assignment = _mapper.Map<Assignment>(dto);
+        
+        _dbContext.Assignments.Add(assignment);
+        await _dbContext.SaveChangesAsync();
+        
+        return _mapper.Map<AssignmentDto>(assignment);
+    }
+
+    public async Task<AssignmentDto> UpdateAssignmentByTeacherId(Guid teacherId, Guid assignmentId, UpdateAssignmentDto dto)
+    {
+        var assignment = await _dbContext.Assignments
+            .Include(a => a.Course)
+            .FirstOrDefaultAsync(a =>
+                a.Id == assignmentId &&
+                a.Course.TeacherId == teacherId);
+        
+        if (assignment == null)
+            throw new KeyNotFoundException("Assignment not found");
+        
+        assignment.Name = dto.Name ?? assignment.Name;
+        assignment.Description = dto.Description ?? assignment.Description;
+        assignment.Deadline = dto.Deadline ?? assignment.Deadline;
+        assignment.UpdatedAt = DateTime.UtcNow;
+        
+        await _dbContext.SaveChangesAsync();
+        return _mapper.Map<AssignmentDto>(assignment);
+    }
+
+    public async Task DeleteAssignmentByTeacherId(Guid teacherId, Guid assignmentId)
+    {
+        var assignment = await _dbContext.Assignments
+            .FirstOrDefaultAsync(a =>
+                a.Id == assignmentId &&
+                a.Course.TeacherId == teacherId);
+        
+        if (assignment == null)
+            throw new KeyNotFoundException("Assignment not found");
+        
         _dbContext.Assignments.Remove(assignment);
         await _dbContext.SaveChangesAsync();
     }

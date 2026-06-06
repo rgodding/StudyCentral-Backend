@@ -1,6 +1,54 @@
-﻿namespace StudyCentral.API.Controllers.Teacher;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using StudyCentral.API.Models.DTOs.Announcement;
+using StudyCentral.API.Services;
 
-public class TeacherAnnouncementController
+namespace StudyCentral.API.Controllers.Teacher;
+
+[ApiController]
+[Route("api/teacher/announcement")]
+public class TeacherAnnouncementController : BaseTeacherController
 {
+    private readonly IAnnouncementService _announcementService;
     
+    public TeacherAnnouncementController(IMapper mapper, IAnnouncementService announcementService) : base(mapper)
+    {
+        _announcementService = announcementService;
+    }
+    
+    [HttpGet]
+    public async Task<ActionResult<AnnouncementDto>> GetAnnouncements()
+    {
+        var announcements = await _announcementService.GetAnnouncementsByTeacherId(CurrentUser.Id);
+        return Ok(announcements);
+    }
+    
+    [HttpGet("{announcementId:guid}")]
+    public async Task<ActionResult<AnnouncementDto>> GetAnnouncementById(Guid announcementId)
+    {
+        var announcement = await _announcementService.GetAnnouncementByTeacherId(CurrentUser.Id, announcementId);
+        return Ok(announcement);
+    }
+    
+    [HttpPost]
+    public async Task<ActionResult<AnnouncementDto>> CreateAnnouncement([FromBody] CreateAnnouncementDto createAnnouncementDto)
+    {
+        var announcement = await _announcementService.CreateAnnouncementByTeacherId(CurrentUser.Id, createAnnouncementDto);
+        return Ok(announcement);
+    }
+    
+    [HttpPut]
+    public async Task<ActionResult<AnnouncementDto>> UpdateAnnouncement(Guid announcementId, [FromBody] UpdateAnnouncementDto updateAnnouncementDto)
+    {
+        var announcement = await _announcementService.UpdateAnnouncementByTeacherId(CurrentUser.Id, announcementId, updateAnnouncementDto);
+        return Ok(announcement);
+    }
+    
+    [HttpDelete("{announcementId:guid}")]
+    public async Task<ActionResult> DeleteAnnouncement(Guid announcementId)
+    {
+        await _announcementService.DeleteAnnouncementByTeacherId(CurrentUser.Id, announcementId);
+        return NoContent();
+    }
+        
 }

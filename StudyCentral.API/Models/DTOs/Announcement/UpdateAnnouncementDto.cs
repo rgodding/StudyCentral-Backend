@@ -6,9 +6,9 @@ public class UpdateAnnouncementDto
 {
     [Required]
     [MaxLength(100)]
-    public string Name { get; set; } = null!;
+    public string? Name { get; set; }
 
     [Required]
     [MaxLength(5000)]
-    public string Content { get; set; } = null!;
+    public string? Content { get; set; }
 }
