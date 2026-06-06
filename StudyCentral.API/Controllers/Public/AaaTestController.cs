@@ -91,7 +91,7 @@ public class AaaTestController : BaseController
             0,
             file1Stream.Length,
             "File",
-            "studycentral-testfile.odt")
+            "studycentral-testfile1.odt")
         {
             Headers = new HeaderDictionary(),
             ContentType = "application/vnd.oasis.opendocument.text"
@@ -126,12 +126,26 @@ public class AaaTestController : BaseController
 
         if (blobCount != 2)
             return BadRequest($"Expected 2 blobs but found {blobCount}.");
-        
+
         return Ok(new
         {
             BlobCount = blobCount,
-            File1 = upload1.BlobName,
-            File2 = upload2.BlobName
+            File1 = new
+            {
+                file1.FileName,
+                upload1.BlobName,
+                file1.ContentType,
+                Size = file1.Length,
+                Exists = file1Exists
+            },
+            File2 = new
+            {
+                file2.FileName,
+                upload2.BlobName,
+                file2.ContentType,
+                Size = file2.Length,
+                Exists = file2Exists
+            }
         });
     }
     
