@@ -12,7 +12,7 @@ using StudyCentral.API.Models;
 namespace StudyCentral.API.Migrations
 {
     [DbContext(typeof(StudyDbContext))]
-    [Migration("20260606132921_InitialCreate")]
+    [Migration("20260606172521_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -62,7 +62,7 @@ namespace StudyCentral.API.Migrations
                             Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
                             Content = "Welcome to StudyCentral",
                             CourseId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            CreatedAt = new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4781),
+                            CreatedAt = new DateTime(2026, 6, 6, 17, 25, 21, 380, DateTimeKind.Utc).AddTicks(1011),
                             Name = "Welcome Announcement"
                         },
                         new
@@ -70,7 +70,7 @@ namespace StudyCentral.API.Migrations
                             Id = new Guid("cdcdcdcd-cdcd-cdcd-cdcd-cdcdcdcdcdcd"),
                             Content = "The final exam will take place in June.",
                             CourseId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            CreatedAt = new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4783),
+                            CreatedAt = new DateTime(2026, 6, 6, 17, 25, 21, 380, DateTimeKind.Utc).AddTicks(1013),
                             Name = "Exam Information"
                         });
                 });
@@ -113,7 +113,7 @@ namespace StudyCentral.API.Migrations
                         {
                             Id = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
                             CourseId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            CreatedAt = new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4795),
+                            CreatedAt = new DateTime(2026, 6, 6, 17, 25, 21, 380, DateTimeKind.Utc).AddTicks(1023),
                             Deadline = new DateTime(2026, 1, 15, 12, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Create a simple API",
                             Name = "Demo Assignment"
@@ -122,7 +122,7 @@ namespace StudyCentral.API.Migrations
                         {
                             Id = new Guid("efefefef-efef-efef-efef-efefefefefef"),
                             CourseId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            CreatedAt = new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4802),
+                            CreatedAt = new DateTime(2026, 6, 6, 17, 25, 21, 380, DateTimeKind.Utc).AddTicks(1029),
                             Deadline = new DateTime(2026, 1, 22, 12, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Design and implement a relational database",
                             Name = "Database Assignment"
@@ -161,7 +161,7 @@ namespace StudyCentral.API.Migrations
                         new
                         {
                             Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            CreatedAt = new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4748),
+                            CreatedAt = new DateTime(2026, 6, 6, 17, 25, 21, 380, DateTimeKind.Utc).AddTicks(986),
                             Description = "StudyCentral demonstration course",
                             Name = "System Integration",
                             TeacherId = new Guid("22222222-2222-2222-2222-222222222222")
@@ -260,6 +260,34 @@ namespace StudyCentral.API.Migrations
                     b.HasIndex("UploadedById");
 
                     b.ToTable("StudyFiles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("56565656-5656-5656-5656-565656565656"),
+                            AltText = "Course syllabus",
+                            BlobName = "studycentral-testfile1.odt",
+                            ContentType = "application/vnd.oasis.opendocument.text",
+                            CreatedAt = new DateTime(2026, 6, 6, 17, 25, 21, 380, DateTimeKind.Utc).AddTicks(1113),
+                            FileName = "studycentral-testfile1.odt",
+                            FileType = 4,
+                            Size = 102400L,
+                            StudyFolderId = new Guid("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"),
+                            UploadedById = new Guid("22222222-2222-2222-2222-222222222222")
+                        },
+                        new
+                        {
+                            Id = new Guid("67676767-6767-6767-6767-676767676767"),
+                            AltText = "Week 1 lecture slides",
+                            BlobName = "studycentral-testfile2.odt",
+                            ContentType = "application/vnd.oasis.opendocument.text",
+                            CreatedAt = new DateTime(2026, 6, 6, 17, 25, 21, 380, DateTimeKind.Utc).AddTicks(1116),
+                            FileName = "studycentral-testfile2.odt",
+                            FileType = 4,
+                            Size = 204800L,
+                            StudyFolderId = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
+                            UploadedById = new Guid("22222222-2222-2222-2222-222222222222")
+                        });
                 });
 
             modelBuilder.Entity("StudyCentral.API.Models.Entities.StudyFolder", b =>
@@ -298,14 +326,14 @@ namespace StudyCentral.API.Migrations
                         {
                             Id = new Guid("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"),
                             CourseId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            CreatedAt = new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4833),
+                            CreatedAt = new DateTime(2026, 6, 6, 17, 25, 21, 380, DateTimeKind.Utc).AddTicks(1057),
                             Name = "Course Materials"
                         },
                         new
                         {
                             Id = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
                             CourseId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            CreatedAt = new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4835),
+                            CreatedAt = new DateTime(2026, 6, 6, 17, 25, 21, 380, DateTimeKind.Utc).AddTicks(1075),
                             Name = "Week 1",
                             ParentFolderId = new Guid("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee")
                         },
@@ -313,7 +341,7 @@ namespace StudyCentral.API.Migrations
                         {
                             Id = new Guid("abababab-abab-abab-abab-abababababab"),
                             CourseId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            CreatedAt = new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4836),
+                            CreatedAt = new DateTime(2026, 6, 6, 17, 25, 21, 380, DateTimeKind.Utc).AddTicks(1077),
                             Name = "Assignments"
                         });
                 });
@@ -371,7 +399,7 @@ namespace StudyCentral.API.Migrations
                             Id = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
                             AssignmentId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
                             Comment = "Demo submission",
-                            CreatedAt = new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4817),
+                            CreatedAt = new DateTime(2026, 6, 6, 17, 25, 21, 380, DateTimeKind.Utc).AddTicks(1040),
                             Status = 1,
                             StudentId = new Guid("33333333-3333-3333-3333-333333333333"),
                             SubmittedAt = new DateTime(2026, 1, 1, 12, 0, 0, 0, DateTimeKind.Utc)
@@ -381,7 +409,7 @@ namespace StudyCentral.API.Migrations
                             Id = new Guid("12121212-1212-1212-1212-121212121212"),
                             AssignmentId = new Guid("efefefef-efef-efef-efef-efefefefefef"),
                             Comment = "Test student submission",
-                            CreatedAt = new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4820),
+                            CreatedAt = new DateTime(2026, 6, 6, 17, 25, 21, 380, DateTimeKind.Utc).AddTicks(1045),
                             Status = 1,
                             StudentId = new Guid("44444444-4444-4444-4444-444444444444"),
                             SubmittedAt = new DateTime(2026, 1, 2, 12, 0, 0, 0, DateTimeKind.Utc)
@@ -435,7 +463,7 @@ namespace StudyCentral.API.Migrations
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111111"),
-                            CreatedAt = new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4647),
+                            CreatedAt = new DateTime(2026, 6, 6, 17, 25, 21, 380, DateTimeKind.Utc).AddTicks(865),
                             Email = "admin@studycentral.dk",
                             FirstName = "Admin",
                             LastName = "User",
@@ -445,7 +473,7 @@ namespace StudyCentral.API.Migrations
                         new
                         {
                             Id = new Guid("22222222-2222-2222-2222-222222222222"),
-                            CreatedAt = new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4650),
+                            CreatedAt = new DateTime(2026, 6, 6, 17, 25, 21, 380, DateTimeKind.Utc).AddTicks(869),
                             Email = "teacher@studycentral.dk",
                             FirstName = "Teacher",
                             LastName = "User",
@@ -455,7 +483,7 @@ namespace StudyCentral.API.Migrations
                         new
                         {
                             Id = new Guid("33333333-3333-3333-3333-333333333333"),
-                            CreatedAt = new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4652),
+                            CreatedAt = new DateTime(2026, 6, 6, 17, 25, 21, 380, DateTimeKind.Utc).AddTicks(870),
                             Email = "student@studycentral.dk",
                             FirstName = "Student",
                             LastName = "User",
@@ -465,7 +493,7 @@ namespace StudyCentral.API.Migrations
                         new
                         {
                             Id = new Guid("44444444-4444-4444-4444-444444444444"),
-                            CreatedAt = new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4653),
+                            CreatedAt = new DateTime(2026, 6, 6, 17, 25, 21, 380, DateTimeKind.Utc).AddTicks(872),
                             Email = "teststudent@studycentral.dk",
                             FirstName = "Test",
                             LastName = "Student",

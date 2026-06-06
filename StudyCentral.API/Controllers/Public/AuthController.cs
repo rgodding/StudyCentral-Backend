@@ -58,6 +58,7 @@ public class AuthController : BaseController
         var hash = PasswordHelper.HashPassword(value);
         return Ok(hash);
     }
+    
     private void SetAuthCookie(string token)
     {
         Response.Cookies.Append(

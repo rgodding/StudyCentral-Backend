@@ -19,6 +19,7 @@ public interface IBlobService
     Task<int> GetBlobCount();
 
     Task<bool> Wipe();
+    Task<BlobUploadResult> UploadFileTest(string fileName, IFormFile file, string? blobName = null);
 }
 public class BlobService : IBlobService
 {
@@ -112,6 +113,9 @@ public class BlobService : IBlobService
         return blobClient.Uri.ToString();
     }
     
+    // ------------
+    // Helper Methods
+    // ------------
     public async Task<bool> FileExists(string blobName)
     {
         if (string.IsNullOrWhiteSpace(blobName))
@@ -151,5 +155,39 @@ public class BlobService : IBlobService
         {
             return false;
         }
+    }
+    
+    public async Task<BlobUploadResult> UploadFileTest(
+        string fileName,
+        IFormFile file,
+        string? blobName = null)
+    {
+        if (file == null || file.Length == 0)
+            throw new ArgumentException("File is null or empty");
+
+        if (string.IsNullOrWhiteSpace(fileName))
+            throw new ArgumentException("File name is null or empty");
+
+        var safeFileName = Path.GetFileName(fileName);
+
+        blobName ??= safeFileName.Replace(" ", "_");
+
+        var blobClient = _containerClient.GetBlobClient(blobName);
+
+        var httpHeaders = new BlobHttpHeaders
+        {
+            ContentType = file.ContentType
+        };
+
+        using var stream = file.OpenReadStream();
+
+        await blobClient.UploadAsync(stream, httpHeaders);
+
+        return new BlobUploadResult
+        {
+            FileName = safeFileName,
+            BlobName = blobName,
+            ContentType = file.ContentType
+        };
     }
 }

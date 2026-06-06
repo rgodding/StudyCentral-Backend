@@ -174,6 +174,7 @@ public class StudyFolderService : IStudyFolderService
         await VerifyTeacherCourse(teacherId, courseId);
 
         var folders = await _dbContext.StudyFolders
+            .Include(f => f.ChildFolders)
             .Where(f =>
                 f.CourseId == courseId &&
                 f.ParentFolderId == parentFolderId)
@@ -183,9 +184,24 @@ public class StudyFolderService : IStudyFolderService
         return _mapper.Map<List<StudyFolderDto>>(folders);
     }
 
-    public async Task<StudyFolderDto> GetFolderByTeacherId(Guid teacherId, Guid folderId)
+    public async Task<StudyFolderDto> GetFolderByTeacherId(
+        Guid teacherId,
+        Guid folderId)
     {
-        var folder = await VerifyTeacherFolder(teacherId, folderId);
+        var folder = await _dbContext.StudyFolders
+            .Include(f => f.Course)
+            .Include(f => f.ChildFolders)
+            .Include(f => f.StudyFiles)
+            .FirstOrDefaultAsync(f => f.Id == folderId);
+
+        if (folder == null)
+            throw new KeyNotFoundException(
+                $"StudyFolder with id {folderId} not found.");
+
+        if (folder.Course.TeacherId != teacherId)
+            throw new UnauthorizedAccessException(
+                "Teacher does not have access to this folder");
+
         return _mapper.Map<StudyFolderDto>(folder);
     }
 
@@ -375,6 +391,7 @@ public class StudyFolderService : IStudyFolderService
         await VerifyStudentCourse(studentId, courseId);
 
         var folders = await _dbContext.StudyFolders
+            .Include(f => f.ChildFolders)
             .Where(f =>
                 f.CourseId == courseId &&
                 f.ParentFolderId == parentFolderId)
@@ -384,9 +401,29 @@ public class StudyFolderService : IStudyFolderService
         return _mapper.Map<List<StudyFolderDto>>(folders);
     }
 
-    public async Task<StudyFolderDto> GetFolderByStudentId(Guid studentId, Guid folderId)
+    public async Task<StudyFolderDto> GetFolderByStudentId(
+        Guid studentId,
+        Guid folderId)
     {
-        var folder = await VerifyStudentFolder(studentId, folderId);
+        var folder = await _dbContext.StudyFolders
+            .Include(f => f.Course)
+            .Include(f => f.ChildFolders)
+            .Include(f => f.StudyFiles)
+            .FirstOrDefaultAsync(f => f.Id == folderId);
+
+        if (folder == null)
+            throw new KeyNotFoundException(
+                $"StudyFolder with id {folderId} not found.");
+
+        var isEnrolled = await _dbContext.CourseStudents
+            .AnyAsync(e =>
+                e.CourseId == folder.CourseId &&
+                e.StudentId == studentId);
+
+        if (!isEnrolled)
+            throw new UnauthorizedAccessException(
+                "Student does not have access to this folder.");
+
         return _mapper.Map<StudyFolderDto>(folder);
     }
 

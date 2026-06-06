@@ -38,6 +38,12 @@ public static class SeedData
 
     private static readonly Guid ChildFolderId =
         Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff");
+    
+    private static readonly Guid StudyFileId =
+        Guid.Parse("56565656-5656-5656-5656-565656565656");
+
+    private static readonly Guid StudyFile2Id =
+        Guid.Parse("67676767-6767-6767-6767-676767676767");
 
     private static readonly Guid TestFolderId =
         Guid.Parse("abababab-abab-abab-abab-abababababab");
@@ -61,6 +67,7 @@ public static class SeedData
         SeedAssignments(modelBuilder);
         SeedSubmissions(modelBuilder);
         SeedFolders(modelBuilder);
+        SeedFiles(modelBuilder);
     }
 
     private static void SeedUsers(ModelBuilder modelBuilder)
@@ -222,6 +229,36 @@ public static class SeedData
                 Id = TestFolderId,
                 Name = "Assignments",
                 CourseId = CourseId
+            });
+    }
+    private static void SeedFiles(
+        ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<StudyFile>().HasData(
+            new StudyFile
+            {
+                Id = StudyFileId,
+                FileName = "studycentral-testfile1.odt",
+                BlobName = "studycentral-testfile1.odt",
+                FileType = FileType.Document,
+                ContentType = "application/vnd.oasis.opendocument.text",
+                Size = 102400,
+                AltText = "Course syllabus",
+                StudyFolderId = FolderId,
+                UploadedById = TeacherId
+            },
+            new StudyFile
+            {
+                Id = StudyFile2Id,
+                FileName = "studycentral-testfile2.odt",
+                BlobName = "studycentral-testfile2.odt",
+                FileType = FileType.Document,
+                ContentType =
+                    "application/vnd.oasis.opendocument.text",
+                Size = 204800,
+                AltText = "Week 1 lecture slides",
+                StudyFolderId = ChildFolderId,
+                UploadedById = TeacherId
             });
     }
 }

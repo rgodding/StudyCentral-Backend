@@ -99,7 +99,17 @@ public class MappingProfile : Profile
     }
     private void CreateStudyFolderMappings()
     {
-        CreateMap<StudyFolder, StudyFolderDto>();
+        CreateMap<StudyFolder, StudyFolderDto>()
+            .ForMember(
+                dest => dest.CourseName,
+                opt => opt.MapFrom(src => src.Course.Name))
+            .ForMember(
+                dest => dest.ChildFolderCount,
+                opt => opt.MapFrom(src => src.ChildFolders.Count))
+            .ForMember(
+                dest => dest.FileCount,
+                opt => opt.MapFrom(src => src.StudyFiles.Count));
+
         CreateMap<CreateStudyFolderDto, StudyFolder>();
     }
 
