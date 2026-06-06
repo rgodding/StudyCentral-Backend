@@ -257,7 +257,7 @@ public static class SeedData
                 BlobName = "studycentral-testfile1.odt",
                 FileType = FileType.Document,
                 ContentType = "application/vnd.oasis.opendocument.text",
-                Size = 102400,
+                Size = 9172,
                 AltText = "Course syllabus",
                 StudyFolderId = FolderId,
                 UploadedById = TeacherId
@@ -270,7 +270,7 @@ public static class SeedData
                 FileType = FileType.Document,
                 ContentType =
                     "application/vnd.oasis.opendocument.text",
-                Size = 204800,
+                Size = 9207,
                 AltText = "Week 1 lecture slides",
                 StudyFolderId = ChildFolderId,
                 UploadedById = TeacherId
@@ -282,7 +282,7 @@ public static class SeedData
                 BlobName = "studycentral-testfile3.pdf",
                 FileType = FileType.Pdf,
                 ContentType = "application/pdf",
-                Size = 102400,
+                Size = 17797,
                 AltText = "Announcement file",
                 AnnouncementId = AnnouncementWithFileId,
                 UploadedById = TeacherId

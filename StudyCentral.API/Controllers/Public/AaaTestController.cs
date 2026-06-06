@@ -100,7 +100,8 @@ public class AaaTestController : BaseController
             {
                 formFile.FileName,
                 upload.BlobName,
-                Size = formFile.Length
+                Size = formFile.Length,
+                formFile.ContentType
             });
         }
         
@@ -149,7 +150,7 @@ public class AaaTestController : BaseController
             {
                 file1.Id,
                 file1.FileName,
-                file1.BlobName
+                file1.BlobName,
             },
             File2 = new
             {
