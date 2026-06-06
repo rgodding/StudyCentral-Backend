@@ -18,18 +18,30 @@ public interface ISubmissionService
     Task Delete(Guid submissionId);
     
     // Teacher Methods
-    Task<List<SubmissionDto>> GetSubmissionsByAssignmentIdAndTeacherId(
-        Guid teacherId,
-        Guid assignmentId);
+    Task<List<SubmissionDto>> GetSubmissionsByAssignmentIdAndTeacherId(Guid teacherId, Guid assignmentId);
+    Task<SubmissionDto> GetSubmissionByTeacherId(Guid teacherId, Guid submissionId);
+    Task<SubmissionDto> GradeSubmissionByTeacherId(Guid teacherId, Guid submissionId, GradeSubmissionRequest request);
+    
+    // Student Methods
+    Task<List<SubmissionDto>> GetSubmissionsByStudentId(
+        Guid studentId);
 
-    Task<SubmissionDto> GetSubmissionByTeacherId(
-        Guid teacherId,
+    Task<SubmissionDto> GetSubmissionByStudentId(
+        Guid studentId,
         Guid submissionId);
 
-    Task<SubmissionDto> GradeSubmissionByTeacherId(
-        Guid teacherId,
+    Task<SubmissionDto> CreateSubmissionByStudentId(
+        Guid studentId,
+        CreateSubmissionDto dto);
+
+    Task<SubmissionDto> UpdateSubmissionByStudentId(
+        Guid studentId,
         Guid submissionId,
-        GradeSubmissionRequest request);
+        UpdateSubmissionDto dto);
+
+    Task DeleteSubmissionByStudentId(
+        Guid studentId,
+        Guid submissionId);
 }
 
 public class SubmissionService : ISubmissionService
@@ -205,5 +217,119 @@ public class SubmissionService : ISubmissionService
         await _dbContext.SaveChangesAsync();
 
         return _mapper.Map<SubmissionDto>(submission);
+    }
+
+    // -----------------
+    // STUDENT METHODS
+    // -----------------
+    public async Task<List<SubmissionDto>> GetSubmissionsByStudentId(Guid studentId)
+    {
+        var submissions = await _dbContext.Submissions
+            .Include(s => s.Assignment)
+            .Include(s => s.Student)
+            .Include(s => s.Files)
+            .Where(s => s.StudentId == studentId)
+            .ToListAsync();
+        
+        return _mapper.Map<List<SubmissionDto>>(submissions);
+    }
+
+    public async Task<SubmissionDto> GetSubmissionByStudentId(Guid studentId, Guid submissionId)
+    {
+        var submission = await _dbContext.Submissions
+            .Include(s => s.Assignment)
+            .Include(s => s.Student)
+            .Include(s => s.Files)
+            .FirstOrDefaultAsync(s =>
+                s.Id == submissionId &&
+                s.StudentId == studentId);
+
+        if (submission == null)
+            throw new KeyNotFoundException("Submission not found");
+
+        return _mapper.Map<SubmissionDto>(submission);
+    }
+
+    public async Task<SubmissionDto> CreateSubmissionByStudentId(Guid studentId, CreateSubmissionDto dto)
+    {
+        var assignment = await _dbContext.Assignments
+            .Include(a => a.Course)
+            .FirstOrDefaultAsync(a => a.Id == dto.AssignmentId);
+        
+        if(assignment == null)
+            throw new KeyNotFoundException("Assignment not found");
+        
+        var isEnrolled = await _dbContext.CourseStudents
+            .AnyAsync(cs =>
+                cs.StudentId == studentId &&
+                cs.CourseId == assignment.CourseId);
+        
+        if(!isEnrolled)
+            throw new SecurityException("Student is not enrolled in this course");
+        
+        var existingSubmission = await _dbContext.Submissions
+            .FirstOrDefaultAsync(s =>
+                s.AssignmentId == assignment.Id &&
+                s.StudentId == studentId);
+        
+        if(existingSubmission != null)
+            throw new InvalidOperationException("Student already submitted this assignment");
+        
+        var submission = _mapper.Map<Submission>(dto);
+        
+        submission.SubmittedAt = DateTime.UtcNow;
+
+        submission.Status = assignment.Deadline < submission.SubmittedAt
+            ? SubmissionStatus.SubmittedLate
+            : SubmissionStatus.Submitted;
+        
+        submission.StudentId = studentId;
+        
+        _dbContext.Submissions.Add(submission);
+        await _dbContext.SaveChangesAsync();
+        
+        return _mapper.Map<SubmissionDto>(submission);
+    }
+
+    public async Task<SubmissionDto> UpdateSubmissionByStudentId(Guid studentId, Guid submissionId, UpdateSubmissionDto dto)
+    {
+        var submission = await _dbContext.Submissions
+            .FirstOrDefaultAsync(s => s.Id == submissionId && s.StudentId == studentId);
+
+        if (submission == null)
+            throw new KeyNotFoundException("Submission not found");
+
+        _mapper.Map(dto, submission);
+        submission.UpdatedAt = DateTime.UtcNow;
+        await _dbContext.SaveChangesAsync();
+
+        return _mapper.Map<SubmissionDto>(submission);
+    }
+
+    public async Task DeleteSubmissionByStudentId(
+        Guid studentId,
+        Guid submissionId)
+    {
+        var submission = await _dbContext.Submissions
+            .Include(s => s.Assignment)
+            .FirstOrDefaultAsync(s =>
+                s.Id == submissionId &&
+                s.StudentId == studentId);
+
+        if (submission == null)
+            throw new KeyNotFoundException(
+                "Submission not found");
+
+        if (submission.Grade != null)
+            throw new InvalidOperationException(
+                "Cannot delete a graded submission");
+
+        if (submission.Assignment.Deadline < DateTime.UtcNow)
+            throw new InvalidOperationException(
+                "Cannot delete a submission after the deadline");
+
+        _dbContext.Submissions.Remove(submission);
+
+        await _dbContext.SaveChangesAsync();
     }
 }

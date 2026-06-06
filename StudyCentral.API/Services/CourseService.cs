@@ -24,6 +24,11 @@ public interface ICourseService
     Task<List<UserDto>> GetStudentsByTeacherId(Guid teacherId, Guid courseId);
     Task AddStudentByTeacherId(Guid teacherId, Guid courseId, Guid studentId);
     Task RemoveStudentByTeacherId(Guid teacherId, Guid courseId, Guid studentId);
+    
+    // Student Methods
+    Task<List<CourseDto>> GetCoursesByStudentId(Guid studentId);
+    Task<CourseDto> GetCourseByStudentId(Guid studentId, Guid courseId);
+    Task<List<UserDto>> GetStudentsByCourseId(Guid studentId, Guid courseId);
 }
 
 public class CourseService : ICourseService
@@ -210,5 +215,39 @@ public class CourseService : ICourseService
         
         _dbContext.CourseStudents.Remove(enrollment);
         await _dbContext.SaveChangesAsync();
+    }
+
+    // ----------------
+    // STUDENT METHODS
+    // ----------------
+    public async Task<List<CourseDto>> GetCoursesByStudentId(Guid studentId)
+    {
+        var courses = await _dbContext.CourseStudents
+            .Where(cs => cs.StudentId == studentId)
+            .Select(cs => cs.Course)
+            .ToListAsync();
+        return _mapper.Map<List<CourseDto>>(courses);
+    }
+
+    public async Task<CourseDto> GetCourseByStudentId(Guid studentId, Guid courseId)
+    {
+        var course = await _dbContext.CourseStudents
+            .Where(cs => cs.StudentId == studentId && cs.CourseId == courseId)
+            .Select(cs => cs.Course)
+            .FirstOrDefaultAsync();
+
+        if (course == null)
+            throw new KeyNotFoundException("Course not found");
+
+        return _mapper.Map<CourseDto>(course);
+    }
+
+    public async Task<List<UserDto>> GetStudentsByCourseId(Guid studentId, Guid courseId)
+    {
+        var students = await _dbContext.CourseStudents
+            .Where(cs => cs.CourseId == courseId)
+            .Select(cs => cs.Student)
+            .ToListAsync();
+        return _mapper.Map<List<UserDto>>(students);
     }
 }
