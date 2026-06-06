@@ -294,6 +294,7 @@ public class AnnouncementService : IAnnouncementService
     public async Task<List<AnnouncementDto>> GetAnnouncementsByStudentId(Guid studentId)
     {
         var announcements = await _dbContext.Announcements
+            .Include(a => a.StudyFiles)
             .Include(a => a.Course)
             .ThenInclude(c => c.CourseStudents)
             .Where(a => a.Course.CourseStudents.Any(cs => cs.StudentId == studentId))
@@ -308,6 +309,7 @@ public class AnnouncementService : IAnnouncementService
         await VerifyStudentCourse(studentId, courseId);
         
         var announcements = await _dbContext.Announcements
+            .Include(a => a.StudyFiles)
             .Include(a => a.Course)
             .Where(a => a.CourseId == courseId)
             .OrderByDescending(a => a.CreatedAt)
