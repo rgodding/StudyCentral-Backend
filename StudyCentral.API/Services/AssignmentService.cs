@@ -51,13 +51,18 @@ public interface IAssignmentService
         Guid teacherId,
         Guid assignmentId,
         IFormFile file);
+    
+    Task DeleteFileFromAssignmentByTeacherId(
+        Guid teacherId,
+        Guid assignmentId,
+        Guid fileId);
 
     Task AttachFileToAssignmentByTeacherId(
         Guid teacherId,
         Guid assignmentId,
         Guid fileId);
 
-    Task RemoveFileFromAssignmentByTeacherId(
+    Task DetachFileFromAssignmentByTeacherId(
         Guid teacherId,
         Guid assignmentId,
         Guid fileId);
@@ -290,6 +295,21 @@ public class AssignmentService : IAssignmentService
         return _mapper.Map<StudyFileDto>(studyFile);
     }
 
+    public async Task DeleteFileFromAssignmentByTeacherId(Guid teacherId, Guid assignmentId, Guid fileId)
+    {
+        var assignment = await VerifyTeacherAssignment(teacherId, assignmentId);
+        
+        var file = await _dbContext.StudyFiles
+            .FirstOrDefaultAsync(f =>
+                f.Id == fileId &&
+                f.AssignmentId == assignmentId);
+        
+        if (file == null)
+            throw new KeyNotFoundException("File not found in this assignment");
+        
+        await _fileService.DeleteFile(fileId);
+    }
+
     public async Task AttachFileToAssignmentByTeacherId(Guid teacherId, Guid assignmentId, Guid fileId)
     {
         await VerifyTeacherAssignment(teacherId, assignmentId);
@@ -297,7 +317,7 @@ public class AssignmentService : IAssignmentService
         await _fileService.AttachToAssignment(fileId, assignmentId);
     }
 
-    public async Task RemoveFileFromAssignmentByTeacherId(Guid teacherId, Guid assignmentId, Guid fileId)
+    public async Task DetachFileFromAssignmentByTeacherId(Guid teacherId, Guid assignmentId, Guid fileId)
     {
         await VerifyTeacherAssignment(teacherId, assignmentId);
 
