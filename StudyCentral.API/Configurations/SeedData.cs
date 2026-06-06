@@ -12,6 +12,9 @@ public static class SeedData
     private static readonly Guid TeacherId =
         Guid.Parse("22222222-2222-2222-2222-222222222222");
 
+    private static readonly Guid TeacherWithoutCourseId =
+        Guid.Parse("55555555-5555-5555-5555-555555555555");
+
     private static readonly Guid StudentId =
         Guid.Parse("33333333-3333-3333-3333-333333333333");
 
@@ -21,8 +24,14 @@ public static class SeedData
     private static readonly Guid CourseId =
         Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
 
+    private static readonly Guid Course2Id =
+        Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaad");
+
     private static readonly Guid AnnouncementId =
         Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
+
+    private static readonly Guid Announcement2Id =
+        Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccd");
 
     private readonly static Guid AnnouncementWithFileId =
         Guid.Parse("abababab-abab-abab-abab-abababababab");
@@ -47,7 +56,7 @@ public static class SeedData
 
     private static readonly Guid StudyFile2Id =
         Guid.Parse("67676767-6767-6767-6767-676767676767");
-    
+
     private static readonly Guid FileAttachedToAnnouncementId =
         Guid.Parse("78787878-7878-7878-7878-787878787878");
 
@@ -99,6 +108,15 @@ public static class SeedData
             },
             new User
             {
+                Id = TeacherWithoutCourseId,
+                Email = "teacher2@studycentral.dk",
+                PasswordHash = "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2",
+                FirstName = "Teacher2",
+                LastName = "User",
+                Role = UserRole.Teacher
+            },
+            new User
+            {
                 Id = StudentId,
                 Email = "student@studycentral.dk",
                 PasswordHash = "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2",
@@ -127,6 +145,12 @@ public static class SeedData
                 Name = "System Integration",
                 Description = "StudyCentral demonstration course",
                 TeacherId = TeacherId
+            },
+            new Course
+            {
+                Id = Course2Id,
+                Name = "Database Systems",
+                Description = "Course about relational databases"
             }
         );
     }
@@ -157,6 +181,13 @@ public static class SeedData
                 Name = "Welcome Announcement",
                 Content = "Welcome to StudyCentral",
                 CourseId = CourseId
+            },
+            new Announcement
+            {
+                Id = Announcement2Id,
+                Name = "Project Information",
+                Content = "The group project will start next week.",
+                CourseId = Course2Id
             },
             new Announcement
             {

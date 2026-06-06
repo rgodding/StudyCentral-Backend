@@ -237,29 +237,40 @@ namespace StudyCentral.API.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.InsertData(
+                table: "Courses",
+                columns: new[] { "Id", "CreatedAt", "Description", "Name", "TeacherId", "UpdatedAt" },
+                values: new object[] { new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaad"), new DateTime(2026, 6, 6, 18, 48, 57, 673, DateTimeKind.Utc).AddTicks(1911), "Course about relational databases", "Database Systems", null, null });
+
+            migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "CreatedAt", "Email", "FirstName", "LastName", "PasswordHash", "ProfilePictureId", "Role", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { new Guid("11111111-1111-1111-1111-111111111111"), new DateTime(2026, 6, 6, 18, 18, 24, 263, DateTimeKind.Utc).AddTicks(3724), "admin@studycentral.dk", "Admin", "User", "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2", null, 2, null },
-                    { new Guid("22222222-2222-2222-2222-222222222222"), new DateTime(2026, 6, 6, 18, 18, 24, 263, DateTimeKind.Utc).AddTicks(3728), "teacher@studycentral.dk", "Teacher", "User", "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2", null, 1, null },
-                    { new Guid("33333333-3333-3333-3333-333333333333"), new DateTime(2026, 6, 6, 18, 18, 24, 263, DateTimeKind.Utc).AddTicks(3729), "student@studycentral.dk", "Student", "User", "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2", null, 0, null },
-                    { new Guid("44444444-4444-4444-4444-444444444444"), new DateTime(2026, 6, 6, 18, 18, 24, 263, DateTimeKind.Utc).AddTicks(3731), "teststudent@studycentral.dk", "Test", "Student", "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2", null, 0, null }
+                    { new Guid("11111111-1111-1111-1111-111111111111"), new DateTime(2026, 6, 6, 18, 48, 57, 673, DateTimeKind.Utc).AddTicks(1778), "admin@studycentral.dk", "Admin", "User", "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2", null, 2, null },
+                    { new Guid("22222222-2222-2222-2222-222222222222"), new DateTime(2026, 6, 6, 18, 48, 57, 673, DateTimeKind.Utc).AddTicks(1781), "teacher@studycentral.dk", "Teacher", "User", "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2", null, 1, null },
+                    { new Guid("33333333-3333-3333-3333-333333333333"), new DateTime(2026, 6, 6, 18, 48, 57, 673, DateTimeKind.Utc).AddTicks(1784), "student@studycentral.dk", "Student", "User", "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2", null, 0, null },
+                    { new Guid("44444444-4444-4444-4444-444444444444"), new DateTime(2026, 6, 6, 18, 48, 57, 673, DateTimeKind.Utc).AddTicks(1815), "teststudent@studycentral.dk", "Test", "Student", "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2", null, 0, null },
+                    { new Guid("55555555-5555-5555-5555-555555555555"), new DateTime(2026, 6, 6, 18, 48, 57, 673, DateTimeKind.Utc).AddTicks(1783), "teacher2@studycentral.dk", "Teacher2", "User", "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2", null, 1, null }
                 });
+
+            migrationBuilder.InsertData(
+                table: "Announcements",
+                columns: new[] { "Id", "Content", "CourseId", "CreatedAt", "Name", "UpdatedAt" },
+                values: new object[] { new Guid("cccccccc-cccc-cccc-cccc-cccccccccccd"), "The group project will start next week.", new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaad"), new DateTime(2026, 6, 6, 18, 48, 57, 673, DateTimeKind.Utc).AddTicks(1938), "Project Information", null });
 
             migrationBuilder.InsertData(
                 table: "Courses",
                 columns: new[] { "Id", "CreatedAt", "Description", "Name", "TeacherId", "UpdatedAt" },
-                values: new object[] { new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 18, 18, 24, 263, DateTimeKind.Utc).AddTicks(3827), "StudyCentral demonstration course", "System Integration", new Guid("22222222-2222-2222-2222-222222222222"), null });
+                values: new object[] { new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 18, 48, 57, 673, DateTimeKind.Utc).AddTicks(1908), "StudyCentral demonstration course", "System Integration", new Guid("22222222-2222-2222-2222-222222222222"), null });
 
             migrationBuilder.InsertData(
                 table: "Announcements",
                 columns: new[] { "Id", "Content", "CourseId", "CreatedAt", "Name", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { new Guid("abababab-abab-abab-abab-abababababab"), "This announcement has an attached file.", new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 18, 18, 24, 263, DateTimeKind.Utc).AddTicks(3861), "Announcement with File", null },
-                    { new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), "Welcome to StudyCentral", new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 18, 18, 24, 263, DateTimeKind.Utc).AddTicks(3854), "Welcome Announcement", null },
-                    { new Guid("cdcdcdcd-cdcd-cdcd-cdcd-cdcdcdcdcdcd"), "The final exam will take place in June.", new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 18, 18, 24, 263, DateTimeKind.Utc).AddTicks(3857), "Exam Information", null }
+                    { new Guid("abababab-abab-abab-abab-abababababab"), "This announcement has an attached file.", new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 18, 48, 57, 673, DateTimeKind.Utc).AddTicks(1940), "Announcement with File", null },
+                    { new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), "Welcome to StudyCentral", new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 18, 48, 57, 673, DateTimeKind.Utc).AddTicks(1936), "Welcome Announcement", null },
+                    { new Guid("cdcdcdcd-cdcd-cdcd-cdcd-cdcdcdcdcdcd"), "The final exam will take place in June.", new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 18, 48, 57, 673, DateTimeKind.Utc).AddTicks(1939), "Exam Information", null }
                 });
 
             migrationBuilder.InsertData(
@@ -267,8 +278,8 @@ namespace StudyCentral.API.Migrations
                 columns: new[] { "Id", "CourseId", "CreatedAt", "Deadline", "Description", "Name", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 18, 18, 24, 263, DateTimeKind.Utc).AddTicks(3874), new DateTime(2026, 1, 15, 12, 0, 0, 0, DateTimeKind.Utc), "Create a simple API", "Demo Assignment", null },
-                    { new Guid("efefefef-efef-efef-efef-efefefefefef"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 18, 18, 24, 263, DateTimeKind.Utc).AddTicks(3885), new DateTime(2026, 1, 22, 12, 0, 0, 0, DateTimeKind.Utc), "Design and implement a relational database", "Database Assignment", null }
+                    { new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 18, 48, 57, 673, DateTimeKind.Utc).AddTicks(1952), new DateTime(2026, 1, 15, 12, 0, 0, 0, DateTimeKind.Utc), "Create a simple API", "Demo Assignment", null },
+                    { new Guid("efefefef-efef-efef-efef-efefefefefef"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 18, 48, 57, 673, DateTimeKind.Utc).AddTicks(1959), new DateTime(2026, 1, 22, 12, 0, 0, 0, DateTimeKind.Utc), "Design and implement a relational database", "Database Assignment", null }
                 });
 
             migrationBuilder.InsertData(
@@ -285,8 +296,8 @@ namespace StudyCentral.API.Migrations
                 columns: new[] { "Id", "CourseId", "CreatedAt", "Name", "ParentFolderId", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { new Guid("abababab-abab-abab-abab-abababababab"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 18, 18, 24, 263, DateTimeKind.Utc).AddTicks(3920), "Assignments", null, null },
-                    { new Guid("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 18, 18, 24, 263, DateTimeKind.Utc).AddTicks(3915), "Course Materials", null, null }
+                    { new Guid("abababab-abab-abab-abab-abababababab"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 18, 48, 57, 673, DateTimeKind.Utc).AddTicks(1990), "Assignments", null, null },
+                    { new Guid("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 18, 48, 57, 673, DateTimeKind.Utc).AddTicks(1987), "Course Materials", null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -294,28 +305,28 @@ namespace StudyCentral.API.Migrations
                 columns: new[] { "Id", "AltText", "AnnouncementId", "AssignmentId", "BlobName", "ContentType", "CreatedAt", "FileName", "FileType", "Size", "StudyFolderId", "SubmissionId", "UpdatedAt", "UploadedById" },
                 values: new object[,]
                 {
-                    { new Guid("56565656-5656-5656-5656-565656565656"), "Course syllabus", null, null, "studycentral-testfile1.odt", "application/vnd.oasis.opendocument.text", new DateTime(2026, 6, 6, 18, 18, 24, 263, DateTimeKind.Utc).AddTicks(3952), "studycentral-testfile1.odt", 4, 9172L, new Guid("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"), null, null, new Guid("22222222-2222-2222-2222-222222222222") },
-                    { new Guid("78787878-7878-7878-7878-787878787878"), "Announcement file", new Guid("abababab-abab-abab-abab-abababababab"), null, "studycentral-testfile3.pdf", "application/pdf", new DateTime(2026, 6, 6, 18, 18, 24, 263, DateTimeKind.Utc).AddTicks(3962), "studycentral-testfile3.pdf", 3, 17797L, null, null, null, new Guid("22222222-2222-2222-2222-222222222222") }
+                    { new Guid("56565656-5656-5656-5656-565656565656"), "Course syllabus", null, null, "studycentral-testfile1.odt", "application/vnd.oasis.opendocument.text", new DateTime(2026, 6, 6, 18, 48, 57, 673, DateTimeKind.Utc).AddTicks(2017), "studycentral-testfile1.odt", 4, 9172L, new Guid("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"), null, null, new Guid("22222222-2222-2222-2222-222222222222") },
+                    { new Guid("78787878-7878-7878-7878-787878787878"), "Announcement file", new Guid("abababab-abab-abab-abab-abababababab"), null, "studycentral-testfile3.pdf", "application/pdf", new DateTime(2026, 6, 6, 18, 48, 57, 673, DateTimeKind.Utc).AddTicks(2022), "studycentral-testfile3.pdf", 3, 17797L, null, null, null, new Guid("22222222-2222-2222-2222-222222222222") }
                 });
 
             migrationBuilder.InsertData(
                 table: "StudyFolders",
                 columns: new[] { "Id", "CourseId", "CreatedAt", "Name", "ParentFolderId", "UpdatedAt" },
-                values: new object[] { new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 18, 18, 24, 263, DateTimeKind.Utc).AddTicks(3917), "Week 1", new Guid("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"), null });
+                values: new object[] { new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 18, 48, 57, 673, DateTimeKind.Utc).AddTicks(1989), "Week 1", new Guid("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"), null });
 
             migrationBuilder.InsertData(
                 table: "Submissions",
                 columns: new[] { "Id", "AssignmentId", "Comment", "CreatedAt", "Feedback", "Grade", "GradedAt", "Status", "StudentId", "SubmittedAt", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { new Guid("12121212-1212-1212-1212-121212121212"), new Guid("efefefef-efef-efef-efef-efefefefefef"), "Test student submission", new DateTime(2026, 6, 6, 18, 18, 24, 263, DateTimeKind.Utc).AddTicks(3902), null, null, null, 1, new Guid("44444444-4444-4444-4444-444444444444"), new DateTime(2026, 1, 2, 12, 0, 0, 0, DateTimeKind.Utc), null },
-                    { new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"), new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), "Demo submission", new DateTime(2026, 6, 6, 18, 18, 24, 263, DateTimeKind.Utc).AddTicks(3898), null, null, null, 1, new Guid("33333333-3333-3333-3333-333333333333"), new DateTime(2026, 1, 1, 12, 0, 0, 0, DateTimeKind.Utc), null }
+                    { new Guid("12121212-1212-1212-1212-121212121212"), new Guid("efefefef-efef-efef-efef-efefefefefef"), "Test student submission", new DateTime(2026, 6, 6, 18, 48, 57, 673, DateTimeKind.Utc).AddTicks(1975), null, null, null, 1, new Guid("44444444-4444-4444-4444-444444444444"), new DateTime(2026, 1, 2, 12, 0, 0, 0, DateTimeKind.Utc), null },
+                    { new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"), new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), "Demo submission", new DateTime(2026, 6, 6, 18, 48, 57, 673, DateTimeKind.Utc).AddTicks(1972), null, null, null, 1, new Guid("33333333-3333-3333-3333-333333333333"), new DateTime(2026, 1, 1, 12, 0, 0, 0, DateTimeKind.Utc), null }
                 });
 
             migrationBuilder.InsertData(
                 table: "StudyFiles",
                 columns: new[] { "Id", "AltText", "AnnouncementId", "AssignmentId", "BlobName", "ContentType", "CreatedAt", "FileName", "FileType", "Size", "StudyFolderId", "SubmissionId", "UpdatedAt", "UploadedById" },
-                values: new object[] { new Guid("67676767-6767-6767-6767-676767676767"), "Week 1 lecture slides", null, null, "studycentral-testfile2.odt", "application/vnd.oasis.opendocument.text", new DateTime(2026, 6, 6, 18, 18, 24, 263, DateTimeKind.Utc).AddTicks(3960), "studycentral-testfile2.odt", 4, 9207L, new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"), null, null, new Guid("22222222-2222-2222-2222-222222222222") });
+                values: new object[] { new Guid("67676767-6767-6767-6767-676767676767"), "Week 1 lecture slides", null, null, "studycentral-testfile2.odt", "application/vnd.oasis.opendocument.text", new DateTime(2026, 6, 6, 18, 48, 57, 673, DateTimeKind.Utc).AddTicks(2020), "studycentral-testfile2.odt", 4, 9207L, new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"), null, null, new Guid("22222222-2222-2222-2222-222222222222") });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Announcements_CourseId",
