@@ -1,5 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using StudyCentral.API.Configurations;
 using StudyCentral.API.Models.Entities;
@@ -77,6 +76,7 @@ public class StudyDbContext : DbContext
             .WithOne(cs => cs.Student)
             .HasForeignKey(cs => cs.StudentId);
     }
+
     private static void ConfigureCourse(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Course>()
@@ -101,6 +101,14 @@ public class StudyDbContext : DbContext
         modelBuilder.Entity<Assignment>()
             .Property(a => a.Description)
             .HasMaxLength(2000);
+
+        modelBuilder.Entity<Assignment>()
+            .HasIndex(a => new
+            {
+                a.CourseId,
+                a.Name
+            })
+            .IsUnique();
 
         // Many-to-one
         // An assignment belongs to one course
@@ -178,7 +186,7 @@ public class StudyDbContext : DbContext
             .WithMany(c => c.StudyFolders)
             .HasForeignKey(f => f.CourseId)
             .OnDelete(DeleteBehavior.Cascade);
-        
+
         // Many-to-one
         modelBuilder.Entity<StudyFile>()
             .HasOne(f => f.StudyFolder)

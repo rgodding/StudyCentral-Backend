@@ -253,17 +253,59 @@ public class StudyFileService : IStudyFileService
     
     public async Task<List<StudyFileDto>> GetFilesByAssignmentId(Guid assignmentId)
     {
-        throw new NotImplementedException();
+        var assignmentExists = await _dbContext.Assignments
+            .AnyAsync(a => a.Id == assignmentId);
+        
+        if(!assignmentExists)
+            throw new KeyNotFoundException($"Assignment with ID '{assignmentId}' not found");
+        
+        var files = await _dbContext.StudyFiles
+            .Where(f => f.AssignmentId == assignmentId)
+            .ToListAsync();
+        
+        return _mapper.Map<List<StudyFileDto>>(files);
     }
 
     public async Task AttachToAssignment(Guid fileId, Guid assignmentId)
     {
-        throw new NotImplementedException();
+        var file = await _dbContext.StudyFiles
+            .FirstOrDefaultAsync(f => f.Id == fileId);
+        
+        if (file == null)
+            throw new KeyNotFoundException($"File with ID '{fileId}' not found");
+        
+        var assignmentExists = await _dbContext.Assignments
+            .AnyAsync(a => a.Id == assignmentId);
+        
+        if(!assignmentExists)
+            throw new KeyNotFoundException($"Assignment with ID '{assignmentId}' not found");
+        
+        if (file.AssignmentId == assignmentId)
+            throw new InvalidOperationException("File is already attached to the target assignment");
+        
+        file.AssignmentId = assignmentId;
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task RemoveFromAssignment(Guid fileId, Guid assignmentId)
     {
-        throw new NotImplementedException();
+        var file = await _dbContext.StudyFiles
+            .FirstOrDefaultAsync(f => f.Id == fileId);
+        
+        if (file == null)
+            throw new KeyNotFoundException($"File with ID '{fileId}' not found");
+        
+        var assignmentExists = await _dbContext.Assignments
+            .AnyAsync(a => a.Id == assignmentId);
+        
+        if(!assignmentExists)
+            throw new KeyNotFoundException($"Assignment with ID '{assignmentId}' not found");
+        
+        if (file.AssignmentId != assignmentId)
+            throw new InvalidOperationException("File is not attached to the specified assignment");
+        
+        file.AssignmentId = null;
+        await _dbContext.SaveChangesAsync();
     }
 
     // -----------------

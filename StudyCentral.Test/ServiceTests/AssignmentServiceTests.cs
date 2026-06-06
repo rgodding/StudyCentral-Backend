@@ -12,14 +12,14 @@ namespace StudyCentral.Test.ServiceTests;
 public class AssignmentServiceTests
 {
     private readonly StudyDbContext _dbContext;
-    private readonly IMapper _mapper;
     private readonly AssignmentService _service;
 
     public AssignmentServiceTests()
     {
         _dbContext = ContextGenerator.GetStudyDbContext();
-        _mapper = MapperGenerator.GetMapper();
-        _service = new AssignmentService(_dbContext, _mapper);
+        var mapper = MapperGenerator.GetMapper();
+        IStudyFileService fileService = new StudyFileServiceGenerator();
+        _service = new AssignmentService(_dbContext, mapper, fileService);
     }
 
     // ----------------
