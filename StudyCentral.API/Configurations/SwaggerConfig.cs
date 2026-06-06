@@ -9,26 +9,37 @@ public static class SwaggerConfig
     {
         services.AddSwaggerGen(c =>
         {
-            var securityScheme = new OpenApiSecurityScheme
+            c.SwaggerDoc("v1", new OpenApiInfo
             {
-                Name = "JWT Authentication",
-                Description = "Enter your Bearer token below.",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.Http,
-                Scheme = "bearer",
-                BearerFormat = "JWT",
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = JwtBearerDefaults.AuthenticationScheme
-                }
-            };
-            c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, securityScheme);
-            c.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                { securityScheme, new string[] { } }
+                Title = "StudyCentral API",
+                Version = "v1"
             });
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "studycentral-backend", Version = "v1" });
+
+            c.SwaggerDoc("student", new OpenApiInfo
+            {
+                Title = "StudyCentral Student API",
+                Version = "v1"
+            });
+
+            c.SwaggerDoc("teacher", new OpenApiInfo
+            {
+                Title = "StudyCentral Teacher API",
+                Version = "v1"
+            });
+
+            c.SwaggerDoc("admin", new OpenApiInfo
+            {
+                Title = "StudyCentral Admin API",
+                Version = "v1"
+            });
+
+            c.DocInclusionPredicate((docName, apiDesc) =>
+            {
+                if (docName == "v1")
+                    return true; // Include everything
+
+                return apiDesc.GroupName == docName;
+            });
         });
     }
 }

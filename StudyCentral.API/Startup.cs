@@ -63,8 +63,10 @@ public class Startup
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "studycentral-backend v1");
-                c.ConfigObject.AdditionalItems["persistAuthorization"] = true;
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "StudyCentral API");
+                c.SwaggerEndpoint("/swagger/student/swagger.json", "Student API");
+                c.SwaggerEndpoint("/swagger/teacher/swagger.json", "Teacher API");
+                c.SwaggerEndpoint("/swagger/admin/swagger.json", "Admin API");
             });
         }
 

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using StudyCentral.API.Models.DTOs.Announcement;
+using StudyCentral.API.Models.DTOs.StudyFile;
 using StudyCentral.API.Services;
 
 namespace StudyCentral.API.Controllers.Teacher;
@@ -37,7 +38,7 @@ public class TeacherAnnouncementController : BaseTeacherController
         return Ok(announcement);
     }
     
-    [HttpPut]
+    [HttpPut("{announcementId:guid}")]
     public async Task<ActionResult<AnnouncementDto>> UpdateAnnouncement(Guid announcementId, [FromBody] UpdateAnnouncementDto updateAnnouncementDto)
     {
         var announcement = await _announcementService.UpdateAnnouncementByTeacherId(CurrentUser.Id, announcementId, updateAnnouncementDto);
@@ -50,5 +51,54 @@ public class TeacherAnnouncementController : BaseTeacherController
         await _announcementService.DeleteAnnouncementByTeacherId(CurrentUser.Id, announcementId);
         return NoContent();
     }
-        
+
+    [HttpGet("courses/{courseId:guid}")]
+    public async Task<ActionResult<List<AnnouncementDto>>> GetAnnouncementsByCourseId(Guid courseId)
+    {
+        var announcements = await _announcementService
+            .GetAnnouncementsByCourseIdAndTeacherId(
+                CurrentUser.Id,
+                courseId);
+        return Ok(announcements);
+    }
+    
+    [HttpGet("{announcementId:guid}/files")]
+    public async Task<ActionResult<List<StudyFileDto>>> GetFiles(
+        Guid announcementId)
+    {
+        var files = await _announcementService
+            .GetFilesByAnnouncementIdAndTeacherId(
+                CurrentUser.Id,
+                announcementId);
+
+        return Ok(files);
+    }
+    
+    [HttpPost("{announcementId:guid}/files/{fileId:guid}")]
+    public async Task<IActionResult> AttachFile(
+        Guid announcementId,
+        Guid fileId)
+    {
+        await _announcementService
+            .AttachFileToAnnouncementByTeacherId(
+                CurrentUser.Id,
+                announcementId,
+                fileId);
+
+        return NoContent();
+    }
+    
+    [HttpDelete("{announcementId:guid}/files/{fileId:guid}")]
+    public async Task<IActionResult> RemoveFile(
+        Guid announcementId,
+        Guid fileId)
+    {
+        await _announcementService
+            .RemoveFileFromAnnouncementByTeacherId(
+                CurrentUser.Id,
+                announcementId,
+                fileId);
+
+        return NoContent();
+    }
 }

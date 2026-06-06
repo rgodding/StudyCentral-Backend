@@ -94,6 +94,7 @@ public class AnnouncementService : IAnnouncementService
     {
         var announcements = await _dbContext.Announcements
             .Include(a => a.Course)
+            .Include(a => a.StudyFiles)
             .ToListAsync();
 
         return _mapper.Map<List<AnnouncementDto>>(announcements);
@@ -103,6 +104,7 @@ public class AnnouncementService : IAnnouncementService
     {
         var announcement = await _dbContext.Announcements
             .Include(a => a.Course)
+            .Include(a => a.StudyFiles)
             .FirstOrDefaultAsync(a => a.Id == announcementId);
 
         if (announcement == null)
@@ -169,6 +171,7 @@ public class AnnouncementService : IAnnouncementService
     {
         var announcements = await _dbContext.Announcements
             .Include(a => a.Course)
+            .Include(a => a.StudyFiles)
             .Where(a => a.Course.TeacherId == teacherId)
             .OrderByDescending(a => a.CreatedAt)
             .ToListAsync();
@@ -329,6 +332,7 @@ public class AnnouncementService : IAnnouncementService
     {
         var announcement = await _dbContext.Announcements
             .Include(a => a.Course)
+            .Include(a => a.StudyFiles)
             .FirstOrDefaultAsync(a => a.Id == announcementId);
 
         if (announcement == null)
@@ -371,6 +375,7 @@ public class AnnouncementService : IAnnouncementService
         var announcement = await _dbContext.Announcements
             .Include(a => a.Course)
             .ThenInclude(c => c.CourseStudents)
+            .Include(a => a.StudyFiles)
             .FirstOrDefaultAsync(a => a.Id == announcementId);
 
         if (announcement == null)

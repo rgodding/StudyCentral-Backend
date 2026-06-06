@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace StudyCentral.API.Controllers.Teacher;
 
-[Route("api/teacher")]
+[Authorize(Roles = "Teacher")]
+[ApiExplorerSettings(GroupName = "teacher")]
 public abstract class BaseTeacherController : BaseController
 {
     protected BaseTeacherController(IMapper mapper)
