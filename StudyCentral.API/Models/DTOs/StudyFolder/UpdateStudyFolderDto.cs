@@ -6,7 +6,7 @@ public class UpdateStudyFolderDto
 {
     [Required]
     [MaxLength(100)]
-    public string Name { get; set; } = null!;
+    public string? Name { get; set; }
 
     public Guid? ParentFolderId { get; set; }
 }
