@@ -150,7 +150,7 @@ namespace StudyCentral.API.Migrations
                         new
                         {
                             Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            CreatedAt = new DateTime(2026, 6, 5, 22, 15, 15, 96, DateTimeKind.Utc).AddTicks(1993),
+                            CreatedAt = new DateTime(2026, 6, 6, 12, 16, 47, 318, DateTimeKind.Utc).AddTicks(1108),
                             Description = "StudyCentral demonstration course",
                             Name = "System Integration",
                             TeacherId = new Guid("22222222-2222-2222-2222-222222222222")
@@ -213,6 +213,9 @@ namespace StudyCentral.API.Migrations
                     b.Property<long>("Size")
                         .HasColumnType("bigint");
 
+                    b.Property<Guid?>("StudyFolderId")
+                        .HasColumnType("char(36)");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");
 
@@ -220,6 +223,8 @@ namespace StudyCentral.API.Migrations
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("StudyFolderId");
 
                     b.HasIndex("UploadedById");
 
@@ -353,7 +358,7 @@ namespace StudyCentral.API.Migrations
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111111"),
-                            CreatedAt = new DateTime(2026, 6, 5, 22, 15, 15, 96, DateTimeKind.Utc).AddTicks(1877),
+                            CreatedAt = new DateTime(2026, 6, 6, 12, 16, 47, 318, DateTimeKind.Utc).AddTicks(980),
                             Email = "admin@studycentral.dk",
                             FirstName = "Admin",
                             LastName = "User",
@@ -363,7 +368,7 @@ namespace StudyCentral.API.Migrations
                         new
                         {
                             Id = new Guid("22222222-2222-2222-2222-222222222222"),
-                            CreatedAt = new DateTime(2026, 6, 5, 22, 15, 15, 96, DateTimeKind.Utc).AddTicks(1880),
+                            CreatedAt = new DateTime(2026, 6, 6, 12, 16, 47, 318, DateTimeKind.Utc).AddTicks(1005),
                             Email = "teacher@studycentral.dk",
                             FirstName = "Teacher",
                             LastName = "User",
@@ -373,7 +378,7 @@ namespace StudyCentral.API.Migrations
                         new
                         {
                             Id = new Guid("33333333-3333-3333-3333-333333333333"),
-                            CreatedAt = new DateTime(2026, 6, 5, 22, 15, 15, 96, DateTimeKind.Utc).AddTicks(1882),
+                            CreatedAt = new DateTime(2026, 6, 6, 12, 16, 47, 318, DateTimeKind.Utc).AddTicks(1006),
                             Email = "student@studycentral.dk",
                             FirstName = "Student",
                             LastName = "User",
@@ -383,28 +388,13 @@ namespace StudyCentral.API.Migrations
                         new
                         {
                             Id = new Guid("44444444-4444-4444-4444-444444444444"),
-                            CreatedAt = new DateTime(2026, 6, 5, 22, 15, 15, 96, DateTimeKind.Utc).AddTicks(1910),
+                            CreatedAt = new DateTime(2026, 6, 6, 12, 16, 47, 318, DateTimeKind.Utc).AddTicks(1008),
                             Email = "teststudent@studycentral.dk",
                             FirstName = "Test",
                             LastName = "Student",
                             PasswordHash = "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2",
                             Role = 0
                         });
-                });
-
-            modelBuilder.Entity("StudyFileStudyFolder", b =>
-                {
-                    b.Property<Guid>("FilesId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("StudyFolderId")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("FilesId", "StudyFolderId");
-
-                    b.HasIndex("StudyFolderId");
-
-                    b.ToTable("StudyFileStudyFolder");
                 });
 
             modelBuilder.Entity("StudyFileSubmission", b =>
@@ -505,11 +495,18 @@ namespace StudyCentral.API.Migrations
 
             modelBuilder.Entity("StudyCentral.API.Models.Entities.StudyFile", b =>
                 {
+                    b.HasOne("StudyCentral.API.Models.Entities.StudyFolder", "StudyFolder")
+                        .WithMany("StudyFiles")
+                        .HasForeignKey("StudyFolderId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("StudyCentral.API.Models.Entities.User", "UploadedBy")
                         .WithMany("UploadedFiles")
                         .HasForeignKey("UploadedById")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("StudyFolder");
 
                     b.Navigation("UploadedBy");
                 });
@@ -517,7 +514,7 @@ namespace StudyCentral.API.Migrations
             modelBuilder.Entity("StudyCentral.API.Models.Entities.StudyFolder", b =>
                 {
                     b.HasOne("StudyCentral.API.Models.Entities.Course", "Course")
-                        .WithMany("Folders")
+                        .WithMany("StudyFolders")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -561,21 +558,6 @@ namespace StudyCentral.API.Migrations
                     b.Navigation("ProfilePicture");
                 });
 
-            modelBuilder.Entity("StudyFileStudyFolder", b =>
-                {
-                    b.HasOne("StudyCentral.API.Models.Entities.StudyFile", null)
-                        .WithMany()
-                        .HasForeignKey("FilesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("StudyCentral.API.Models.Entities.StudyFolder", null)
-                        .WithMany()
-                        .HasForeignKey("StudyFolderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("StudyFileSubmission", b =>
                 {
                     b.HasOne("StudyCentral.API.Models.Entities.StudyFile", null)
@@ -604,12 +586,14 @@ namespace StudyCentral.API.Migrations
 
                     b.Navigation("CourseStudents");
 
-                    b.Navigation("Folders");
+                    b.Navigation("StudyFolders");
                 });
 
             modelBuilder.Entity("StudyCentral.API.Models.Entities.StudyFolder", b =>
                 {
                     b.Navigation("ChildFolders");
+
+                    b.Navigation("StudyFiles");
                 });
 
             modelBuilder.Entity("StudyCentral.API.Models.Entities.User", b =>

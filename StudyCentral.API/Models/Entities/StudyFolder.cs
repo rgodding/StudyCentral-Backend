@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-
-namespace StudyCentral.API.Models.Entities;
+﻿namespace StudyCentral.API.Models.Entities;
 
 public class StudyFolder
 {
@@ -19,7 +17,7 @@ public class StudyFolder
     public ICollection<StudyFolder> ChildFolders { get; set; } = new List<StudyFolder>();
     
     // Files
-    public ICollection<StudyFile> Files { get; set; } = new List<StudyFile>();
+    public ICollection<StudyFile> StudyFiles { get; set; } = new List<StudyFile>();
     
     // Audit
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

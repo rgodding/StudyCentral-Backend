@@ -24,7 +24,7 @@ public class Course
     public ICollection<Announcement> Announcements { get; set; }
         = new List<Announcement>();
    
-    public ICollection<StudyFolder> Folders { get; set; }
+    public ICollection<StudyFolder> StudyFolders { get; set; }
         = new List<StudyFolder>();
     
     // Audit

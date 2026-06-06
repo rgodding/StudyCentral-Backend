@@ -175,9 +175,15 @@ public class StudyDbContext : DbContext
         // A folder belongs to one course
         modelBuilder.Entity<StudyFolder>()
             .HasOne(f => f.Course)
-            .WithMany(c => c.Folders)
+            .WithMany(c => c.StudyFolders)
             .HasForeignKey(f => f.CourseId)
             .OnDelete(DeleteBehavior.Cascade);
+        
+        // Many-to-one
+        modelBuilder.Entity<StudyFile>()
+            .HasOne(f => f.StudyFolder)
+            .WithMany(f => f.StudyFiles)
+            .HasForeignKey(f => f.StudyFolderId);
 
         // Self-referencing one-to-many
         // A folder can contain many child folders
@@ -235,11 +241,13 @@ public class StudyDbContext : DbContext
             .HasMany(s => s.Files)
             .WithMany();
 
-        // Many-to-many
-        // A folder can contain many files
-        modelBuilder.Entity<StudyFolder>()
-            .HasMany(f => f.Files)
-            .WithMany();
+        // Many-to-one
+        // A file can belong to one folder, but a folder can contain many files
+        modelBuilder.Entity<StudyFile>()
+            .HasOne(f => f.StudyFolder)
+            .WithMany(f => f.StudyFiles)
+            .HasForeignKey(f => f.StudyFolderId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 
     private static void ConfigureCourseStudent(ModelBuilder modelBuilder)

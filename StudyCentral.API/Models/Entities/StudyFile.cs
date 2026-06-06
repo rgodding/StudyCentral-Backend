@@ -13,6 +13,10 @@ public class StudyFile
     public long Size { get; set; }
 
     public string? AltText { get; set; }
+    
+    // Folder
+    public Guid? StudyFolderId { get; set; }
+    public StudyFolder? StudyFolder { get; set; }
 
     public Guid UploadedById { get; set; }
     public User UploadedBy { get; set; } = null!;
