@@ -48,6 +48,10 @@ public class StudyFileService : IStudyFileService
         _mapper = mapper;
     }
 
+    // -----------------
+    // Blob Operations
+    // -----------------
+    
     public async Task<StudyFile> UploadFile(
         IFormFile file,
         Guid userId,
@@ -199,17 +203,48 @@ public class StudyFileService : IStudyFileService
     // -----------------
     public async Task<List<StudyFileDto>> GetFilesByAnnouncementId(Guid announcementId)
     {
-        throw new NotImplementedException();
+        var files = await _dbContext.StudyFiles
+            .Include(f => f.UploadedBy)
+            .Where(f => f.AnnouncementId == announcementId)
+            .ToListAsync();
+        
+        return _mapper.Map<List<StudyFileDto>>(files);
     }
     
     public async Task AttachToAnnouncement(Guid fileId, Guid announcementId)
     {
-        throw new NotImplementedException();
+        var file = await _dbContext.StudyFiles
+            .FirstOrDefaultAsync(f => f.Id == fileId);
+        
+        if (file == null)
+            throw new KeyNotFoundException($"File with ID '{fileId}' not found");
+        
+        var announcement = await _dbContext.Announcements
+            .FirstOrDefaultAsync(a => a.Id == announcementId);
+        
+        if (announcement == null)
+            throw new KeyNotFoundException($"Announcement with ID '{announcementId}' not found");
+        
+        if (file.AnnouncementId == announcementId)
+            throw new InvalidOperationException("File is already attached to the target announcement");
+        
+        file.AnnouncementId = announcementId;
+        await _dbContext.SaveChangesAsync();
     }
     
     public async Task RemoveFromAnnouncement(Guid fileId, Guid announcementId)
     {
-        throw new NotImplementedException();
+        var file = await _dbContext.StudyFiles
+            .FirstOrDefaultAsync(f => f.Id == fileId);
+        
+        if (file == null)
+            throw new KeyNotFoundException($"File with ID '{fileId}' not found");
+        
+        if (file.AnnouncementId != announcementId)
+            throw new InvalidOperationException("File is not attached to the specified announcement");
+        
+        file.AnnouncementId = null;
+        await _dbContext.SaveChangesAsync();
     }
     
     // -----------------

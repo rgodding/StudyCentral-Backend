@@ -35,7 +35,11 @@ public class TeacherAnnouncementController : BaseTeacherController
     public async Task<ActionResult<AnnouncementDto>> CreateAnnouncement([FromBody] CreateAnnouncementDto createAnnouncementDto)
     {
         var announcement = await _announcementService.CreateAnnouncementByTeacherId(CurrentUser.Id, createAnnouncementDto);
-        return Ok(announcement);
+        
+        return CreatedAtAction(
+            nameof(GetAnnouncementById),
+            new { announcementId = announcement.Id },
+            announcement);
     }
     
     [HttpPut("{announcementId:guid}")]
@@ -72,6 +76,20 @@ public class TeacherAnnouncementController : BaseTeacherController
                 announcementId);
 
         return Ok(files);
+    }
+    
+    [HttpPost("{announcementId:guid}/files")]
+    public async Task<ActionResult<StudyFileDto>> UploadFile(
+        Guid announcementId,
+        IFormFile file)
+    {
+        var uploadedFile = await _announcementService
+            .UploadFileToAnnouncementByTeacherId(
+                CurrentUser.Id,
+                announcementId,
+                file);
+
+        return Ok(uploadedFile);
     }
     
     [HttpPost("{announcementId:guid}/files/{fileId:guid}")]

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using StudyCentral.API.Middleware;
 using StudyCentral.API.Models;
 using StudyCentral.API.Models.DTOs.Announcement;
 using StudyCentral.API.Models.DTOs.StudyFile;
@@ -42,6 +43,12 @@ public interface IAnnouncementService
         Guid courseId);
 
     // Teacher File Methods
+    Task<StudyFileDto> UploadFileToAnnouncementByTeacherId(
+        Guid teacherId,
+        Guid announcementId,
+        IFormFile file,
+        string? altText = null);
+    
     Task<List<StudyFileDto>> GetFilesByAnnouncementIdAndTeacherId(
         Guid teacherId,
         Guid announcementId);
@@ -190,6 +197,15 @@ public class AnnouncementService : IAnnouncementService
     {
         await VerifyTeacherCourse(teacherId, dto.CourseId);
         
+        var exists = await _dbContext.Announcements
+            .AnyAsync(a =>
+                a.Name == dto.Name &&
+                a.CourseId == dto.CourseId);
+        
+        if (exists)
+            throw new ExceptionMiddleware.ConflictException(
+                "Announcement with this Name already exists in this course");
+        
         var announcement = _mapper.Map<Announcement>(dto);
         
         _dbContext.Announcements.Add(announcement);
@@ -231,6 +247,7 @@ public class AnnouncementService : IAnnouncementService
         
         var announcements = await _dbContext.Announcements
             .Include(a => a.Course)
+            .Include(a => a.StudyFiles)
             .Where(a => a.CourseId == courseId)
             .OrderByDescending(a => a.CreatedAt)
             .ToListAsync();
@@ -239,6 +256,17 @@ public class AnnouncementService : IAnnouncementService
     }
     
     // Teacher File Methods
+    public async Task<StudyFileDto> UploadFileToAnnouncementByTeacherId(Guid teacherId, Guid announcementId, IFormFile file, string? altText = null)
+    {
+        await VerifyTeacherAnnouncement(teacherId, announcementId);
+        
+        var uploadedFile = await _studyFileService.UploadFile(file, teacherId, altText);
+        
+        await _studyFileService.AttachToAnnouncement(uploadedFile.Id, announcementId);
+        
+        return _mapper.Map<StudyFileDto>(uploadedFile);
+    }
+    
     public async Task<List<StudyFileDto>> GetFilesByAnnouncementIdAndTeacherId(Guid teacherId, Guid announcementId)
     {
         await VerifyTeacherAnnouncement(teacherId, announcementId);
