@@ -35,6 +35,8 @@ public class ServiceConfig
         services.AddScoped<IAssignmentService, AssignmentService>();
         services.AddScoped<ISubmissionService, SubmissionService>();
         services.AddScoped<IAnnouncementService, AnnouncementService>();
+        services.AddScoped<IStudyFolderService, StudyFolderService>();
+        services.AddScoped<IStudyFileService, StudyFileService>();
     }
 
     private static void JsonConfig(IServiceCollection services)
