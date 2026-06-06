@@ -14,17 +14,53 @@ public static class SeedData
 
     private static readonly Guid StudentId =
         Guid.Parse("33333333-3333-3333-3333-333333333333");
+
     private static readonly Guid TestStudentId =
         Guid.Parse("44444444-4444-4444-4444-444444444444");
 
     private static readonly Guid CourseId =
         Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
 
+    private static readonly Guid AnnouncementId =
+        Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
+
+    private static readonly Guid AssignmentId =
+        Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
+
+    private static readonly Guid SubmissionId =
+        Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd");
+
+    private static readonly Guid TestSubmissionId =
+        Guid.Parse("12121212-1212-1212-1212-121212121212");
+
+    private static readonly Guid FolderId =
+        Guid.Parse("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee");
+
+    private static readonly Guid ChildFolderId =
+        Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff");
+
+    private static readonly Guid TestFolderId =
+        Guid.Parse("abababab-abab-abab-abab-abababababab");
+
+    private static readonly Guid TestAnnouncementId =
+        Guid.Parse("cdcdcdcd-cdcd-cdcd-cdcd-cdcdcdcdcdcd");
+
+    private static readonly Guid TestAssignmentId =
+        Guid.Parse("efefefef-efef-efef-efef-efefefefefef");
+
+    private static readonly DateTime SeedDate =
+        new DateTime(2026, 1, 1, 12, 0, 0, DateTimeKind.Utc);
+
     public static void Seed(ModelBuilder modelBuilder)
     {
         SeedUsers(modelBuilder);
         SeedCourses(modelBuilder);
         SeedEnrollments(modelBuilder);
+
+        SeedAnnouncements(modelBuilder);
+        SeedAssignments(modelBuilder);
+        SeedSubmissions(modelBuilder);
+        SeedFolders(modelBuilder);
     }
 
     private static void SeedUsers(ModelBuilder modelBuilder)
@@ -89,7 +125,103 @@ public static class SeedData
             {
                 CourseId = CourseId,
                 StudentId = StudentId
+            },
+            new CourseStudent
+            {
+                CourseId = CourseId,
+                StudentId = TestStudentId
             }
         );
+    }
+
+    private static void SeedAnnouncements(
+        ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Announcement>().HasData(
+            new Announcement
+            {
+                Id = AnnouncementId,
+                Name = "Welcome Announcement",
+                Content = "Welcome to StudyCentral",
+                CourseId = CourseId
+            },
+            new Announcement
+            {
+                Id = TestAnnouncementId,
+                Name = "Exam Information",
+                Content = "The final exam will take place in June.",
+                CourseId = CourseId
+            });
+    }
+
+    private static void SeedAssignments(
+        ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Assignment>().HasData(
+            new Assignment
+            {
+                Id = AssignmentId,
+                Name = "Demo Assignment",
+                Description = "Create a simple API",
+                Deadline = SeedDate.AddDays(14),
+                CourseId = CourseId
+            },
+            new Assignment
+            {
+                Id = TestAssignmentId,
+                Name = "Database Assignment",
+                Description = "Design and implement a relational database",
+                Deadline = SeedDate.AddDays(21),
+                CourseId = CourseId
+            });
+    }
+
+    private static void SeedSubmissions(
+        ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Submission>().HasData(
+            new Submission
+            {
+                Id = SubmissionId,
+                AssignmentId = AssignmentId,
+                StudentId = StudentId,
+                Comment = "Demo submission",
+                Status = SubmissionStatus.Submitted,
+                SubmittedAt = SeedDate
+            },
+            new Submission
+            {
+                Id = TestSubmissionId,
+                AssignmentId = TestAssignmentId,
+                StudentId = TestStudentId,
+                Comment = "Test student submission",
+                Status = SubmissionStatus.Submitted,
+                SubmittedAt = SeedDate.AddDays(1)
+            });
+    }
+
+    private static void SeedFolders(
+        ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<StudyFolder>().HasData(
+            new StudyFolder
+            {
+                Id = FolderId,
+                Name = "Course Materials",
+                CourseId = CourseId
+            },
+            new StudyFolder
+            {
+                Id = ChildFolderId,
+                Name = "Week 1",
+                CourseId = CourseId,
+                ParentFolderId = FolderId
+            },
+            new StudyFolder
+            {
+                Id = TestFolderId,
+                Name = "Assignments",
+                CourseId = CourseId
+            });
     }
 }

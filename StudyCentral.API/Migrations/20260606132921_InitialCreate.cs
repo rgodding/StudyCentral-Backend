@@ -36,25 +36,6 @@ namespace StudyCentral.API.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "AnnouncementStudyFile",
-                columns: table => new
-                {
-                    AnnouncementId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    FilesId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AnnouncementStudyFile", x => new { x.AnnouncementId, x.FilesId });
-                    table.ForeignKey(
-                        name: "FK_AnnouncementStudyFile_Announcements_AnnouncementId",
-                        column: x => x.AnnouncementId,
-                        principalTable: "Announcements",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "Assignments",
                 columns: table => new
                 {
@@ -71,25 +52,6 @@ namespace StudyCentral.API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Assignments", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "AssignmentStudyFile",
-                columns: table => new
-                {
-                    AssignmentId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    FilesId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AssignmentStudyFile", x => new { x.AssignmentId, x.FilesId });
-                    table.ForeignKey(
-                        name: "FK_AssignmentStudyFile_Assignments_AssignmentId",
-                        column: x => x.AssignmentId,
-                        principalTable: "Assignments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -177,6 +139,9 @@ namespace StudyCentral.API.Migrations
                     AltText = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     StudyFolderId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    AssignmentId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    AnnouncementId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    SubmissionId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
                     UploadedById = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
@@ -184,6 +149,18 @@ namespace StudyCentral.API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_StudyFiles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StudyFiles_Announcements_AnnouncementId",
+                        column: x => x.AnnouncementId,
+                        principalTable: "Announcements",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_StudyFiles_Assignments_AssignmentId",
+                        column: x => x.AssignmentId,
+                        principalTable: "Assignments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_StudyFiles_StudyFolders_StudyFolderId",
                         column: x => x.StudyFolderId,
@@ -259,51 +236,67 @@ namespace StudyCentral.API.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "StudyFileSubmission",
-                columns: table => new
-                {
-                    FilesId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    SubmissionId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_StudyFileSubmission", x => new { x.FilesId, x.SubmissionId });
-                    table.ForeignKey(
-                        name: "FK_StudyFileSubmission_StudyFiles_FilesId",
-                        column: x => x.FilesId,
-                        principalTable: "StudyFiles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_StudyFileSubmission_Submissions_SubmissionId",
-                        column: x => x.SubmissionId,
-                        principalTable: "Submissions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "CreatedAt", "Email", "FirstName", "LastName", "PasswordHash", "ProfilePictureId", "Role", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { new Guid("11111111-1111-1111-1111-111111111111"), new DateTime(2026, 6, 6, 12, 16, 47, 318, DateTimeKind.Utc).AddTicks(980), "admin@studycentral.dk", "Admin", "User", "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2", null, 2, null },
-                    { new Guid("22222222-2222-2222-2222-222222222222"), new DateTime(2026, 6, 6, 12, 16, 47, 318, DateTimeKind.Utc).AddTicks(1005), "teacher@studycentral.dk", "Teacher", "User", "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2", null, 1, null },
-                    { new Guid("33333333-3333-3333-3333-333333333333"), new DateTime(2026, 6, 6, 12, 16, 47, 318, DateTimeKind.Utc).AddTicks(1006), "student@studycentral.dk", "Student", "User", "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2", null, 0, null },
-                    { new Guid("44444444-4444-4444-4444-444444444444"), new DateTime(2026, 6, 6, 12, 16, 47, 318, DateTimeKind.Utc).AddTicks(1008), "teststudent@studycentral.dk", "Test", "Student", "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2", null, 0, null }
+                    { new Guid("11111111-1111-1111-1111-111111111111"), new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4647), "admin@studycentral.dk", "Admin", "User", "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2", null, 2, null },
+                    { new Guid("22222222-2222-2222-2222-222222222222"), new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4650), "teacher@studycentral.dk", "Teacher", "User", "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2", null, 1, null },
+                    { new Guid("33333333-3333-3333-3333-333333333333"), new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4652), "student@studycentral.dk", "Student", "User", "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2", null, 0, null },
+                    { new Guid("44444444-4444-4444-4444-444444444444"), new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4653), "teststudent@studycentral.dk", "Test", "Student", "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2", null, 0, null }
                 });
 
             migrationBuilder.InsertData(
                 table: "Courses",
                 columns: new[] { "Id", "CreatedAt", "Description", "Name", "TeacherId", "UpdatedAt" },
-                values: new object[] { new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 12, 16, 47, 318, DateTimeKind.Utc).AddTicks(1108), "StudyCentral demonstration course", "System Integration", new Guid("22222222-2222-2222-2222-222222222222"), null });
+                values: new object[] { new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4748), "StudyCentral demonstration course", "System Integration", new Guid("22222222-2222-2222-2222-222222222222"), null });
+
+            migrationBuilder.InsertData(
+                table: "Announcements",
+                columns: new[] { "Id", "Content", "CourseId", "CreatedAt", "Name", "UpdatedAt" },
+                values: new object[,]
+                {
+                    { new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), "Welcome to StudyCentral", new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4781), "Welcome Announcement", null },
+                    { new Guid("cdcdcdcd-cdcd-cdcd-cdcd-cdcdcdcdcdcd"), "The final exam will take place in June.", new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4783), "Exam Information", null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Assignments",
+                columns: new[] { "Id", "CourseId", "CreatedAt", "Deadline", "Description", "Name", "UpdatedAt" },
+                values: new object[,]
+                {
+                    { new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4795), new DateTime(2026, 1, 15, 12, 0, 0, 0, DateTimeKind.Utc), "Create a simple API", "Demo Assignment", null },
+                    { new Guid("efefefef-efef-efef-efef-efefefefefef"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4802), new DateTime(2026, 1, 22, 12, 0, 0, 0, DateTimeKind.Utc), "Design and implement a relational database", "Database Assignment", null }
+                });
 
             migrationBuilder.InsertData(
                 table: "CourseStudent",
                 columns: new[] { "CourseId", "StudentId" },
-                values: new object[] { new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new Guid("33333333-3333-3333-3333-333333333333") });
+                values: new object[,]
+                {
+                    { new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new Guid("33333333-3333-3333-3333-333333333333") },
+                    { new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new Guid("44444444-4444-4444-4444-444444444444") }
+                });
+
+            migrationBuilder.InsertData(
+                table: "StudyFolders",
+                columns: new[] { "Id", "CourseId", "CreatedAt", "Name", "ParentFolderId", "UpdatedAt" },
+                values: new object[,]
+                {
+                    { new Guid("abababab-abab-abab-abab-abababababab"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4836), "Assignments", null, null },
+                    { new Guid("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4833), "Course Materials", null, null },
+                    { new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4835), "Week 1", new Guid("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"), null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Submissions",
+                columns: new[] { "Id", "AssignmentId", "Comment", "CreatedAt", "Feedback", "Grade", "GradedAt", "Status", "StudentId", "SubmittedAt", "UpdatedAt" },
+                values: new object[,]
+                {
+                    { new Guid("12121212-1212-1212-1212-121212121212"), new Guid("efefefef-efef-efef-efef-efefefefefef"), "Test student submission", new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4820), null, null, null, 1, new Guid("44444444-4444-4444-4444-444444444444"), new DateTime(2026, 1, 2, 12, 0, 0, 0, DateTimeKind.Utc), null },
+                    { new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"), new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"), "Demo submission", new DateTime(2026, 6, 6, 13, 29, 21, 351, DateTimeKind.Utc).AddTicks(4817), null, null, null, 1, new Guid("33333333-3333-3333-3333-333333333333"), new DateTime(2026, 1, 1, 12, 0, 0, 0, DateTimeKind.Utc), null }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Announcements_CourseId",
@@ -311,19 +304,9 @@ namespace StudyCentral.API.Migrations
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AnnouncementStudyFile_FilesId",
-                table: "AnnouncementStudyFile",
-                column: "FilesId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Assignments_CourseId",
                 table: "Assignments",
                 column: "CourseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AssignmentStudyFile_FilesId",
-                table: "AssignmentStudyFile",
-                column: "FilesId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Courses_TeacherId",
@@ -336,19 +319,29 @@ namespace StudyCentral.API.Migrations
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_StudyFiles_AnnouncementId",
+                table: "StudyFiles",
+                column: "AnnouncementId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudyFiles_AssignmentId",
+                table: "StudyFiles",
+                column: "AssignmentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_StudyFiles_StudyFolderId",
                 table: "StudyFiles",
                 column: "StudyFolderId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_StudyFiles_SubmissionId",
+                table: "StudyFiles",
+                column: "SubmissionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_StudyFiles_UploadedById",
                 table: "StudyFiles",
                 column: "UploadedById");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_StudyFileSubmission_SubmissionId",
-                table: "StudyFileSubmission",
-                column: "SubmissionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StudyFolders_CourseId",
@@ -391,26 +384,10 @@ namespace StudyCentral.API.Migrations
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_AnnouncementStudyFile_StudyFiles_FilesId",
-                table: "AnnouncementStudyFile",
-                column: "FilesId",
-                principalTable: "StudyFiles",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
                 name: "FK_Assignments_Courses_CourseId",
                 table: "Assignments",
                 column: "CourseId",
                 principalTable: "Courses",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AssignmentStudyFile_StudyFiles_FilesId",
-                table: "AssignmentStudyFile",
-                column: "FilesId",
-                principalTable: "StudyFiles",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
@@ -431,6 +408,14 @@ namespace StudyCentral.API.Migrations
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
+                name: "FK_StudyFiles_Submissions_SubmissionId",
+                table: "StudyFiles",
+                column: "SubmissionId",
+                principalTable: "Submissions",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.SetNull);
+
+            migrationBuilder.AddForeignKey(
                 name: "FK_StudyFiles_Users_UploadedById",
                 table: "StudyFiles",
                 column: "UploadedById",
@@ -443,45 +428,48 @@ namespace StudyCentral.API.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
+                name: "FK_Announcements_Courses_CourseId",
+                table: "Announcements");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Assignments_Courses_CourseId",
+                table: "Assignments");
+
+            migrationBuilder.DropForeignKey(
                 name: "FK_StudyFolders_Courses_CourseId",
                 table: "StudyFolders");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_Users_StudyFiles_ProfilePictureId",
-                table: "Users");
+                name: "FK_StudyFiles_Users_UploadedById",
+                table: "StudyFiles");
 
-            migrationBuilder.DropTable(
-                name: "AnnouncementStudyFile");
-
-            migrationBuilder.DropTable(
-                name: "AssignmentStudyFile");
+            migrationBuilder.DropForeignKey(
+                name: "FK_Submissions_Users_StudentId",
+                table: "Submissions");
 
             migrationBuilder.DropTable(
                 name: "CourseStudent");
 
             migrationBuilder.DropTable(
-                name: "StudyFileSubmission");
+                name: "Courses");
+
+            migrationBuilder.DropTable(
+                name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "StudyFiles");
 
             migrationBuilder.DropTable(
                 name: "Announcements");
+
+            migrationBuilder.DropTable(
+                name: "StudyFolders");
 
             migrationBuilder.DropTable(
                 name: "Submissions");
 
             migrationBuilder.DropTable(
                 name: "Assignments");
-
-            migrationBuilder.DropTable(
-                name: "Courses");
-
-            migrationBuilder.DropTable(
-                name: "StudyFiles");
-
-            migrationBuilder.DropTable(
-                name: "StudyFolders");
-
-            migrationBuilder.DropTable(
-                name: "Users");
         }
     }
 }
