@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Models;
 using StudyCentral.API.Models.DTOs.Announcement;
+using StudyCentral.API.Models.DTOs.StudyFile;
 using StudyCentral.API.Models.Entities;
 
 namespace StudyCentral.API.Services;
@@ -14,10 +15,9 @@ public interface IAnnouncementService
     Task<AnnouncementDto> Create(CreateAnnouncementDto dto);
     Task<AnnouncementDto> Update(Guid announcementId, UpdateAnnouncementDto dto);
     Task Delete(Guid announcementId);
-    
+
     // Teacher Methods
-    Task<List<AnnouncementDto>> GetAnnouncementsByTeacherId(
-        Guid teacherId);
+    Task<List<AnnouncementDto>> GetAnnouncementsByTeacherId(Guid teacherId);
 
     Task<AnnouncementDto> GetAnnouncementByTeacherId(
         Guid teacherId,
@@ -35,22 +35,61 @@ public interface IAnnouncementService
     Task DeleteAnnouncementByTeacherId(
         Guid teacherId,
         Guid announcementId);
+    
+    // Teacher Methods
+    Task<List<AnnouncementDto>> GetAnnouncementsByCourseIdAndTeacherId(
+        Guid teacherId,
+        Guid courseId);
+
+    // Teacher File Methods
+    Task<List<StudyFileDto>> GetFilesByAnnouncementIdAndTeacherId(
+        Guid teacherId,
+        Guid announcementId);
+
+    Task AttachFileToAnnouncementByTeacherId(
+        Guid teacherId,
+        Guid announcementId,
+        Guid fileId);
+
+    Task RemoveFileFromAnnouncementByTeacherId(
+        Guid teacherId,
+        Guid announcementId,
+        Guid fileId);
+
+    // Student Methods
+    Task<List<AnnouncementDto>> GetAnnouncementsByStudentId(Guid studentId);
+    
+    Task<List<AnnouncementDto>> GetAnnouncementsByCourseIdAndStudentId(
+        Guid studentId,
+        Guid courseId);
+
+    Task<AnnouncementDto> GetAnnouncementByStudentId(
+        Guid studentId,
+        Guid announcementId);
+
+    // Student File Methods
+    Task<List<StudyFileDto>> GetFilesByAnnouncementIdAndStudentId(
+        Guid studentId,
+        Guid announcementId);
 }
 
 public class AnnouncementService : IAnnouncementService
 {
     private readonly StudyDbContext _dbContext;
     private readonly IMapper _mapper;
+    private readonly IStudyFileService _studyFileService;
 
-    public AnnouncementService(StudyDbContext dbContext, IMapper mapper)
+    public AnnouncementService(StudyDbContext dbContext, IMapper mapper, IStudyFileService studyFileService)
     {
         _dbContext = dbContext;
         _mapper = mapper;
+        _studyFileService = studyFileService;
     }
 
     // ----------------
     // CRUD METHODS
     // ----------------
+    
     public async Task<List<AnnouncementDto>> GetAll()
     {
         var announcements = await _dbContext.Announcements
@@ -119,15 +158,19 @@ public class AnnouncementService : IAnnouncementService
         await _dbContext.SaveChangesAsync();
     }
     
+
     // -----------------
     // TEACHER METHODS
     // -----------------
 
-    public async Task<List<AnnouncementDto>> GetAnnouncementsByTeacherId(Guid teacherId)
+    // Teacher CRUD Methods
+    public async Task<List<AnnouncementDto>> GetAnnouncementsByTeacherId(
+        Guid teacherId)
     {
         var announcements = await _dbContext.Announcements
             .Include(a => a.Course)
             .Where(a => a.Course.TeacherId == teacherId)
+            .OrderByDescending(a => a.CreatedAt)
             .ToListAsync();
 
         return _mapper.Map<List<AnnouncementDto>>(announcements);
@@ -135,45 +178,33 @@ public class AnnouncementService : IAnnouncementService
 
     public async Task<AnnouncementDto> GetAnnouncementByTeacherId(Guid teacherId, Guid announcementId)
     {
-        var announcement = await _dbContext.Announcements
-            .Include(a => a.Course)
-            .FirstOrDefaultAsync(a =>
-                a.Id == announcementId &&
-                a.Course.TeacherId == teacherId);
-        
-        if (announcement == null)
-            throw new KeyNotFoundException("Announcement not found");
+        var announcement = await VerifyTeacherAnnouncement(teacherId, announcementId);
 
         return _mapper.Map<AnnouncementDto>(announcement);
     }
 
     public async Task<AnnouncementDto> CreateAnnouncementByTeacherId(Guid teacherId, CreateAnnouncementDto dto)
     {
-        var course = await _dbContext.Courses
-            .FirstOrDefaultAsync(c => c.Id == dto.CourseId && c.TeacherId == teacherId);
-
-        if (course == null)
-            throw new KeyNotFoundException("Course not found");
-
+        await VerifyTeacherCourse(teacherId, dto.CourseId);
+        
         var announcement = _mapper.Map<Announcement>(dto);
-
+        
         _dbContext.Announcements.Add(announcement);
+        
         await _dbContext.SaveChangesAsync();
-
+        
+        announcement = await _dbContext.Announcements
+            .Include(a => a.Course)
+            .Include(a => a.StudyFiles)
+            .FirstAsync(a => a.Id == announcement.Id);
+        
         return _mapper.Map<AnnouncementDto>(announcement);
     }
 
     public async Task<AnnouncementDto> UpdateAnnouncementByTeacherId(Guid teacherId, Guid announcementId, UpdateAnnouncementDto dto)
     {
-        var announcement = await _dbContext.Announcements
-            .Include(a => a.Course)
-            .FirstOrDefaultAsync(a =>
-                a.Id == announcementId &&
-                a.Course.TeacherId == teacherId);
-
-        if (announcement == null)
-            throw new KeyNotFoundException("Announcement not found");
-
+        var announcement = await VerifyTeacherAnnouncement(teacherId, announcementId);
+        
         announcement.Name = dto.Name ?? announcement.Name;
         announcement.Content = dto.Content ?? announcement.Content;
         announcement.UpdatedAt = DateTime.UtcNow;
@@ -185,16 +216,174 @@ public class AnnouncementService : IAnnouncementService
 
     public async Task DeleteAnnouncementByTeacherId(Guid teacherId, Guid announcementId)
     {
+        var announcement = await VerifyTeacherAnnouncement(teacherId, announcementId);
+        _dbContext.Announcements.Remove(announcement);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    // Teacher Methods
+    public async Task<List<AnnouncementDto>> GetAnnouncementsByCourseIdAndTeacherId(Guid teacherId, Guid courseId)
+    {
+        await VerifyTeacherCourse(teacherId, courseId);
+        
+        var announcements = await _dbContext.Announcements
+            .Include(a => a.Course)
+            .Where(a => a.CourseId == courseId)
+            .OrderByDescending(a => a.CreatedAt)
+            .ToListAsync();
+
+        return _mapper.Map<List<AnnouncementDto>>(announcements);
+    }
+    
+    // Teacher File Methods
+    public async Task<List<StudyFileDto>> GetFilesByAnnouncementIdAndTeacherId(Guid teacherId, Guid announcementId)
+    {
+        await VerifyTeacherAnnouncement(teacherId, announcementId);
+        
+        return await _studyFileService.GetFilesByAnnouncementId(announcementId);
+    }
+
+    public async Task AttachFileToAnnouncementByTeacherId(Guid teacherId, Guid announcementId, Guid fileId)
+    {
+        await VerifyTeacherAnnouncement(teacherId, announcementId);
+        
+        await _studyFileService.AttachToAnnouncement(fileId, announcementId);
+    }
+
+    public async Task RemoveFileFromAnnouncementByTeacherId(Guid teacherId, Guid announcementId, Guid fileId)
+    {
+        await VerifyTeacherAnnouncement(teacherId, announcementId);
+        
+        await _studyFileService.RemoveFromAnnouncement(fileId, announcementId);
+    }
+
+    // -----------------
+    // STUDENT METHODS
+    // -----------------
+    public async Task<List<AnnouncementDto>> GetAnnouncementsByStudentId(Guid studentId)
+    {
+        var announcements = await _dbContext.Announcements
+            .Include(a => a.Course)
+            .ThenInclude(c => c.CourseStudents)
+            .Where(a => a.Course.CourseStudents.Any(cs => cs.StudentId == studentId))
+            .OrderByDescending(a => a.CreatedAt)
+            .ToListAsync();
+
+        return _mapper.Map<List<AnnouncementDto>>(announcements);
+    }
+
+    public async Task<List<AnnouncementDto>> GetAnnouncementsByCourseIdAndStudentId(Guid studentId, Guid courseId)
+    {
+        await VerifyStudentCourse(studentId, courseId);
+        
+        var announcements = await _dbContext.Announcements
+            .Include(a => a.Course)
+            .Where(a => a.CourseId == courseId)
+            .OrderByDescending(a => a.CreatedAt)
+            .ToListAsync();
+
+        return _mapper.Map<List<AnnouncementDto>>(announcements);
+    }
+
+    public async Task<AnnouncementDto> GetAnnouncementByStudentId(Guid studentId, Guid announcementId)
+    {
+        var announcement = await VerifyStudentAnnouncement(studentId, announcementId);
+
+        return _mapper.Map<AnnouncementDto>(announcement);
+    }
+
+    // Student File Methods
+    public async Task<List<StudyFileDto>> GetFilesByAnnouncementIdAndStudentId(Guid studentId, Guid announcementId)
+    {
+        await VerifyStudentAnnouncement(studentId, announcementId);
+        
+        return await _studyFileService.GetFilesByAnnouncementId(announcementId);
+    }
+    
+
+    
+    // -----------------
+    // HELPER METHODS
+    // -----------------
+    private async Task<Course> VerifyTeacherCourse(
+        Guid teacherId,
+        Guid courseId)
+    {
+        var course = await _dbContext.Courses
+            .FirstOrDefaultAsync(c => c.Id == courseId);
+
+        if (course == null)
+            throw new KeyNotFoundException(
+                $"Course with id {courseId} not found.");
+
+        if (course.TeacherId != teacherId)
+            throw new UnauthorizedAccessException(
+                "Teacher does not have access to this course.");
+
+        return course;
+    }
+    
+    private async Task<Announcement> VerifyTeacherAnnouncement(
+        Guid teacherId,
+        Guid announcementId)
+    {
         var announcement = await _dbContext.Announcements
             .Include(a => a.Course)
-            .FirstOrDefaultAsync(a =>
-                a.Id == announcementId &&
-                a.Course.TeacherId == teacherId);
-        
+            .FirstOrDefaultAsync(a => a.Id == announcementId);
+
         if (announcement == null)
-            throw new KeyNotFoundException("Announcement not found");
-        
-        _dbContext.Announcements.Remove(announcement);
-        await _dbContext.SaveChangesAsync();       
+            throw new KeyNotFoundException(
+                $"Announcement with id {announcementId} not found.");
+
+        if (announcement.Course.TeacherId != teacherId)
+            throw new UnauthorizedAccessException(
+                "Teacher does not have access to this announcement.");
+
+        return announcement;
+    }
+    
+    private async Task<Course> VerifyStudentCourse(
+        Guid studentId,
+        Guid courseId)
+    {
+        var course = await _dbContext.Courses
+            .Include(c => c.CourseStudents)
+            .FirstOrDefaultAsync(c => c.Id == courseId);
+
+        if (course == null)
+            throw new KeyNotFoundException(
+                $"Course with id {courseId} not found.");
+
+        var isEnrolled = course.CourseStudents
+            .Any(cs => cs.StudentId == studentId);
+
+        if (!isEnrolled)
+            throw new UnauthorizedAccessException(
+                "Student does not have access to this course.");
+
+        return course;
+    }
+    
+    private async Task<Announcement> VerifyStudentAnnouncement(
+        Guid studentId,
+        Guid announcementId)
+    {
+        var announcement = await _dbContext.Announcements
+            .Include(a => a.Course)
+            .ThenInclude(c => c.CourseStudents)
+            .FirstOrDefaultAsync(a => a.Id == announcementId);
+
+        if (announcement == null)
+            throw new KeyNotFoundException(
+                $"Announcement with id {announcementId} not found.");
+
+        var isEnrolled = announcement.Course.CourseStudents
+            .Any(cs => cs.StudentId == studentId);
+
+        if (!isEnrolled)
+            throw new UnauthorizedAccessException(
+                "Student does not have access to this announcement.");
+
+        return announcement;
     }
 }

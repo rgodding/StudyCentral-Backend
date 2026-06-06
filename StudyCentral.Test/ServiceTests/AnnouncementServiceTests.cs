@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Models;
 using StudyCentral.API.Models.DTOs.Announcement;
 using StudyCentral.API.Models.Entities;
@@ -13,14 +12,14 @@ namespace StudyCentral.Test.ServiceTests;
 public class AnnouncementServiceTests
 {
     private readonly StudyDbContext _dbContext;
-    private readonly IMapper _mapper;
     private readonly AnnouncementService _service;
 
     public AnnouncementServiceTests()
     {
         _dbContext = ContextGenerator.GetStudyDbContext();
-        _mapper = MapperGenerator.GetMapper();
-        _service = new AnnouncementService(_dbContext, _mapper);
+        var mapper = MapperGenerator.GetMapper();
+        IStudyFileService fileService = new StudyFileServiceGenerator();
+        _service = new AnnouncementService(_dbContext, mapper, fileService);
     }
 
     // ----------------

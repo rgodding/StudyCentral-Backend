@@ -94,7 +94,14 @@ public class MappingProfile : Profile
     }
     private void CreateAnnouncementMappings()
     {
-        CreateMap<Announcement, AnnouncementDto>();
+        CreateMap<Announcement, AnnouncementDto>()
+            .ForMember(
+                dest => dest.CourseName,
+                opt => opt.MapFrom(src => src.Course.Name))
+            .ForMember(
+                dest => dest.FileCount,
+                opt => opt.MapFrom(src => src.StudyFiles.Count));
+        
         CreateMap<CreateAnnouncementDto, Announcement>();
     }
     private void CreateStudyFolderMappings()

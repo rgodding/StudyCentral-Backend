@@ -24,6 +24,9 @@ public static class SeedData
     private static readonly Guid AnnouncementId =
         Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
 
+    private readonly static Guid AnnouncementWithFileId =
+        Guid.Parse("abababab-abab-abab-abab-abababababab");
+
     private static readonly Guid AssignmentId =
         Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
 
@@ -38,12 +41,15 @@ public static class SeedData
 
     private static readonly Guid ChildFolderId =
         Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff");
-    
+
     private static readonly Guid StudyFileId =
         Guid.Parse("56565656-5656-5656-5656-565656565656");
 
     private static readonly Guid StudyFile2Id =
         Guid.Parse("67676767-6767-6767-6767-676767676767");
+    
+    private static readonly Guid FileAttachedToAnnouncementId =
+        Guid.Parse("78787878-7878-7878-7878-787878787878");
 
     private static readonly Guid TestFolderId =
         Guid.Parse("abababab-abab-abab-abab-abababababab");
@@ -158,7 +164,15 @@ public static class SeedData
                 Name = "Exam Information",
                 Content = "The final exam will take place in June.",
                 CourseId = CourseId
-            });
+            },
+            new Announcement
+            {
+                Id = AnnouncementWithFileId,
+                Name = "Announcement with File",
+                Content = "This announcement has an attached file.",
+                CourseId = CourseId
+            }
+        );
     }
 
     private static void SeedAssignments(
@@ -231,6 +245,7 @@ public static class SeedData
                 CourseId = CourseId
             });
     }
+
     private static void SeedFiles(
         ModelBuilder modelBuilder)
     {
@@ -258,6 +273,18 @@ public static class SeedData
                 Size = 204800,
                 AltText = "Week 1 lecture slides",
                 StudyFolderId = ChildFolderId,
+                UploadedById = TeacherId
+            },
+            new StudyFile
+            {
+                Id = FileAttachedToAnnouncementId,
+                FileName = "studycentral-testfile3.pdf",
+                BlobName = "studycentral-testfile3.pdf",
+                FileType = FileType.Pdf,
+                ContentType = "application/pdf",
+                Size = 102400,
+                AltText = "Announcement file",
+                AnnouncementId = AnnouncementWithFileId,
                 UploadedById = TeacherId
             });
     }

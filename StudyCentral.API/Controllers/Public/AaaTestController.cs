@@ -67,86 +67,52 @@ public class AaaTestController : BaseController
         if(!wiped)
             return BadRequest("Failed to wipe blob storage.");
         
-        var file1Path = Path.Combine(
+        var testDataPath = Path.Combine(
             _environment.WebRootPath,
-            "testdata",
-            "studycentral-testfile1.odt");
-
-        var file2Path = Path.Combine(
-            _environment.WebRootPath,
-            "testdata",
-            "studycentral-testfile2.odt");
-
-        if (!System.IO.File.Exists(file1Path))
-            return NotFound($"File not found: {file1Path}");
-
-        if (!System.IO.File.Exists(file2Path))
-            return NotFound($"File not found: {file2Path}");
+            "testdata");
         
-        await using var file1Stream = System.IO.File.OpenRead(file1Path);
-        await using var file2Stream = System.IO.File.OpenRead(file2Path);
+        if (!Directory.Exists(testDataPath))
+            return NotFound($"Test data directory not found: {testDataPath}");
         
-        var file1 = new FormFile(
-            file1Stream,
-            0,
-            file1Stream.Length,
-            "File",
-            "studycentral-testfile1.odt")
+        var files = Directory.GetFiles(testDataPath);
+        var uploadedFiles = new List<object>();
+
+        foreach (var filePath in files)
         {
-            Headers = new HeaderDictionary(),
-            ContentType = "application/vnd.oasis.opendocument.text"
-        };
-
-        var file2 = new FormFile(
-            file2Stream,
-            0,
-            file2Stream.Length,
-            "File",
-            "studycentral-testfile2.odt")
-        {
-            Headers = new HeaderDictionary(),
-            ContentType = "application/vnd.oasis.opendocument.text"
-        };
+            await using var stream = System.IO.File.OpenRead(filePath);
+            
+            var formFile = new FormFile(
+                stream,
+                0,
+                stream.Length,
+                "File",
+                Path.GetFileName(filePath))
+            {
+                Headers = new HeaderDictionary(),
+                ContentType = "application/octet-stream"
+            };
+            
+            var upload = await _blobService.UploadFileTest(
+                formFile.FileName,
+                formFile);
+            
+            uploadedFiles.Add(new
+            {
+                formFile.FileName,
+                upload.BlobName,
+                Size = formFile.Length
+            });
+        }
         
-        var upload1 = await _blobService.UploadFileTest(
-            file1.FileName,
-            file1);
-
-        var upload2 = await _blobService.UploadFileTest(
-            file2.FileName,
-            file2);
-
-        var file1Exists = await _blobService.FileExists(upload1.BlobName);
-        var file2Exists = await _blobService.FileExists(upload2.BlobName);
-
         var blobCount = await _blobService.GetBlobCount();
-
-        if (!file1Exists || !file2Exists)
-            return BadRequest("One or more seed files were not uploaded.");
-
-        if (blobCount != 2)
-            return BadRequest($"Expected 2 blobs but found {blobCount}.");
-
+        
         return Ok(new
         {
-            BlobCount = blobCount,
-            File1 = new
-            {
-                file1.FileName,
-                upload1.BlobName,
-                file1.ContentType,
-                Size = file1.Length,
-                Exists = file1Exists
-            },
-            File2 = new
-            {
-                file2.FileName,
-                upload2.BlobName,
-                file2.ContentType,
-                Size = file2.Length,
-                Exists = file2Exists
-            }
+            Message = "Blob storage reset and test files uploaded.",
+            UploadedFiles = uploadedFiles,
+            BlobCount = blobCount
         });
+        
     }
     
     [HttpGet("verify-study-files")]
