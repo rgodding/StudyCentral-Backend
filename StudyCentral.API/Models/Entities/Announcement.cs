@@ -12,7 +12,7 @@ public class Announcement
     public Course Course { get; set; } = null!;
     
     // Attachments
-    public ICollection<StudyFile> Files { get; set; } = new List<StudyFile>();
+    public ICollection<StudyFile> StudyFiles { get; set; } = new List<StudyFile>();
     
     // Audit
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

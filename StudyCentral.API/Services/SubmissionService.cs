@@ -63,7 +63,7 @@ public class SubmissionService : ISubmissionService
         var submissions = await _dbContext.Submissions
             .Include(s => s.Assignment)
             .Include(s => s.Student)
-            .Include(s => s.Files)
+            .Include(s => s.StudyFiles)
             .ToListAsync();
 
         return _mapper.Map<List<SubmissionDto>>(submissions);
@@ -74,7 +74,7 @@ public class SubmissionService : ISubmissionService
         var submission = await _dbContext.Submissions
             .Include(s => s.Assignment)
             .Include(s => s.Student)
-            .Include(s => s.Files)
+            .Include(s => s.StudyFiles)
             .FirstOrDefaultAsync(s => s.Id == submissionId);
 
         if (submission == null)
@@ -126,7 +126,7 @@ public class SubmissionService : ISubmissionService
         var result = await _dbContext.Submissions
             .Include(s => s.Assignment)
             .Include(s => s.Student)
-            .Include(s => s.Files)
+            .Include(s => s.StudyFiles)
             .FirstAsync(s => s.Id == submission.Id);
 
         return _mapper.Map<SubmissionDto>(result);
@@ -137,7 +137,7 @@ public class SubmissionService : ISubmissionService
         var submission = await _dbContext.Submissions
             .Include(s => s.Assignment)
             .Include(s => s.Student)
-            .Include(s => s.Files)
+            .Include(s => s.StudyFiles)
             .FirstOrDefaultAsync(s => s.Id == submissionId);
 
         if (submission == null)
@@ -172,7 +172,7 @@ public class SubmissionService : ISubmissionService
         var submissions = await _dbContext.Submissions
             .Include(s => s.Assignment)
             .Include(s => s.Student)
-            .Include(s => s.Files)
+            .Include(s => s.StudyFiles)
             .Where(s =>
                 s.AssignmentId == assignmentId &&
                 s.Assignment.Course.TeacherId == teacherId)
@@ -186,7 +186,7 @@ public class SubmissionService : ISubmissionService
         var submission = await _dbContext.Submissions
             .Include(s => s.Assignment)
             .Include(s => s.Student)
-            .Include(s => s.Files)
+            .Include(s => s.StudyFiles)
             .FirstOrDefaultAsync(s =>
                 s.Id == submissionId &&
                 s.Assignment.Course.TeacherId == teacherId);
@@ -202,7 +202,7 @@ public class SubmissionService : ISubmissionService
         var submission = await _dbContext.Submissions
             .Include(s => s.Assignment)
             .Include(s => s.Student)
-            .Include(s => s.Files)
+            .Include(s => s.StudyFiles)
             .FirstOrDefaultAsync(s =>
                 s.Id == submissionId &&
                 s.Assignment.Course.TeacherId == teacherId);
@@ -227,7 +227,7 @@ public class SubmissionService : ISubmissionService
         var submissions = await _dbContext.Submissions
             .Include(s => s.Assignment)
             .Include(s => s.Student)
-            .Include(s => s.Files)
+            .Include(s => s.StudyFiles)
             .Where(s => s.StudentId == studentId)
             .ToListAsync();
         
@@ -239,7 +239,7 @@ public class SubmissionService : ISubmissionService
         var submission = await _dbContext.Submissions
             .Include(s => s.Assignment)
             .Include(s => s.Student)
-            .Include(s => s.Files)
+            .Include(s => s.StudyFiles)
             .FirstOrDefaultAsync(s =>
                 s.Id == submissionId &&
                 s.StudentId == studentId);

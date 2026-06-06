@@ -18,10 +18,21 @@ public class StudyFile
     public Guid? StudyFolderId { get; set; }
     public StudyFolder? StudyFolder { get; set; }
 
-    public Guid UploadedById { get; set; }
-    public User UploadedBy { get; set; } = null!;
+    // Assignment
+    public Guid? AssignmentId { get; set; }
+    public Assignment? Assignment { get; set; }
+
+    // Announcement
+    public Guid? AnnouncementId { get; set; }
+    public Announcement? Announcement { get; set; }
+
+    // Submission
+    public Guid? SubmissionId { get; set; }
+    public Submission? Submission { get; set; }
     
     // Audit
+    public Guid UploadedById { get; set; }
+    public User UploadedBy { get; set; } = null!;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
 }

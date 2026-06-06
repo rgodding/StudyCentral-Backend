@@ -15,7 +15,7 @@ public class Submission
     public DateTime? GradedAt { get; set; }
     
     // Files
-    public ICollection<StudyFile> Files { get; set; } = new List<StudyFile>();
+    public ICollection<StudyFile> StudyFiles { get; set; } = new List<StudyFile>();
     
     // Assignment
     public Guid AssignmentId { get; set; }

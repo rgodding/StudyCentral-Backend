@@ -7,7 +7,6 @@ using StudyCentral.API.Models.DTOs.StudyFolder;
 using StudyCentral.API.Models.DTOs.Submission;
 using StudyCentral.API.Models.DTOs.User;
 using StudyCentral.API.Models.Entities;
-using StudyCentral.API.Services;
 
 namespace StudyCentral.API.Models;
 
@@ -51,7 +50,7 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.CourseName,
                 opt => opt.MapFrom(src => src.Course.Name))
             .ForMember(dest => dest.FileCount,
-                opt => opt.MapFrom(src => src.Files.Count));
+                opt => opt.MapFrom(src => src.StudyFiles.Count));
         CreateMap<Assignment, AssignmentDto>();
         CreateMap<CreateAssignmentDto, Assignment>();
     }
@@ -79,7 +78,7 @@ public class MappingProfile : Profile
 
             // Files
             .ForMember(dest => dest.FileCount,
-                opt => opt.MapFrom(src => src.Files.Count))
+                opt => opt.MapFrom(src => src.StudyFiles.Count))
 
             // Dates
             .ForMember(dest => dest.SubmittedAt,
@@ -106,6 +105,28 @@ public class MappingProfile : Profile
 
     private void CreateStudyFileMappings()
     {
-        CreateMap<StudyFile, StudyFileDto>();
+        CreateMap<StudyFile, StudyFileDto>()
+            .ForMember(
+                dest => dest.FileSize,
+                opt => opt.MapFrom(src => src.Size))
+            .ForMember(
+                dest => dest.UploadedByName,
+                opt => opt.MapFrom(src =>
+                    $"{src.UploadedBy.FirstName} {src.UploadedBy.LastName}".Trim()))
+            .ForMember(
+                dest => dest.OwnerType,
+                opt => opt.MapFrom(src =>
+                    src.StudyFolderId != null ? FileOwnerType.Folder :
+                    src.AssignmentId != null ? FileOwnerType.Assignment :
+                    src.AnnouncementId != null ? FileOwnerType.Announcement :
+                    src.SubmissionId != null ? FileOwnerType.Submission :
+                    (FileOwnerType?)null))
+            .ForMember(
+                dest => dest.OwnerId,
+                opt => opt.MapFrom(src =>
+                    src.StudyFolderId ??
+                    src.AssignmentId ??
+                    src.AnnouncementId ??
+                    src.SubmissionId));
     }
 }

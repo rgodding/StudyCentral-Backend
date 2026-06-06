@@ -215,38 +215,39 @@ public class StudyDbContext : DbContext
             .Property(f => f.AltText)
             .HasMaxLength(500);
 
-        // Many-to-one
-        // A file has one uploader and a user can upload many files
+        // Uploader
         modelBuilder.Entity<StudyFile>()
             .HasOne(f => f.UploadedBy)
             .WithMany(u => u.UploadedFiles)
             .HasForeignKey(f => f.UploadedById)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Many-to-many
-        // An assignment can contain many files
-        modelBuilder.Entity<Assignment>()
-            .HasMany(a => a.Files)
-            .WithMany();
-
-        // Many-to-many
-        // An announcement can contain many files
-        modelBuilder.Entity<Announcement>()
-            .HasMany(a => a.Files)
-            .WithMany();
-
-        // Many-to-many
-        // A submission can contain many files
-        modelBuilder.Entity<Submission>()
-            .HasMany(s => s.Files)
-            .WithMany();
-
-        // Many-to-one
-        // A file can belong to one folder, but a folder can contain many files
+        // Folder
         modelBuilder.Entity<StudyFile>()
             .HasOne(f => f.StudyFolder)
             .WithMany(f => f.StudyFiles)
             .HasForeignKey(f => f.StudyFolderId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // Assignment
+        modelBuilder.Entity<StudyFile>()
+            .HasOne(f => f.Assignment)
+            .WithMany(a => a.StudyFiles)
+            .HasForeignKey(f => f.AssignmentId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // Announcement
+        modelBuilder.Entity<StudyFile>()
+            .HasOne(f => f.Announcement)
+            .WithMany(a => a.StudyFiles)
+            .HasForeignKey(f => f.AnnouncementId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // Submission
+        modelBuilder.Entity<StudyFile>()
+            .HasOne(f => f.Submission)
+            .WithMany(s => s.StudyFiles)
+            .HasForeignKey(f => f.SubmissionId)
             .OnDelete(DeleteBehavior.SetNull);
     }
 

@@ -56,7 +56,7 @@ public class AssignmentService : IAssignmentService
     {
         var assignments = await _dbContext.Assignments
             .Include(a => a.Course)
-            .Include(a => a.Files)
+            .Include(a => a.StudyFiles)
             .ToListAsync();
 
         return _mapper.Map<List<AssignmentDto>>(assignments);

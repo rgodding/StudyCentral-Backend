@@ -9,22 +9,43 @@ namespace StudyCentral.API.Services;
 
 public interface IStudyFileService
 {
+    // Blob Operations
     Task<StudyFile> UploadFile(IFormFile file, Guid userId, FileType type, string? altText = null);
-
     Task DeleteFile(Guid fileId);
-
     Task<string> GetFileUrl(Guid fileId);
+
+    // Folder Operations
+    Task<List<StudyFileDto>> GetFilesByFolderId(Guid folderId);
+    Task AttachToFolder(Guid fileId, Guid folderId);
+    Task RemoveFromFolder(Guid fileId);
+
+    // Announcement
+    Task<List<StudyFileDto>> GetFilesByAnnouncementId(Guid announcementId);
+    Task AttachToAnnouncement(Guid fileId, Guid announcementId);
+    Task RemoveFromAnnouncement(Guid fileId, Guid announcementId);
+
+    // Assignment
+    Task<List<StudyFileDto>> GetFilesByAssignmentId(Guid assignmentId);
+    Task AttachToAssignment(Guid fileId, Guid assignmentId);
+    Task RemoveFromAssignment(Guid fileId, Guid assignmentId);
+
+    // Submission
+    Task<List<StudyFileDto>> GetFilesBySubmissionId(Guid submissionId);
+    Task AttachToSubmission(Guid fileId, Guid submissionId);
+    Task RemoveFromSubmission(Guid fileId, Guid submissionId);
 }
 
 public class StudyFileService : IStudyFileService
 {
     private readonly StudyDbContext _dbContext;
+    private readonly IMapper _mapper;
     private readonly IBlobService _blobService;
 
-    public StudyFileService(StudyDbContext dbContext, IBlobService blobService)
+    public StudyFileService(StudyDbContext dbContext, IBlobService blobService, IMapper mapper)
     {
         _dbContext = dbContext;
         _blobService = blobService;
+        _mapper = mapper;
     }
 
     public async Task<StudyFile> UploadFile(
@@ -116,4 +137,119 @@ public class StudyFileService : IStudyFileService
                 ex);
         }
     }
+
+    // -----------------
+    // Folder Operations
+    // -----------------
+    public async Task<List<StudyFileDto>> GetFilesByFolderId(Guid folderId)
+    {
+        var folder = await _dbContext.StudyFolders
+            .FirstOrDefaultAsync(f => f.Id == folderId);
+
+        if (folder == null)
+            throw new KeyNotFoundException(
+                $"Folder with ID '{folderId}' not found");
+
+        var files = await _dbContext.StudyFiles
+            .Where(f => f.StudyFolderId == folderId)
+            .ToListAsync();
+
+        return _mapper.Map<List<StudyFileDto>>(files);
+    }
+
+    public async Task AttachToFolder(Guid fileId, Guid folderId)
+    {
+        var file = await _dbContext.StudyFiles
+            .FirstOrDefaultAsync(f => f.Id == fileId);
+
+        if (file == null)
+            throw new KeyNotFoundException($"File with ID '{fileId}' not found");
+
+        var folder = await _dbContext.StudyFolders
+            .FirstOrDefaultAsync(f => f.Id == folderId);
+
+        if (folder == null)
+            throw new KeyNotFoundException($"Folder with ID '{folderId}' not found");
+
+        if (file.StudyFolderId == folderId)
+            throw new InvalidOperationException("File is already in the target folder");
+
+        file.StudyFolderId = folderId;
+
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task RemoveFromFolder(Guid fileId)
+    {
+        var file = await _dbContext.StudyFiles
+            .FirstOrDefaultAsync(f => f.Id == fileId);
+
+        if (file == null)
+            throw new KeyNotFoundException($"File with ID '{fileId}' not found");
+
+        if (file.StudyFolderId == null)
+            throw new InvalidOperationException("File is not in any folder");
+
+        file.StudyFolderId = null;
+
+        await _dbContext.SaveChangesAsync();
+    }
+
+    // -----------------
+    // Announcement Operations
+    // -----------------
+    public async Task<List<StudyFileDto>> GetFilesByAnnouncementId(Guid announcementId)
+    {
+        throw new NotImplementedException();
+    }
+    
+    public async Task AttachToAnnouncement(Guid fileId, Guid announcementId)
+    {
+        throw new NotImplementedException();
+    }
+    
+    public async Task RemoveFromAnnouncement(Guid fileId, Guid announcementId)
+    {
+        throw new NotImplementedException();
+    }
+    
+    // -----------------
+    // Assignment Operations
+    // -----------------
+    
+    public async Task<List<StudyFileDto>> GetFilesByAssignmentId(Guid assignmentId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task AttachToAssignment(Guid fileId, Guid assignmentId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task RemoveFromAssignment(Guid fileId, Guid assignmentId)
+    {
+        throw new NotImplementedException();
+    }
+
+    // -----------------
+    // Submission Operations
+    // -----------------
+    public async Task<List<StudyFileDto>> GetFilesBySubmissionId(Guid submissionId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task AttachToSubmission(Guid fileId, Guid submissionId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task RemoveFromSubmission(Guid fileId, Guid submissionId)
+    {
+        throw new NotImplementedException();
+    }
+
+
+
 }

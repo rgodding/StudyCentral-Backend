@@ -13,7 +13,7 @@ public class Assignment
     public Course Course { get; set; } = null!;
 
     // Files
-    public ICollection<StudyFile> Files { get; set; }
+    public ICollection<StudyFile> StudyFiles { get; set; }
         = new List<StudyFile>();
 
     // Student submissions

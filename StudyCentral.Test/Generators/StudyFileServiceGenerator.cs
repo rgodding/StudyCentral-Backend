@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using StudyCentral.API.Models.DTOs.StudyFile;
 using StudyCentral.API.Models.Entities;
 using StudyCentral.API.Services;
 
@@ -44,5 +45,65 @@ public class StudyFileServiceGenerator : IStudyFileService
     {
         return Task.FromResult(
             $"https://fake-storage/files/{fileId}");
+    }
+
+    public async Task<List<StudyFileDto>> GetFilesByFolderId(Guid folderId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task AttachToFolder(Guid fileId, Guid folderId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task RemoveFromFolder(Guid fileId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<List<StudyFileDto>> GetFilesByAnnouncementId(Guid announcementId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task AttachToAnnouncement(Guid fileId, Guid announcementId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task RemoveFromAnnouncement(Guid fileId, Guid announcementId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<List<StudyFileDto>> GetFilesByAssignmentId(Guid assignmentId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task AttachToAssignment(Guid fileId, Guid assignmentId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task RemoveFromAssignment(Guid fileId, Guid assignmentId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<List<StudyFileDto>> GetFilesBySubmissionId(Guid submissionId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task AttachToSubmission(Guid fileId, Guid submissionId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task RemoveFromSubmission(Guid fileId, Guid submissionId)
+    {
+        throw new NotImplementedException();
     }
 }
