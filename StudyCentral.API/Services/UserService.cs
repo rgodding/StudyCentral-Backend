@@ -203,7 +203,7 @@ public class UserService : IUserService
             user.ProfilePictureId = null;
         }
 
-        var profilePicture = await _studyFileService.UploadFile(file, userId, FileType.Image);
+        var profilePicture = await _studyFileService.UploadFile(file, userId);
 
         user.ProfilePicture = profilePicture;
         user.ProfilePictureId = profilePicture.Id;

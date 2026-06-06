@@ -10,7 +10,7 @@ namespace StudyCentral.API.Services;
 public interface IStudyFileService
 {
     // Blob Operations
-    Task<StudyFile> UploadFile(IFormFile file, Guid userId, FileType type, string? altText = null);
+    Task<StudyFile> UploadFile(IFormFile file, Guid userId, string? altText = null);
     Task DeleteFile(Guid fileId);
     Task<string> GetFileUrl(Guid fileId);
 
@@ -51,7 +51,6 @@ public class StudyFileService : IStudyFileService
     public async Task<StudyFile> UploadFile(
         IFormFile file,
         Guid userId,
-        FileType type,
         string? altText = null)
     {
         var userExists = await _dbContext.Users
@@ -84,7 +83,7 @@ public class StudyFileService : IStudyFileService
             BlobName = uploadResult.BlobName,
             ContentType = uploadResult.ContentType,
             Size = file.Length,
-            FileType = type,
+            FileType = GetFileType(file),
             AltText = altText,
             UploadedById = userId
         };
@@ -249,6 +248,40 @@ public class StudyFileService : IStudyFileService
     {
         throw new NotImplementedException();
     }
+    
+    
+    // -----------------
+     // Helper Methods
+     // -----------------
+     
+     private FileType GetFileType(IFormFile file)
+     {
+         var contentType = file.ContentType.ToLower();
+
+         if (contentType.StartsWith("image/"))
+             return FileType.Image;
+
+         if (contentType.StartsWith("video/"))
+             return FileType.Video;
+
+         if (contentType.StartsWith("audio/"))
+             return FileType.Audio;
+
+         if (contentType == "application/pdf")
+             return FileType.Pdf;
+
+         if (contentType.StartsWith("text/") ||
+             contentType.Contains("word") ||
+             contentType.Contains("document") ||
+             contentType.Contains("officedocument") ||
+             contentType.Contains("excel") ||
+             contentType.Contains("spreadsheet") ||
+             contentType.Contains("powerpoint") ||
+             contentType.Contains("presentation"))
+             return FileType.Document;
+
+         return FileType.Other;
+     }
 
 
 

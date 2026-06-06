@@ -21,7 +21,6 @@ public class StudyFileServiceGenerator : IStudyFileService
     public Task<StudyFile> UploadFile(
         IFormFile file,
         Guid userId,
-        FileType type,
         string? altText = null)
     {
         return Task.FromResult(new StudyFile
@@ -31,7 +30,7 @@ public class StudyFileServiceGenerator : IStudyFileService
             BlobName = $"test-blob-{Guid.NewGuid()}",
             ContentType = file.ContentType ?? "image/png",
             UploadedById = userId,
-            FileType = type,
+            FileType = FileType.Image,
             AltText = altText
         });
     }
