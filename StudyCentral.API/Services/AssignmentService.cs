@@ -297,7 +297,7 @@ public class AssignmentService : IAssignmentService
 
     public async Task DeleteFileFromAssignmentByTeacherId(Guid teacherId, Guid assignmentId, Guid fileId)
     {
-        var assignment = await VerifyTeacherAssignment(teacherId, assignmentId);
+        await VerifyTeacherAssignment(teacherId, assignmentId);
         
         var file = await _dbContext.StudyFiles
             .FirstOrDefaultAsync(f =>
