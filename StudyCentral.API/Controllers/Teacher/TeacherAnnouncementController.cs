@@ -7,7 +7,7 @@ using StudyCentral.API.Services;
 namespace StudyCentral.API.Controllers.Teacher;
 
 [ApiController]
-[Route("api/teacher/announcement")]
+[Route("api/teacher/announcements")]
 public class TeacherAnnouncementController : BaseTeacherController
 {
     private readonly IAnnouncementService _announcementService;
