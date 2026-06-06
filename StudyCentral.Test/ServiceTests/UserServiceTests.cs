@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using StudyCentral.API.Authentication;
 using StudyCentral.API.Models;
+using StudyCentral.API.Models.ApiModels.Account;
 using StudyCentral.API.Models.DTOs.User;
 using StudyCentral.API.Models.Entities;
 using StudyCentral.API.Services;
@@ -15,7 +17,7 @@ public class UserServiceTests
     private readonly StudyDbContext _dbContext;
     private readonly IMapper _mapper;
     private readonly UserService _service;
-    
+
     public UserServiceTests()
     {
         _dbContext = ContextGenerator.GetStudyDbContext();
@@ -42,10 +44,10 @@ public class UserServiceTests
             TestUserFactory.Create(),
             TestUserFactory.Create()
         };
-        
+
         _dbContext.AddRange(users);
         await _dbContext.SaveChangesAsync();
-        
+
         // Act
         var result = await _service.GetAll();
 
@@ -58,10 +60,10 @@ public class UserServiceTests
     public async Task GetAll_WhenNoUsers_ReturnsEmptyList()
     {
         // Arrange
-        
+
         // Act
         var result = await _service.GetAll();
-        
+
         // Assert
         Assert.NotNull(result);
         Assert.Empty(result);
@@ -76,13 +78,13 @@ public class UserServiceTests
         // Arrange
         var userId = Guid.NewGuid();
         var user = TestUserFactory.Create(id: userId);
-        
+
         _dbContext.Add(user);
         await _dbContext.SaveChangesAsync();
-        
+
         // Act
         var result = await _service.GetById(userId);
-        
+
         // Assert
         Assert.NotNull(result);
         Assert.Equal(userId, result.Id);
@@ -91,21 +93,21 @@ public class UserServiceTests
         Assert.Equal(user.Role, result.Role);
         Assert.Equal(user.Email, result.Email);
     }
-    
+
     [Fact]
     public async Task GetById_WhenUserDoesNotExist_ThrowsKeyNotFoundException()
     {
         // Arrange
         var userId = Guid.NewGuid();
-        
+
         // Act & Assert
         await Assert.ThrowsAsync<KeyNotFoundException>(() => _service.GetById(userId));
     }
-    
+
     // ----------------
     // Create
     // ----------------
-    
+
     [Fact]
     public async Task Create_WhenValidData_ReturnsCreatedUser()
     {
@@ -118,10 +120,10 @@ public class UserServiceTests
             Password = "testPassword",
             Role = UserRole.Student
         };
-        
+
         // Act
         var result = await _service.Create(dto);
-        
+
         // Assert
         Assert.NotNull(result);
         Assert.Equal(dto.FirstName, result.FirstName);
@@ -152,7 +154,7 @@ public class UserServiceTests
         // Act & Assert
         await Assert.ThrowsAsync<InvalidOperationException>(() => _service.Create(dto));
     }
-    
+
     // ----------------
     // Update
     // ----------------
@@ -162,27 +164,27 @@ public class UserServiceTests
         // Arrange
         var userId = Guid.NewGuid();
         var user = TestUserFactory.Create(id: userId);
-        
+
         _dbContext.Add(user);
         await _dbContext.SaveChangesAsync();
-        
+
         var dto = new UpdateUserDto
         {
             FirstName = "Updated",
             LastName = "User",
             Email = $"updated{Guid.NewGuid()}@example.com"
         };
-        
+
         // Act
         var result = await _service.Update(userId, dto);
-        
+
         // Assert
         Assert.NotNull(result);
         Assert.Equal(dto.FirstName, result.FirstName);
         Assert.Equal(dto.LastName, result.LastName);
         Assert.Equal(dto.Email, result.Email);
     }
-    
+
     [Fact]
     public async Task Update_WhenUserDoesNotExist_ThrowsKeyNotFoundException()
     {
@@ -198,20 +200,20 @@ public class UserServiceTests
         // Act & Assert
         await Assert.ThrowsAsync<KeyNotFoundException>(() => _service.Update(userId, dto));
     }
-    
+
     [Fact]
     public async Task Update_WhenEmailAlreadyExists_ThrowsInvalidOperationException()
     {
         // Arrange
         var userId = Guid.NewGuid();
         var existingEmail = $"existing{Guid.NewGuid()}@example.com";
-        
+
         var user = TestUserFactory.Create(id: userId);
         var existingUser = TestUserFactory.Create(email: existingEmail);
-        
+
         _dbContext.AddRange(user, existingUser);
         await _dbContext.SaveChangesAsync();
-        
+
         var dto = new UpdateUserDto
         {
             FirstName = "Updated",
@@ -222,7 +224,7 @@ public class UserServiceTests
         // Act & Assert
         await Assert.ThrowsAsync<InvalidOperationException>(() => _service.Update(userId, dto));
     }
-    
+
     [Theory]
     [InlineData("new@mail.com", "John", "Doe")]
     [InlineData(null, "UpdatedFirst", null)]
@@ -266,38 +268,220 @@ public class UserServiceTests
         Assert.Equal(newFirstName ?? "Original", updated.FirstName);
         Assert.Equal(newLastName ?? "User", updated.LastName);
     }
-    
+
     // ----------------
     // Delete
     // ----------------
-    
+
     [Fact]
     public async Task Delete_WhenUserExists_DeletesUser()
     {
         // Arrange
         var userId = Guid.NewGuid();
         var user = TestUserFactory.Create(id: userId);
-        
+
         _dbContext.Add(user);
         await _dbContext.SaveChangesAsync();
-        
+
         // Act
         await _service.Delete(userId);
-        
+
         // Assert
         var deletedUser = await _dbContext.Users.FindAsync(userId);
         Assert.Null(deletedUser);
     }
-    
+
     [Fact]
     public async Task Delete_WhenUserDoesNotExist_ThrowsKeyNotFoundException()
     {
         // Arrange
         var userId = Guid.NewGuid();
-        
+
         // Act & Assert
         await Assert.ThrowsAsync<KeyNotFoundException>(() => _service.Delete(userId));
     }
+
+    // ----------------
+    // GetMe
+    // ----------------
+
+    [Fact]
+    public async Task GetMe_WhenUserExists_ReturnsUser()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var user = TestUserFactory.Create(id: userId);
+
+        _dbContext.Add(user);
+        await _dbContext.SaveChangesAsync();
+
+        // Act
+        var result = await _service.GetMe(userId);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(userId, result.Id);
+        Assert.Equal(user.FirstName, result.FirstName);
+        Assert.Equal(user.LastName, result.LastName);
+        Assert.Equal(user.Role, result.Role);
+        Assert.Equal(user.Email, result.Email);
+    }
+
+    [Fact]
+    public async Task GetMe_WhenDoesNotExist_ThrowsKeyNotFoundException()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+
+        // Act & Assert
+        await Assert.ThrowsAsync<KeyNotFoundException>(() => _service.GetMe(userId));
+    }
+
+    // -----------------
+    // UpdateMe
+    // -----------------
+
+    [Fact]
+    public async Task UpdateMe_WhenUserExists_ReturnsUpdatedUser()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var user = TestUserFactory.Create(id: userId);
+
+        _dbContext.Add(user);
+        await _dbContext.SaveChangesAsync();
+
+        var dto = new UpdateMeRequest
+        {
+            FirstName = "Updated",
+            LastName = "User",
+            Email = $"updated{Guid.NewGuid()}@example.com"
+        };
+
+        // Act
+        var result = await _service.UpdateMe(userId, dto);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(dto.FirstName, result.FirstName);
+        Assert.Equal(dto.LastName, result.LastName);
+        Assert.Equal(dto.Email, result.Email);
+    }
+
+    [Fact]
+    public async Task UpdateMe_WhenUserDoesNotExist_ThrowsKeyNotFoundException()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var dto = new UpdateMeRequest
+        {
+            FirstName = "Updated",
+            LastName = "User",
+            Email = $"updated{Guid.NewGuid()}@example.com"
+        };
+
+        // Act & Assert
+        await Assert.ThrowsAsync<KeyNotFoundException>(() => _service.UpdateMe(userId, dto));
+    }
+
+    [Theory]
+    [InlineData("updatedFirstName", "updatedLastName", "updated@example.com")]
+    [InlineData(null, "updatedLastName", null)]
+    [InlineData("updatedFirstName", null, null)]
+    [InlineData(null, null, null)]
+    [InlineData(null, null, "updated@example.com")]
+    public async Task UpdateMe_WhenVariousInputs_AppliesCorrectChanges(
+        string? newFirstName,
+        string? newLastName,
+        string? newEmail)
+    {
+        // Arrange
+        var user = TestUserFactory.Create(firstName: "OriginalFirst", lastName: "OriginalLast", email: "original@example.com");
+
+        _dbContext.Add(user);
+        await _dbContext.SaveChangesAsync();
+
+        var dto = new UpdateMeRequest
+        {
+            FirstName = newFirstName,
+            LastName = newLastName,
+            Email = newEmail
+        };
+
+        // Act
+        var result = await _service.UpdateMe(user.Id, dto);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(newFirstName ?? "OriginalFirst", result.FirstName);
+        Assert.Equal(newLastName ?? "OriginalLast", result.LastName);
+        Assert.Equal(newEmail ?? "original@example.com", result.Email);
+    }
+
+
+    // -----------------
+    // UpdateMe
+    // -----------------
+
+    [Fact]
+    public async Task ChangePassword_WhenValidData_ChangesPassword()
+    {
+        // Arrange
+        var oldPassword = PasswordHelper.HashPassword("oldPassword");
+        var user = TestUserFactory.Create(passwordHash: oldPassword);
+        
+        _dbContext.Add(user);
+        await _dbContext.SaveChangesAsync();
+        
+        var dto = new ChangePasswordRequest
+        {
+            CurrentPassword = "oldPassword",
+            NewPassword = "newPassword"
+        };
+        
+        // Act
+        await _service.ChangePassword(user.Id, dto);
+        
+        // Assert
+        var updatedUser = await _dbContext.Users.FindAsync(user.Id);
+        Assert.NotNull(updatedUser);
+        Assert.True(PasswordHelper.VerifyHash("newPassword", updatedUser.PasswordHash));
+    }
+    
+    [Fact]
+    public async Task ChangePassword_WhenCurrentPasswordIsIncorrect_ThrowsUnauthorizedAccessException(){
+        // Arrange
+        var user = TestUserFactory.Create(passwordHash: PasswordHelper.HashPassword("correctPassword"));
+        
+        _dbContext.Add(user);
+        await _dbContext.SaveChangesAsync();
+        
+        var dto = new ChangePasswordRequest
+        {
+            CurrentPassword = "wrongPassword",
+            NewPassword = "newPassword"
+        };
+        
+        // Act & Assert
+        await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _service.ChangePassword(user.Id, dto));
+    }
+    
+    [Fact]
+    public async Task ChangePassword_WhenUserDoesNotExist_ThrowsKeyNotFoundException()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var dto = new ChangePasswordRequest
+        {
+            CurrentPassword = "anyPassword",
+            NewPassword = "newPassword"
+        };
+        
+        // Act & Assert
+        await Assert.ThrowsAsync<KeyNotFoundException>(() => _service.ChangePassword(userId, dto));
+    }
+    
+    
     
     
     
