@@ -10,9 +10,9 @@ namespace StudyCentral.API.Services;
 public interface IStudyFileService
 {
     // Blob Operations
+    Task<BlobFileResult> DownloadFile(Guid fileId);
     Task<StudyFile> UploadFile(IFormFile file, Guid userId, string? altText = null);
     Task DeleteFile(Guid fileId);
-    Task<string> GetFileUrl(Guid fileId);
 
     // Folder Operations
     Task<List<StudyFileDto>> GetFilesByFolderId(Guid folderId);
@@ -51,7 +51,18 @@ public class StudyFileService : IStudyFileService
     // -----------------
     // Blob Operations
     // -----------------
-    
+
+    public async Task<BlobFileResult> DownloadFile(Guid fileId)
+    {
+        var file = await _dbContext.StudyFiles
+            .FirstOrDefaultAsync(f => f.Id == fileId);
+        
+        if (file == null)
+            throw new KeyNotFoundException($"File with ID '{fileId}' not found");
+        
+        return await _blobService.GetFile(file.BlobName);
+    }
+
     public async Task<StudyFile> UploadFile(
         IFormFile file,
         Guid userId,

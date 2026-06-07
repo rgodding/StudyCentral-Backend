@@ -18,6 +18,11 @@ public class StudyFileServiceGenerator : IStudyFileService
         });
     }
 
+    public async Task<BlobFileResult> DownloadFile(Guid fileId)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<StudyFile> UploadFile(
         IFormFile file,
         Guid userId,
