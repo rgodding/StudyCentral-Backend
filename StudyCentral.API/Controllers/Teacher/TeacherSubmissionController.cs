@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using StudyCentral.API.Models.ApiModels.Submission;
 using StudyCentral.API.Models.DTOs.StudyFile;
 using StudyCentral.API.Models.DTOs.Submission;
 using StudyCentral.API.Services;
@@ -34,9 +33,9 @@ public class TeacherSubmissionController : BaseTeacherController
     }
 
     [HttpPost("{submissionId}/grade")]
-    public async Task<IActionResult> GradeSubmission(Guid submissionId, [FromBody] GradeSubmissionRequest request)
+    public async Task<IActionResult> GradeSubmission(Guid submissionId, [FromBody] GradeSubmissionDto dto)
     {
-        var grade = await _submissionService.GradeSubmissionByTeacherId(CurrentUser.Id, submissionId, request);
+        var grade = await _submissionService.GradeSubmissionByTeacherId(CurrentUser.Id, submissionId, dto);
         return Ok(grade);
     }
 

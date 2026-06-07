@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Authentication;
 using StudyCentral.API.Models;
-using StudyCentral.API.Models.ApiModels.Account;
 using StudyCentral.API.Models.DTOs.Admin.User;
 using StudyCentral.API.Models.DTOs.User;
 using StudyCentral.API.Models.Entities;
@@ -24,8 +23,8 @@ public interface IUserService
 
     // User Management
     Task<UserDto> GetMe(Guid userId);
-    Task<UserDto> UpdateMe(Guid userId, UpdateMeRequest request);
-    Task ChangePassword(Guid userId, ChangePasswordRequest request);
+    Task<UserDto> UpdateMe(Guid userId, UpdateUserDto dto);
+    Task ChangePassword(Guid userId, ChangePasswordDto dto);
 
     // File Management
     Task AddProfilePicture(Guid userId, IFormFile file);
@@ -190,7 +189,7 @@ public class UserService : IUserService
         return _mapper.Map<UserDto>(user);
     }
 
-    public async Task<UserDto> UpdateMe(Guid userId, UpdateMeRequest request)
+    public async Task<UserDto> UpdateMe(Guid userId, UpdateUserDto dto)
     {
         var user = await _dbContext.Users
             .Include(u => u.ProfilePicture)
@@ -199,9 +198,9 @@ public class UserService : IUserService
         if (user == null)
             throw new KeyNotFoundException("User not found");
 
-        user.FirstName = request.FirstName ?? user.FirstName;
-        user.LastName = request.LastName ?? user.LastName;
-        user.Email = request.Email ?? user.Email;
+        user.FirstName = dto.FirstName ?? user.FirstName;
+        user.LastName = dto.LastName ?? user.LastName;
+        user.Email = dto.Email ?? user.Email;
         user.UpdatedAt = DateTime.UtcNow;
 
         await _dbContext.SaveChangesAsync();
@@ -210,7 +209,7 @@ public class UserService : IUserService
 
     public async Task ChangePassword(
         Guid userId,
-        ChangePasswordRequest request)
+        ChangePasswordDto dto)
     {
         var user = await _dbContext.Users
             .FirstOrDefaultAsync(u => u.Id == userId);
@@ -219,7 +218,7 @@ public class UserService : IUserService
             throw new KeyNotFoundException("User not found");
 
         if (!PasswordHelper.VerifyHash(
-                request.CurrentPassword,
+                dto.CurrentPassword,
                 user.PasswordHash))
         {
             throw new UnauthorizedAccessException(
@@ -227,7 +226,7 @@ public class UserService : IUserService
         }
 
         user.PasswordHash =
-            PasswordHelper.HashPassword(request.NewPassword);
+            PasswordHelper.HashPassword(dto.NewPassword);
 
         user.UpdatedAt = DateTime.UtcNow;
 

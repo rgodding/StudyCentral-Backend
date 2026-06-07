@@ -7,8 +7,6 @@ using StudyCentral.API.Models;
 using StudyCentral.API.Models.DTOs.User;
 using StudyCentral.API.Services;
 using StudyCentral.API.Utilities;
-using LoginRequest = StudyCentral.API.Models.ApiModels.Auth.LoginRequest;
-
 namespace StudyCentral.API.Controllers.Public;
 
 [ApiController]
@@ -41,7 +39,7 @@ public class AaaTestController : BaseController
     public async Task<ActionResult<UserDto>> LoginAdmin()
     {
 
-        var result = await _authService.Login(TestLoginRequests.Admin);
+        var result = await _authService.Login(TestLoginDto.Admin);
         SetAuthCookie(result.Token);
         return Ok(result.User);
     }
@@ -49,7 +47,7 @@ public class AaaTestController : BaseController
     [HttpGet("login-teacher")]
     public async Task<ActionResult<UserDto>> LoginTeacher()
     {
-        var result = await _authService.Login(TestLoginRequests.Teacher);
+        var result = await _authService.Login(TestLoginDto.Teacher);
         SetAuthCookie(result.Token);
         return Ok(result.User);
     }
@@ -57,7 +55,7 @@ public class AaaTestController : BaseController
     [HttpGet("login-student")]
     public async Task<ActionResult<UserDto>> LoginStudent()
     {
-        var result = await _authService.Login(TestLoginRequests.Student);
+        var result = await _authService.Login(TestLoginDto.Student);
         SetAuthCookie(result.Token);
         return Ok(result.User);
     }

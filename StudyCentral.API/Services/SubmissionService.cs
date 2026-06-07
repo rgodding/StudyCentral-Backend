@@ -2,7 +2,6 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Models;
-using StudyCentral.API.Models.ApiModels.Submission;
 using StudyCentral.API.Models.DTOs.Admin.Submission;
 using StudyCentral.API.Models.DTOs.StudyFile;
 using StudyCentral.API.Models.DTOs.Submission;
@@ -25,7 +24,7 @@ public interface ISubmissionService
     // Teacher Methods
     Task<List<SubmissionDto>> GetSubmissionsByAssignmentIdAndTeacherId(Guid teacherId, Guid assignmentId);
     Task<SubmissionDto> GetSubmissionByTeacherId(Guid teacherId, Guid submissionId);
-    Task<SubmissionDto> GradeSubmissionByTeacherId(Guid teacherId, Guid submissionId, GradeSubmissionRequest request);
+    Task<SubmissionDto> GradeSubmissionByTeacherId(Guid teacherId, Guid submissionId, GradeSubmissionDto dto);
     Task<List<StudyFileDto>> GetSubmissionFilesByTeacherId(Guid teacherId, Guid submissionId);
 
     // Student Methods
@@ -253,7 +252,7 @@ public class SubmissionService : ISubmissionService
     public async Task<SubmissionDto> GradeSubmissionByTeacherId(
         Guid teacherId,
         Guid submissionId,
-        GradeSubmissionRequest request)
+        GradeSubmissionDto dto)
     {
         var submission = await VerifyTeacherSubmission(
             teacherId,
@@ -261,8 +260,8 @@ public class SubmissionService : ISubmissionService
 
         VerifySubmissionGradeable(submission);
         
-        submission.Grade = request.Grade;
-        submission.Feedback = request.Feedback;
+        submission.Grade = dto.Grade;
+        submission.Feedback = dto.Feedback;
         submission.GradedAt = DateTime.UtcNow;
         submission.UpdatedAt = DateTime.UtcNow;
 

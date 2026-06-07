@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Authentication;
 using StudyCentral.API.Middleware;
 using StudyCentral.API.Models;
-using StudyCentral.API.Models.ApiModels.Auth;
+using StudyCentral.API.Models.DTOs.Auth;
 using StudyCentral.API.Models.Entities;
 using StudyCentral.API.Services;
 using StudyCentral.Test.Generators;
@@ -41,7 +41,7 @@ public class AuthServiceTests
     public async Task Register_ValidData_ReturnsSuccess()
     {
         // Arrange
-        var dto = new RegisterRequest
+        var dto = new RegisterDto
         {
             Email = "test@test.com",
             Password = "testPassword",
@@ -87,7 +87,7 @@ public class AuthServiceTests
         _dbContext.Users.Add(existingUser);
         await _dbContext.SaveChangesAsync();
 
-        var dto = new RegisterRequest
+        var dto = new RegisterDto
         {
             Email = "test@test.com",
             Password = "newPassword",
@@ -111,8 +111,6 @@ public class AuthServiceTests
     public async Task Login_ValidCredentials_ReturnsSuccess()
     {
         // Arrange
-
-
         var user = new User
         {
             Email = "test@test.com",
@@ -125,7 +123,7 @@ public class AuthServiceTests
         _dbContext.Users.Add(user);
         await _dbContext.SaveChangesAsync();
 
-        var dto = new LoginRequest
+        var dto = new LoginDto
         {
             Email = "test@test.com",
             Password = "testPassword"
@@ -158,7 +156,7 @@ public class AuthServiceTests
         _dbContext.Users.Add(user);
         await _dbContext.SaveChangesAsync();
 
-        var dto = new LoginRequest
+        var dto = new LoginDto
         {
             Email = "test@test.com",
             Password = "wrongPassword"
@@ -178,7 +176,7 @@ public class AuthServiceTests
         // Arrange
 
 
-        var dto = new LoginRequest
+        var dto = new LoginDto
         {
             Email = "nonexistent@test.com",
             Password = "anyPassword"

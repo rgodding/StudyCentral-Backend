@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Authentication;
 using StudyCentral.API.Models;
-using StudyCentral.API.Models.ApiModels.Account;
 using StudyCentral.API.Models.DTOs.User;
 using StudyCentral.API.Models.Entities;
 using StudyCentral.API.Services;
@@ -15,16 +13,15 @@ namespace StudyCentral.Test.ServiceTests;
 public class UserServiceTests
 {
     private readonly StudyDbContext _dbContext;
-    private readonly IMapper _mapper;
     private readonly UserService _service;
 
     public UserServiceTests()
     {
         _dbContext = ContextGenerator.GetStudyDbContext();
-        _mapper = MapperGenerator.GetMapper();
+        var mapper = MapperGenerator.GetMapper();
         _service = new UserService(
             _dbContext,
-            _mapper,
+            mapper,
             new StudyFileServiceGenerator());
     }
 
@@ -351,7 +348,7 @@ public class UserServiceTests
         _dbContext.Add(user);
         await _dbContext.SaveChangesAsync();
 
-        var dto = new UpdateMeRequest
+        var dto = new UpdateUserDto
         {
             FirstName = "Updated",
             LastName = "User",
@@ -373,7 +370,7 @@ public class UserServiceTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var dto = new UpdateMeRequest
+        var dto = new UpdateUserDto
         {
             FirstName = "Updated",
             LastName = "User",
@@ -401,7 +398,7 @@ public class UserServiceTests
         _dbContext.Add(user);
         await _dbContext.SaveChangesAsync();
 
-        var dto = new UpdateMeRequest
+        var dto = new UpdateUserDto
         {
             FirstName = newFirstName,
             LastName = newLastName,
@@ -433,7 +430,7 @@ public class UserServiceTests
         _dbContext.Add(user);
         await _dbContext.SaveChangesAsync();
         
-        var dto = new ChangePasswordRequest
+        var dto = new ChangePasswordDto
         {
             CurrentPassword = "oldPassword",
             NewPassword = "newPassword"
@@ -456,7 +453,7 @@ public class UserServiceTests
         _dbContext.Add(user);
         await _dbContext.SaveChangesAsync();
         
-        var dto = new ChangePasswordRequest
+        var dto = new ChangePasswordDto
         {
             CurrentPassword = "wrongPassword",
             NewPassword = "newPassword"
@@ -471,7 +468,7 @@ public class UserServiceTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var dto = new ChangePasswordRequest
+        var dto = new ChangePasswordDto
         {
             CurrentPassword = "anyPassword",
             NewPassword = "newPassword"

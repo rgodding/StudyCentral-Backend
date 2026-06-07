@@ -1,8 +1,8 @@
 ﻿using StudyCentral.API.Models.Entities;
 
-namespace StudyCentral.API.Models.ApiModels.Submission;
+namespace StudyCentral.API.Models.DTOs.Submission;
 
-public class GradeSubmissionRequest
+public class GradeSubmissionDto
 {
     public GradeLetter Grade { get; set; }
     public string? Feedback { get; set; }

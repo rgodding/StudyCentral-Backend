@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Authentication;
 using StudyCentral.API.Middleware;
 using StudyCentral.API.Models;
-using StudyCentral.API.Models.ApiModels.Auth;
+using StudyCentral.API.Models.DTOs.Auth;
 using StudyCentral.API.Models.DTOs.User;
 using StudyCentral.API.Models.Entities;
 
@@ -13,8 +13,8 @@ namespace StudyCentral.API.Services;
 
 public interface IAuthService
 {
-    Task<AuthResponse> Register(RegisterRequest request);
-    Task<AuthResponse> Login(LoginRequest request);
+    Task<AuthResponseDto> Register(RegisterDto request);
+    Task<AuthResponseDto> Login(LoginDto request);
 }
 
 public class AuthService : IAuthService
@@ -31,10 +31,10 @@ public class AuthService : IAuthService
         _mapper = mapper;
     }
 
-    public async Task<AuthResponse> Register(RegisterRequest request)
+    public async Task<AuthResponseDto> Register(RegisterDto dto)
     {
         var emailExists = await _dbContext.Users
-            .AnyAsync(u => u.Email == request.Email);
+            .AnyAsync(u => u.Email == dto.Email);
 
         if (emailExists)
             throw new ExceptionMiddleware.ConflictException("Email already exists");
@@ -42,11 +42,11 @@ public class AuthService : IAuthService
         var user = new User
         {
             Id = Guid.NewGuid(),
-            Email = request.Email,
-            FirstName = request.FirstName,
-            LastName = request.LastName,
+            Email = dto.Email,
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
             Role = UserRole.Student,
-            PasswordHash = PasswordHelper.HashPassword(request.Password),
+            PasswordHash = PasswordHelper.HashPassword(dto.Password),
             CreatedAt = DateTime.UtcNow
         };
 
@@ -57,27 +57,27 @@ public class AuthService : IAuthService
 
         var token = _jwtService.GenerateToken(userDto);
 
-        return new AuthResponse
+        return new AuthResponseDto
         {
             Token = token,
             User = userDto
         };
     }
 
-    public async Task<AuthResponse> Login(LoginRequest request)
+    public async Task<AuthResponseDto> Login(LoginDto dto)
     {
         var user = await _dbContext.Users
-            .FirstOrDefaultAsync(u => u.Email == request.Email);
+            .FirstOrDefaultAsync(u => u.Email == dto.Email);
 
         if (user == null)
             throw new UnauthorizedAccessException("Invalid credentials");
         
-        var validPassword = PasswordHelper.VerifyHash(request.Password, user.PasswordHash);
+        var validPassword = PasswordHelper.VerifyHash(dto.Password, user.PasswordHash);
         
         if(!validPassword)
             throw new UnauthorizedAccessException("Invalid credentials");
         
-        return new AuthResponse
+        return new AuthResponseDto
         {
             Token = _jwtService.GenerateToken(_mapper.Map<UserDto>(user)),
             User = _mapper.Map<UserDto>(user)

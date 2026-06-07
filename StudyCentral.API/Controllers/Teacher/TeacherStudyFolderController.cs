@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using StudyCentral.API.Models.ApiModels.Course;
-using StudyCentral.API.Models.ApiModels.StudyFolder;
 using StudyCentral.API.Models.DTOs.StudyFile;
 using StudyCentral.API.Models.DTOs.StudyFolder;
 using StudyCentral.API.Services;
@@ -29,13 +27,14 @@ public class TeacherStudyFolderController : BaseController
     // -----------------
 
     [HttpGet("courses/{courseId:guid}")]
-    public async Task<ActionResult<List<StudyFolderDto>>> GetFolders(Guid courseId, [FromQuery] Guid? parentFolderId = null)
+    public async Task<ActionResult<List<StudyFolderDto>>> GetFolders(Guid courseId,
+        [FromQuery] Guid? parentFolderId = null)
     {
         var folders = await _studyFolderService.GetFoldersByCourseIdAndTeacherId(
             CurrentUser.Id,
             courseId,
             parentFolderId);
-        
+
         return Ok(folders);
     }
 
@@ -44,7 +43,7 @@ public class TeacherStudyFolderController : BaseController
     {
         var folder = await _studyFolderService
             .GetFolderByTeacherId(CurrentUser.Id, folderId);
-        
+
         return Ok(folder);
     }
 
@@ -68,7 +67,7 @@ public class TeacherStudyFolderController : BaseController
     {
         var folder = await _studyFolderService
             .UpdateFolderByTeacherId(CurrentUser.Id, folderId, dto);
-        
+
         return Ok(folder);
     }
 
@@ -80,11 +79,11 @@ public class TeacherStudyFolderController : BaseController
     }
 
     [HttpPatch("{folderId:guid}/move")]
-    public async Task<ActionResult<StudyFolderDto>> MoveFolder(Guid folderId, [FromBody] MoveFolderRequest request)
+    public async Task<ActionResult<StudyFolderDto>> MoveFolder(Guid folderId, [FromBody] MoveFolderDto dto)
     {
         var folder = await _studyFolderService
-            .MoveFolderByTeacherId(CurrentUser.Id, folderId, request.NewParentFolderId);
-        
+            .MoveFolderByTeacherId(CurrentUser.Id, folderId, dto.NewParentFolderId);
+
         return Ok(folder);
     }
 
@@ -97,7 +96,7 @@ public class TeacherStudyFolderController : BaseController
     {
         var files = await _studyFolderService
             .GetFilesByFolderIdAndTeacherId(CurrentUser.Id, folderId);
-        
+
         return Ok(files);
     }
 
@@ -106,20 +105,20 @@ public class TeacherStudyFolderController : BaseController
     {
         var file = await _studyFolderService
             .GetFileByIdAndTeacherId(CurrentUser.Id, fileId);
-        
+
         return Ok(file);
     }
 
     [HttpPost("{folderId:guid}/files")]
     public async Task<ActionResult<StudyFileDto>> UploadFile(
         Guid folderId,
-        [FromForm] UploadFileToFolderRequest request)
+        [FromForm] UploadFileDto dto)
     {
         var file = await _studyFolderService
             .CreateFileByTeacherId(
                 CurrentUser.Id,
                 folderId,
-                request);
+                dto);
 
         return CreatedAtAction(
             nameof(GetFile),

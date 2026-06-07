@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using StudyCentral.API.Models.ApiModels.Submission;
 using StudyCentral.API.Models.DTOs.StudyFile;
 using StudyCentral.API.Models.DTOs.Submission;
 using StudyCentral.API.Services;
@@ -97,13 +96,13 @@ public class StudentSubmissionController : BaseStudentController
     [HttpPost("{submissionId:guid}/files")]
     public async Task<ActionResult<StudyFileDto>> UploadFile(
         Guid submissionId,
-        [FromForm] UploadSubmissionFileRequest request)
+        [FromForm] UploadFileDto dto)
     {
         var uploadedFile = await _submissionService
             .UploadSubmissionFileByStudentId(
                 CurrentUser.Id,
                 submissionId,
-                request.File);
+                dto.File);
 
         return CreatedAtAction(
             nameof(GetFiles),

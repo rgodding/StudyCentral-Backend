@@ -1,6 +1,6 @@
-﻿namespace StudyCentral.API.Models.ApiModels.Account;
+﻿namespace StudyCentral.API.Models.DTOs.User;
 
-public class ChangePasswordRequest
+public class ChangePasswordDto
 {
     public string CurrentPassword { get; set; } = null!;
     public string NewPassword { get; set; } = null!;

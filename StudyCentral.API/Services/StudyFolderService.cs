@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Models;
-using StudyCentral.API.Models.ApiModels.Course;
 using StudyCentral.API.Models.DTOs.StudyFile;
 using StudyCentral.API.Models.DTOs.StudyFolder;
 using StudyCentral.API.Models.Entities;
@@ -33,7 +32,7 @@ public interface IStudyFolderService
     // Teacher File Methods
     Task<List<StudyFileDto>> GetFilesByFolderIdAndTeacherId(Guid teacherId, Guid folderId);
     Task<StudyFileDto> GetFileByIdAndTeacherId(Guid teacherId, Guid fileId);
-    Task<StudyFileDto> CreateFileByTeacherId(Guid teacherId, Guid folderId, UploadFileToFolderRequest request);
+    Task<StudyFileDto> CreateFileByTeacherId(Guid teacherId, Guid folderId, UploadFileDto request);
     Task RemoveFileFromFolderByTeacherId(Guid teacherId, Guid folderId, Guid fileId);
 
     // Student Folder Methods
@@ -367,7 +366,7 @@ public class StudyFolderService : IStudyFolderService
     }
 
     public async Task<StudyFileDto> CreateFileByTeacherId(Guid teacherId, Guid folderId,
-        UploadFileToFolderRequest request)
+        UploadFileDto request)
     {
         await VerifyTeacherFolder(teacherId, folderId);
 
