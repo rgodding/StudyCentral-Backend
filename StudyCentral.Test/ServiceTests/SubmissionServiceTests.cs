@@ -1,5 +1,4 @@
 ﻿using System.Security;
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Models;
 using StudyCentral.API.Models.DTOs.Submission;
@@ -15,14 +14,14 @@ namespace StudyCentral.Test.ServiceTests;
 public class SubmissionServiceTests
 {
     private readonly StudyDbContext _dbContext;
-    private readonly IMapper _mapper;
     private readonly SubmissionService _service;
 
     public SubmissionServiceTests()
     {
         _dbContext = ContextGenerator.GetStudyDbContext();
-        _mapper = MapperGenerator.GetMapper();
-        _service = new SubmissionService(_dbContext, _mapper);
+        var mapper = MapperGenerator.GetMapper();
+        IStudyFileService studyFileService = new StudyFileServiceGenerator();
+        _service = new SubmissionService(_dbContext, mapper, studyFileService);
     }
 
     // ----------------

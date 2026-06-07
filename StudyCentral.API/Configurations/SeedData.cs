@@ -77,6 +77,12 @@ public static class SeedData
 
     private static readonly Guid FileAttachedToAnnouncementId =
         Guid.Parse("78787878-7878-7878-7878-787878787878");
+    
+    private static readonly Guid FileAttachedToSubmission1Id =
+        Guid.Parse("89898989-8989-8989-8989-898989898989");
+    
+    private static readonly Guid FileAttachedToSubmission2Id =
+        Guid.Parse("90909090-9090-9090-9090-909090909090");
 
     private static readonly Guid TestFolderId =
         Guid.Parse("abababab-abab-abab-abab-abababababab");
@@ -316,7 +322,7 @@ public static class SeedData
             },
             new Submission
             {
-                Id = AssignmentId,
+                Id = TestSubmission2Id,
                 AssignmentId = AssignmentId,
                 StudentId = TestSubmissionStudent1Id,
                 Comment = "Test student submission 2",
@@ -385,8 +391,7 @@ public static class SeedData
                 FileName = "studycentral-testfile2.odt",
                 BlobName = "studycentral-testfile2.odt",
                 FileType = FileType.Document,
-                ContentType =
-                    "application/vnd.oasis.opendocument.text",
+                ContentType = "application/vnd.oasis.opendocument.text",
                 Size = 9207,
                 AltText = "Week 1 lecture slides",
                 StudyFolderId = ChildFolderId,
@@ -403,6 +408,32 @@ public static class SeedData
                 AltText = "Announcement file",
                 AnnouncementId = AnnouncementWithFileId,
                 UploadedById = TeacherId
-            });
+            },
+            new StudyFile
+            {
+                Id = FileAttachedToSubmission1Id,
+                FileName = "studycentral-testfile4.odt",
+                BlobName = "studycentral-testfile4.odt",
+                FileType = FileType.Document,
+                ContentType = "application/vnd.oasis.opendocument.text",
+                Size = 204800,
+                AltText = "Submission 1 code",
+                SubmissionId = SubmissionId,
+                UploadedById = StudentId
+            },
+            new StudyFile
+            {
+                Id = FileAttachedToSubmission2Id,
+                FileName = "studycentral-testfile5.pdf",
+                BlobName = "studycentral-testfile5.pdf",
+                FileType = FileType.Document,
+                ContentType = "application/pdf",
+                Size = 409600,
+                AltText = "Submission 2 code",
+                SubmissionId = SubmissionId,
+                UploadedById = StudentId
+            }
+            
+            );
     }
 }

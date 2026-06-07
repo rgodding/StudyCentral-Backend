@@ -311,19 +311,68 @@ public class StudyFileService : IStudyFileService
     // -----------------
     // Submission Operations
     // -----------------
-    public async Task<List<StudyFileDto>> GetFilesBySubmissionId(Guid submissionId)
+    public async Task<List<StudyFileDto>> GetFilesBySubmissionId(
+        Guid submissionId)
     {
-        throw new NotImplementedException();
+        var submissionExists = await _dbContext.Submissions
+            .AnyAsync(s => s.Id == submissionId);
+
+        if (!submissionExists)
+            throw new KeyNotFoundException($"Submission with ID '{submissionId}' not found");
+
+        var files = await _dbContext.StudyFiles
+            .Where(f => f.SubmissionId == submissionId)
+            .ToListAsync();
+
+        return _mapper.Map<List<StudyFileDto>>(files);
     }
 
-    public async Task AttachToSubmission(Guid fileId, Guid submissionId)
+    public async Task AttachToSubmission(
+        Guid fileId,
+        Guid submissionId)
     {
-        throw new NotImplementedException();
+        var file = await _dbContext.StudyFiles
+            .FirstOrDefaultAsync(f => f.Id == fileId);
+
+        if (file == null)
+            throw new KeyNotFoundException($"File with ID '{fileId}' not found");
+
+        var submissionExists = await _dbContext.Submissions
+            .AnyAsync(s => s.Id == submissionId);
+
+        if (!submissionExists)
+            throw new KeyNotFoundException($"Submission with ID '{submissionId}' not found");
+
+        if (file.SubmissionId == submissionId)
+            throw new InvalidOperationException("File is already attached to the target submission");
+
+        file.SubmissionId = submissionId;
+
+        await _dbContext.SaveChangesAsync();
     }
 
-    public async Task RemoveFromSubmission(Guid fileId, Guid submissionId)
+    public async Task RemoveFromSubmission(
+        Guid fileId,
+        Guid submissionId)
     {
-        throw new NotImplementedException();
+        var file = await _dbContext.StudyFiles
+            .FirstOrDefaultAsync(f => f.Id == fileId);
+
+        if (file == null)
+            throw new KeyNotFoundException($"File with ID '{fileId}' not found");
+
+        var submissionExists = await _dbContext.Submissions
+            .AnyAsync(s => s.Id == submissionId);
+
+        if (!submissionExists)
+            throw new KeyNotFoundException($"Submission with ID '{submissionId}' not found");
+
+        if (file.SubmissionId != submissionId)
+            throw new InvalidOperationException("File is not attached to the specified submission");
+
+        file.SubmissionId = null;
+
+        await _dbContext.SaveChangesAsync();
     }
     
     
