@@ -20,12 +20,18 @@ public static class SeedData
 
     private static readonly Guid TestStudentId =
         Guid.Parse("44444444-4444-4444-4444-444444444444");
-    
+
     private static readonly Guid TestStudentWithoutCourseId =
         Guid.Parse("77777777-7777-7777-7777-777777777777");
-    
+
     private static readonly Guid TestTeacherId =
         Guid.Parse("66666666-6666-6666-6666-666666666666");
+
+    private static readonly Guid TestSubmissionStudent1Id =
+        Guid.Parse("88888888-8888-8888-8888-888888888888");
+
+    private static readonly Guid TestSubmissionStudent2Id =
+        Guid.Parse("99999999-9999-9999-9999-999999999999");
 
     private static readonly Guid CourseId =
         Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
@@ -48,8 +54,14 @@ public static class SeedData
     private static readonly Guid SubmissionId =
         Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd");
 
-    private static readonly Guid TestSubmissionId =
+    private static readonly Guid TestSubmission1Id =
         Guid.Parse("12121212-1212-1212-1212-121212121212");
+
+    private static readonly Guid TestSubmission2Id =
+        Guid.Parse("13131313-1313-1313-1313-131313131313");
+
+    private static readonly Guid TestSubmission3Id =
+        Guid.Parse("14141414-1414-1414-1414-141414141414");
 
     private static readonly Guid FolderId =
         Guid.Parse("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee");
@@ -156,6 +168,24 @@ public static class SeedData
                 FirstName = "Test",
                 LastName = "StudentWithoutCourse",
                 Role = UserRole.Student
+            },
+            new User
+            {
+                Id = TestSubmissionStudent1Id,
+                Email = "testsubmissionstudent1@studycentral.dk",
+                PasswordHash = "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2",
+                FirstName = "Test",
+                LastName = "SubmissionStudent1",
+                Role = UserRole.Student
+            },
+            new User
+            {
+                Id = TestSubmissionStudent2Id,
+                Email = "testsubmissionstudent2@studycentral.dk",
+                PasswordHash = "$2a$11$ykLhMftf0qTgiJAxVTAt/eGyXwEKWocNpyC/a3wwOywH/XRNcK2e2",
+                FirstName = "Test",
+                LastName = "SubmissionStudent2",
+                Role = UserRole.Student
             }
         );
     }
@@ -191,6 +221,16 @@ public static class SeedData
             {
                 CourseId = CourseId,
                 StudentId = TestStudentId
+            },
+            new CourseStudent
+            {
+                CourseId = CourseId,
+                StudentId = TestSubmissionStudent1Id
+            },
+            new CourseStudent
+            {
+                CourseId = CourseId,
+                StudentId = TestSubmissionStudent2Id
             }
         );
     }
@@ -267,12 +307,34 @@ public static class SeedData
             },
             new Submission
             {
-                Id = TestSubmissionId,
+                Id = TestSubmission1Id,
                 AssignmentId = TestAssignmentId,
                 StudentId = TestStudentId,
-                Comment = "Test student submission",
+                Comment = "Test student submission 1",
                 Status = SubmissionStatus.Submitted,
                 SubmittedAt = SeedDate.AddDays(1)
+            },
+            new Submission
+            {
+                Id = TestSubmission2Id,
+                AssignmentId = TestAssignmentId,
+                StudentId = TestSubmissionStudent1Id,
+                Comment = "Test student submission 2",
+                Status = SubmissionStatus.Passed,
+                Grade = GradeLetter.B,
+                SubmittedAt = SeedDate.AddDays(2),
+                GradedAt = SeedDate.AddDays(3)
+            },
+            new Submission
+            {
+                Id = TestSubmission3Id,
+                AssignmentId = TestAssignmentId,
+                StudentId = TestSubmissionStudent2Id,
+                Comment = "Test student submission 3",
+                Status = SubmissionStatus.Failed,
+                Grade = GradeLetter.F,
+                SubmittedAt = SeedDate.AddDays(4),
+                GradedAt = SeedDate.AddDays(5)
             });
     }
 

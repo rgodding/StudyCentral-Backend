@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authorization;
 using StudyCentral.API.Authentication;
 using StudyCentral.API.Models;
 using StudyCentral.API.Services;
@@ -12,22 +13,22 @@ public class ServiceConfig
         ServiceClasses(services);
         JsonConfig(services);
     }
-    
+
 
     private static void ServiceClasses(IServiceCollection services)
     {
         // AutoMapper
         services.AddAutoMapper(typeof(MappingProfile));
-        
+
         // JWT
         services.AddScoped<IJwtService, JwtService>();
-        
+
         // Blob
         services.AddSingleton<IBlobService, BlobService>();
-        
+
         // File Services
         services.AddScoped<IStudyFileService, StudyFileService>();
-        
+
         // Services
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
@@ -41,6 +42,12 @@ public class ServiceConfig
 
     private static void JsonConfig(IServiceCollection services)
     {
+        services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(
+                    new JsonStringEnumConverter());
+            });
         /*
         services.AddControllers()
             .AddJsonOptions(options =>

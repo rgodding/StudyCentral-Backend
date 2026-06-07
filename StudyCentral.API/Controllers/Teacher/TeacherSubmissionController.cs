@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using StudyCentral.API.Models.ApiModels.Submission;
+using StudyCentral.API.Models.DTOs.Submission;
 using StudyCentral.API.Services;
 
 namespace StudyCentral.API.Controllers.Teacher;
@@ -14,24 +16,24 @@ public class TeacherSubmissionController : BaseTeacherController
         _submissionService = submissionService;
     }
     
-    [HttpGet("assignment/{assignmentId}")]
-    public async Task<IActionResult> GetSubmissionsByAssignmentId(Guid assignmentId)
+    [HttpGet("assignments/{assignmentId}")]
+    public async Task<ActionResult<List<SubmissionDto>>> GetSubmissionsByAssignmentId(Guid assignmentId)
     {
         var submissions = await _submissionService.GetSubmissionsByAssignmentIdAndTeacherId(CurrentUser.Id, assignmentId);
         return Ok(submissions);
     }
     
     [HttpGet("{submissionId}")]
-    public async Task<IActionResult> GetSubmission(Guid submissionId)
+    public async Task<ActionResult<SubmissionDto>> GetSubmission(Guid submissionId)
     {
         var submission = await _submissionService.GetSubmissionByTeacherId(CurrentUser.Id, submissionId);
         return Ok(submission);
     }
     
-    [HttpGet("{submissionId}/grade")]
-    public async Task<IActionResult> GetSubmissionGrade(Guid submissionId)
+    [HttpPost("{submissionId}/grade")]
+    public async Task<IActionResult> GradeSubmission(Guid submissionId, [FromBody] GradeSubmissionRequest request)
     {
-        var grade = await _submissionService.GradeSubmissionByTeacherId(CurrentUser.Id, submissionId, null);
+        var grade = await _submissionService.GradeSubmissionByTeacherId(CurrentUser.Id, submissionId, request);
         return Ok(grade);
     }
 }
