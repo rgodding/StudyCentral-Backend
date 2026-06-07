@@ -344,8 +344,8 @@ public class SubmissionService : ISubmissionService
         
         VerifySubmissionEditable(submission);
         
-        _mapper.Map(dto, submission);
 
+        submission.Comment = dto.Comment ?? submission.Comment;
         submission.UpdatedAt = DateTime.UtcNow;
 
         await _dbContext.SaveChangesAsync();
