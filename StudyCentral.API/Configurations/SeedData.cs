@@ -50,6 +50,9 @@ public static class SeedData
 
     private static readonly Guid AssignmentId =
         Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
+    
+    private static readonly Guid Assignment2Id =
+        Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddabc");
 
     private static readonly Guid SubmissionId =
         Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd");
@@ -295,7 +298,15 @@ public static class SeedData
                 Description = "Design and implement a relational database",
                 Deadline = SeedDate.AddDays(21),
                 CourseId = CourseId
-            });
+            },
+            new Assignment
+            {
+                Id = Assignment2Id,
+                Name = "Project Proposal",
+                Description = "Submit a proposal for your group project",
+                CourseId = CourseId
+            }
+            );
     }
 
     private static void SeedSubmissions(
