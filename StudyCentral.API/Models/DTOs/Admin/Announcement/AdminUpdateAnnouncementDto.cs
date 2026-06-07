@@ -2,9 +2,9 @@
 
 public class AdminUpdateAnnouncementDto
 {
-    public string Name { get; set; } = null!;
+    public string? Name { get; set; } = null!;
 
-    public string Content { get; set; } = null!;
+    public string? Content { get; set; } = null!;
 
-    public Guid CourseId { get; set; }
+    public Guid? CourseId { get; set; }
 }

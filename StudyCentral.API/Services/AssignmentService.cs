@@ -16,7 +16,7 @@ public interface IAssignmentService
     Task<AssignmentDto> Create(CreateAssignmentDto dto);
     Task<AssignmentDto> Update(Guid assignmentId, UpdateAssignmentDto dto);
     Task Delete(Guid assignmentId);
-    
+
     // Admin Methods
     Task<AssignmentDto> AdminUpdateAssignment(Guid assignmentId, AdminUpdateAssignmentDto dto);
     Task<List<StudyFileDto>> GetFiles(Guid assignmentId);
@@ -198,15 +198,46 @@ public class AssignmentService : IAssignmentService
     // --------------
     //  ADMIN METHODS
     // --------------
-    
+
     public async Task<AssignmentDto> AdminUpdateAssignment(Guid assignmentId, AdminUpdateAssignmentDto dto)
     {
-        throw new NotImplementedException();
+        var assignment = await _dbContext.Assignments
+            .FirstOrDefaultAsync(a => a.Id == assignmentId);
+
+        if (assignment == null)
+            throw new KeyNotFoundException("Assignment not found");
+
+        if (dto.CourseId != null && dto.CourseId != assignment.CourseId)
+        {
+            var courseExists = await _dbContext.Courses
+                .AnyAsync(c => c.Id == dto.CourseId);
+
+            if (!courseExists)
+                throw new KeyNotFoundException("Course not found");
+
+            assignment.CourseId = dto.CourseId.Value;
+        }
+
+        assignment.Name = dto.Name ?? assignment.Name;
+        assignment.Description = dto.Description ?? assignment.Description;
+        assignment.Deadline = dto.Deadline ?? assignment.Deadline;
+        assignment.UpdatedAt = DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync();
+
+        return _mapper.Map<AssignmentDto>(assignment);
     }
 
     public async Task<List<StudyFileDto>> GetFiles(Guid assignmentId)
     {
-        throw new NotImplementedException();
+        var assignment = await _dbContext.Assignments
+            .Include(a => a.StudyFiles)
+            .FirstOrDefaultAsync(a => a.Id == assignmentId);
+
+        if (assignment == null)
+            throw new KeyNotFoundException("Assignment not found");
+
+        return _mapper.Map<List<StudyFileDto>>(assignment.StudyFiles);
     }
 
     // --------------

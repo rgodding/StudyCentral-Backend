@@ -37,8 +37,11 @@ public class BlobServiceGenerator : IBlobService
     public Task<bool> Wipe()
         => Task.FromResult(true);
 
-    public async Task<BlobUploadResult> UploadFileTest(string fileName, IFormFile file, string? blobName = null)
-    {
-        throw new NotImplementedException();
-    }
+    public Task<BlobUploadResult> UploadFileTest(string fileName, IFormFile file, string? blobName = null)
+        => Task.FromResult(new BlobUploadResult
+        {
+            FileName = fileName,
+            BlobName = blobName ?? "test-blob-" + Guid.NewGuid(),
+            ContentType = file.ContentType ?? "image/png"
+        });
 }

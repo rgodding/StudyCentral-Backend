@@ -2,11 +2,11 @@
 
 public class AdminUpdateAssignmentDto
 {
-    public string Name { get; set; } = null!;
+    public string? Name { get; set; } = null!;
 
-    public string Description { get; set; } = null!;
+    public string? Description { get; set; } = null!;
 
-    public DateTime Deadline { get; set; }
+    public DateTime? Deadline { get; set; }
 
-    public Guid CourseId { get; set; }
+    public Guid? CourseId { get; set; }
 }

@@ -178,12 +178,42 @@ public class AnnouncementService : IAnnouncementService
 
     public async Task<AnnouncementDto> AdminUpdateAnnouncement(Guid announcementId, AdminUpdateAnnouncementDto dto)
     {
-        throw new NotImplementedException();
+        var announcement = await _dbContext.Announcements
+            .FirstOrDefaultAsync(a => a.Id == announcementId);
+
+        if (announcement == null)
+            throw new KeyNotFoundException("Announcement not found");
+        
+        if(dto.CourseId != null)
+        {
+            var courseExists = await _dbContext.Courses
+                .AnyAsync(c => c.Id == dto.CourseId);
+
+            if (!courseExists)
+                throw new KeyNotFoundException("Course not found");
+
+            announcement.CourseId = dto.CourseId.Value;
+        }
+
+        announcement.Name = dto.Name ?? announcement.Name;
+        announcement.Content = dto.Content ?? announcement.Content;
+        announcement.UpdatedAt = DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync();
+
+        return _mapper.Map<AnnouncementDto>(announcement);
     }
 
     public async Task<List<StudyFileDto>> GetFiles(Guid announcementId)
     {
-        throw new NotImplementedException();
+        var announcement = await _dbContext.Announcements
+            .Include(a => a.StudyFiles)
+            .FirstOrDefaultAsync(a => a.Id == announcementId);
+
+        if (announcement == null)
+            throw new KeyNotFoundException("Announcement not found");
+
+        return _mapper.Map<List<StudyFileDto>>(announcement.StudyFiles);
     }
 
 

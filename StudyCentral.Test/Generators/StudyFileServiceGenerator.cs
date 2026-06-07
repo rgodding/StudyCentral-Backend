@@ -7,25 +7,16 @@ namespace StudyCentral.Test.Generators;
 
 public class StudyFileServiceGenerator : IStudyFileService
 {
-    public Task<StudyFile> UploadFile(IFormFile file)
+    public Task<BlobFileResult> DownloadFile(
+        Guid userId,
+        Guid fileId)
     {
-        return Task.FromResult(new StudyFile
+        return Task.FromResult(new BlobFileResult
         {
-            Id = Guid.NewGuid(),
-            FileName = file.FileName,
-            BlobName = $"test-blob-{Guid.NewGuid()}",
-            ContentType = file.ContentType ?? "image/png"
+            Content = Stream.Null,
+            ContentType = "application/pdf",
+            FileName = "test.pdf"
         });
-    }
-
-    public async Task<BlobFileResult> DownloadFile(Guid fileId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<BlobFileResult> DownloadFile(Guid userId, Guid fileId)
-    {
-        throw new NotImplementedException();
     }
 
     public Task<StudyFile> UploadFile(
@@ -37,11 +28,11 @@ public class StudyFileServiceGenerator : IStudyFileService
         {
             Id = Guid.NewGuid(),
             FileName = file.FileName,
-            BlobName = $"test-blob-{Guid.NewGuid()}",
-            ContentType = file.ContentType ?? "image/png",
-            UploadedById = userId,
-            FileType = FileType.Image,
-            AltText = altText
+            BlobName = file.FileName,
+            ContentType = file.ContentType,
+            Size = file.Length,
+            AltText = altText,
+            UploadedById = userId
         });
     }
 
@@ -50,69 +41,63 @@ public class StudyFileServiceGenerator : IStudyFileService
         return Task.CompletedTask;
     }
 
-    public Task<string> GetFileUrl(Guid fileId)
+    public Task<List<StudyFileDto>> GetFilesByFolderId(Guid folderId)
     {
-        return Task.FromResult(
-            $"https://fake-storage/files/{fileId}");
+        return Task.FromResult(new List<StudyFileDto>());
     }
 
-    public async Task<List<StudyFileDto>> GetFilesByFolderId(Guid folderId)
+    public Task AttachToFolder(Guid fileId, Guid folderId)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 
-    public async Task AttachToFolder(Guid fileId, Guid folderId)
+    public Task RemoveFromFolder(Guid fileId)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 
-    public async Task RemoveFromFolder(Guid fileId)
+    public Task<List<StudyFileDto>> GetFilesByAnnouncementId(Guid announcementId)
     {
-        throw new NotImplementedException();
+        return Task.FromResult(new List<StudyFileDto>());
     }
 
-    public async Task<List<StudyFileDto>> GetFilesByAnnouncementId(Guid announcementId)
+    public Task AttachToAnnouncement(Guid fileId, Guid announcementId)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 
-    public async Task AttachToAnnouncement(Guid fileId, Guid announcementId)
+    public Task RemoveFromAnnouncement(Guid fileId, Guid announcementId)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 
-    public async Task RemoveFromAnnouncement(Guid fileId, Guid announcementId)
+    public Task<List<StudyFileDto>> GetFilesByAssignmentId(Guid assignmentId)
     {
-        throw new NotImplementedException();
+        return Task.FromResult(new List<StudyFileDto>());
     }
 
-    public async Task<List<StudyFileDto>> GetFilesByAssignmentId(Guid assignmentId)
+    public Task AttachToAssignment(Guid fileId, Guid assignmentId)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 
-    public async Task AttachToAssignment(Guid fileId, Guid assignmentId)
+    public Task RemoveFromAssignment(Guid fileId, Guid assignmentId)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 
-    public async Task RemoveFromAssignment(Guid fileId, Guid assignmentId)
+    public Task<List<StudyFileDto>> GetFilesBySubmissionId(Guid submissionId)
     {
-        throw new NotImplementedException();
+        return Task.FromResult(new List<StudyFileDto>());
     }
 
-    public async Task<List<StudyFileDto>> GetFilesBySubmissionId(Guid submissionId)
+    public Task AttachToSubmission(Guid fileId, Guid submissionId)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 
-    public async Task AttachToSubmission(Guid fileId, Guid submissionId)
+    public Task RemoveFromSubmission(Guid fileId, Guid submissionId)
     {
-        throw new NotImplementedException();
-    }
-
-    public async Task RemoveFromSubmission(Guid fileId, Guid submissionId)
-    {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 }

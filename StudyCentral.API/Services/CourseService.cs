@@ -17,10 +17,10 @@ public interface ICourseService
     Task<CourseDto> Create(CreateCourseDto dto);
     Task<CourseDto> Update(Guid courseId, UpdateCourseDto dto);
     Task Delete(Guid courseId);
-    
+
     // Admin Methods
     Task<CourseDto> AdminUpdateCourse(Guid courseId, AdminUpdateCourseDto dto);
-    
+
     // Teacher Methods
     Task<List<CourseDto>> GetCoursesByTeacherId(Guid teacherId);
     Task<CourseDto> GetCourseByTeacherId(Guid teacherId, Guid courseId);
@@ -28,7 +28,7 @@ public interface ICourseService
     Task<List<UserDto>> GetStudentsByTeacherId(Guid teacherId, Guid courseId);
     Task AddStudentByTeacherId(Guid teacherId, Guid courseId, Guid studentId);
     Task RemoveStudentByTeacherId(Guid teacherId, Guid courseId, Guid studentId);
-    
+
     // Student Methods
     Task<List<CourseDto>> GetCoursesByStudentId(Guid studentId);
     Task<CourseDto> GetCourseByStudentId(Guid studentId, Guid courseId);
@@ -116,7 +116,30 @@ public class CourseService : ICourseService
     // ----------------
     public async Task<CourseDto> AdminUpdateCourse(Guid courseId, AdminUpdateCourseDto dto)
     {
-        throw new NotImplementedException();
+        var course = await _dbContext.Courses
+            .FirstOrDefaultAsync(c => c.Id == courseId);
+
+        if (course == null)
+            throw new KeyNotFoundException("Course not found");
+
+        if (dto.TeacherId != null)
+        {
+            var teacherExists = await _dbContext.Users
+                .AnyAsync(u => u.Id == dto.TeacherId && u.Role == UserRole.Teacher);
+
+            if (!teacherExists)
+                throw new KeyNotFoundException("Teacher not found");
+
+            course.TeacherId = dto.TeacherId.Value;
+        }
+
+        course.Name = dto.Name ?? course.Name;
+        course.Description = dto.Description ?? course.Description;
+        course.UpdatedAt = DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync();
+
+        return _mapper.Map<CourseDto>(course);
     }
 
     // ----------------
@@ -188,25 +211,25 @@ public class CourseService : ICourseService
 
         if (course == null)
             throw new KeyNotFoundException("Course not found");
-        
+
         var student = await _dbContext.Users
             .FirstOrDefaultAsync(u => u.Id == studentId && u.Role == UserRole.Student);
-        
-        if(student == null)
+
+        if (student == null)
             throw new KeyNotFoundException("Student not found");
-        
+
         var enrollmentExists = await _dbContext.CourseStudents
             .AnyAsync(cs => cs.CourseId == courseId && cs.StudentId == studentId);
-        
-        if(enrollmentExists)
+
+        if (enrollmentExists)
             throw new InvalidOperationException("Student is already enrolled in the course");
-        
+
         _dbContext.CourseStudents.Add(new CourseStudent
         {
             CourseId = courseId,
             StudentId = studentId
         });
-        
+
         await _dbContext.SaveChangesAsync();
     }
 
@@ -216,16 +239,16 @@ public class CourseService : ICourseService
             .FirstOrDefaultAsync(c =>
                 c.Id == courseId &&
                 c.TeacherId == teacherId);
-        
+
         if (course == null)
             throw new KeyNotFoundException("Course not found");
-        
+
         var enrollment = await _dbContext.CourseStudents
             .FirstOrDefaultAsync(cs => cs.CourseId == courseId && cs.StudentId == studentId);
-        
+
         if (enrollment == null)
             throw new KeyNotFoundException("Student not found");
-        
+
         _dbContext.CourseStudents.Remove(enrollment);
         await _dbContext.SaveChangesAsync();
     }
