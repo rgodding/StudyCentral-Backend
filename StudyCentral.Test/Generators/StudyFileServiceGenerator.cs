@@ -23,6 +23,11 @@ public class StudyFileServiceGenerator : IStudyFileService
         throw new NotImplementedException();
     }
 
+    public async Task<BlobFileResult> DownloadFile(Guid userId, Guid fileId)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<StudyFile> UploadFile(
         IFormFile file,
         Guid userId,

@@ -51,7 +51,7 @@ public interface IAssignmentService
         Guid teacherId,
         Guid assignmentId,
         IFormFile file);
-    
+
     Task DeleteFileFromAssignmentByTeacherId(
         Guid teacherId,
         Guid assignmentId,
@@ -119,13 +119,9 @@ public class AssignmentService : IAssignmentService
             .Include(a => a.StudyFiles)
             .FirstOrDefaultAsync(a => a.Id == assignmentId);
 
-        Console.WriteLine("Deadline Value in Service (GetById): " + assignment?.Deadline);
-        
         if (assignment == null)
             throw new KeyNotFoundException("Assignment not found");
 
-        Console.WriteLine("Deadline Value in Service after null check: " + assignment.Deadline);
-        
         return _mapper.Map<AssignmentDto>(assignment);
     }
 
@@ -224,20 +220,16 @@ public class AssignmentService : IAssignmentService
         await VerifyTeacherCourse(
             teacherId,
             dto.CourseId);
-        
+
         var exists = await _dbContext.Assignments
             .AnyAsync(a => a.Name == dto.Name && a.CourseId == dto.CourseId);
 
         if (exists)
             throw new InvalidOperationException("Assignment with this name already exists in this course");
-        Console.WriteLine("Deadline Value in Service: " + dto.Deadline);
         var assignment = _mapper.Map<Assignment>(dto);
-        Console.WriteLine("Deadline Value in Service after mapping: " + assignment.Deadline);
 
         _dbContext.Assignments.Add(assignment);
         await _dbContext.SaveChangesAsync();
-
-        Console.WriteLine("Deadline Value after Save: " + assignment.Deadline);
 
         assignment = await _dbContext.Assignments
             .Include(a => a.Course)
@@ -252,7 +244,7 @@ public class AssignmentService : IAssignmentService
     {
         var assignment = await VerifyTeacherAssignment(teacherId, assignmentId);
 
-        
+
         assignment.Name = dto.Name ?? assignment.Name;
         assignment.Description = dto.Description ?? assignment.Description;
         assignment.Deadline = dto.Deadline ?? assignment.Deadline;
@@ -308,15 +300,15 @@ public class AssignmentService : IAssignmentService
     public async Task DeleteFileFromAssignmentByTeacherId(Guid teacherId, Guid assignmentId, Guid fileId)
     {
         await VerifyTeacherAssignment(teacherId, assignmentId);
-        
+
         var file = await _dbContext.StudyFiles
             .FirstOrDefaultAsync(f =>
                 f.Id == fileId &&
                 f.AssignmentId == assignmentId);
-        
+
         if (file == null)
             throw new KeyNotFoundException("File not found in this assignment");
-        
+
         await _fileService.DeleteFile(fileId);
     }
 
@@ -388,7 +380,7 @@ public class AssignmentService : IAssignmentService
     // -----------------
     // HELPER METHODS
     // -----------------
-    private async Task<Course> VerifyTeacherCourse(
+    private async Task VerifyTeacherCourse(
         Guid teacherId,
         Guid courseId)
     {
@@ -402,8 +394,6 @@ public class AssignmentService : IAssignmentService
         if (course.TeacherId != teacherId)
             throw new UnauthorizedAccessException(
                 "Teacher does not have access to this course.");
-
-        return course;
     }
 
     private async Task<Assignment> VerifyTeacherAssignment(
@@ -426,7 +416,7 @@ public class AssignmentService : IAssignmentService
         return assignment;
     }
 
-    private async Task<Course> VerifyStudentCourse(
+    private async Task VerifyStudentCourse(
         Guid studentId,
         Guid courseId)
     {
@@ -444,8 +434,6 @@ public class AssignmentService : IAssignmentService
         if (!isEnrolled)
             throw new UnauthorizedAccessException(
                 "Student does not have access to this course.");
-
-        return course;
     }
 
     private async Task<Assignment> VerifyStudentAssignment(

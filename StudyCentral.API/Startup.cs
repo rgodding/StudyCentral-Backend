@@ -25,9 +25,11 @@ public class Startup
         var connectionString = Configuration["ConnectionStrings:DefaultConnection"];
 
         // Validate configuration values
-        if (string.IsNullOrEmpty(issuer) || string.IsNullOrEmpty(audience) || string.IsNullOrEmpty(key))
+        if (string.IsNullOrEmpty(issuer) ||
+            string.IsNullOrEmpty(audience) ||
+            string.IsNullOrEmpty(key) ||
+            string.IsNullOrEmpty(connectionString))
         {
-            Console.WriteLine("Invalid Configuration Values");
             throw new Exception("Invalid Configuration Values");
         }
 
@@ -37,7 +39,6 @@ public class Startup
         DatabaseConfig.Configure(services, connectionString);
         SwaggerConfig.Configure(services);
 
-        Console.WriteLine("addubg controlers");
         services.AddControllers();
 
         // Adds cors policy which allows any origin, method and header

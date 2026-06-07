@@ -27,9 +27,7 @@ public class StudentCourseController : BaseStudentController
     [HttpGet("{courseId:guid}")]
     public async Task<ActionResult<CourseDto>> GetCourse(Guid courseId)
     {
-        Console.WriteLine($"Getting course with ID: {courseId} for student ID: {CurrentUser.Id}");
         var course = await _courseService.GetCourseByStudentId(CurrentUser.Id, courseId);
-        Console.WriteLine($"Course id: {course.Id}, Course name: {course.Name}");
         return Ok(course);
     }
     

@@ -1,15 +1,17 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudyCentral.API.Services;
 
 namespace StudyCentral.API.Controllers.Public;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class FileController : BaseController
 {
     private readonly IStudyFileService _studyFileService;
-    
+
     public FileController(IMapper mapper, IStudyFileService studyFileService) : base(mapper)
     {
         _studyFileService = studyFileService;
@@ -19,13 +21,11 @@ public class FileController : BaseController
     public async Task<IActionResult> DownloadFile(Guid fileId)
     {
         var file = await _studyFileService
-            .DownloadFile(fileId);
-        
+            .DownloadFile(CurrentUser.Id, fileId);
+
         return File(
             file.Content,
             file.ContentType,
             file.FileName);
-        
     }
-    
 }

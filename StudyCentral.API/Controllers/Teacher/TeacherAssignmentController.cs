@@ -37,8 +37,6 @@ public class TeacherAssignmentController : BaseTeacherController
                 CurrentUser.Id,
                 assignmentId);
 
-        Console.WriteLine("Deadline Value in Controller: " + assignment.Deadline);
-
         return Ok(assignment);
     }
 
@@ -46,12 +44,10 @@ public class TeacherAssignmentController : BaseTeacherController
     public async Task<IActionResult> CreateAssignment(
         [FromBody] CreateAssignmentDto dto)
     {
-        Console.WriteLine("1st Deadline Value: " + dto.Deadline);
         var createdAssignment = await _assignmentService
             .CreateAssignmentByTeacherId(
                 CurrentUser.Id,
                 dto);
-        Console.WriteLine("2nd Deadline Value: " + createdAssignment.Deadline);
 
         return CreatedAtAction(
             nameof(GetAssignment),

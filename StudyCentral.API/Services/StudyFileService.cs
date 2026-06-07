@@ -10,7 +10,7 @@ namespace StudyCentral.API.Services;
 public interface IStudyFileService
 {
     // Blob Operations
-    Task<BlobFileResult> DownloadFile(Guid fileId);
+    Task<BlobFileResult> DownloadFile(Guid userId, Guid fileId);
     Task<StudyFile> UploadFile(IFormFile file, Guid userId, string? altText = null);
     Task DeleteFile(Guid fileId);
 
@@ -52,14 +52,9 @@ public class StudyFileService : IStudyFileService
     // Blob Operations
     // -----------------
 
-    public async Task<BlobFileResult> DownloadFile(Guid fileId)
+    public async Task<BlobFileResult> DownloadFile(Guid userId, Guid fileId)
     {
-        var file = await _dbContext.StudyFiles
-            .FirstOrDefaultAsync(f => f.Id == fileId);
-        
-        if (file == null)
-            throw new KeyNotFoundException($"File with ID '{fileId}' not found");
-        
+        var file = await VerifyUserAccessToFile(userId, fileId);
         return await _blobService.GetFile(file.BlobName);
     }
 
@@ -218,62 +213,62 @@ public class StudyFileService : IStudyFileService
             .Include(f => f.UploadedBy)
             .Where(f => f.AnnouncementId == announcementId)
             .ToListAsync();
-        
+
         return _mapper.Map<List<StudyFileDto>>(files);
     }
-    
+
     public async Task AttachToAnnouncement(Guid fileId, Guid announcementId)
     {
         var file = await _dbContext.StudyFiles
             .FirstOrDefaultAsync(f => f.Id == fileId);
-        
+
         if (file == null)
             throw new KeyNotFoundException($"File with ID '{fileId}' not found");
-        
+
         var announcement = await _dbContext.Announcements
             .FirstOrDefaultAsync(a => a.Id == announcementId);
-        
+
         if (announcement == null)
             throw new KeyNotFoundException($"Announcement with ID '{announcementId}' not found");
-        
+
         if (file.AnnouncementId == announcementId)
             throw new InvalidOperationException("File is already attached to the target announcement");
-        
+
         file.AnnouncementId = announcementId;
         await _dbContext.SaveChangesAsync();
     }
-    
+
     public async Task RemoveFromAnnouncement(Guid fileId, Guid announcementId)
     {
         var file = await _dbContext.StudyFiles
             .FirstOrDefaultAsync(f => f.Id == fileId);
-        
+
         if (file == null)
             throw new KeyNotFoundException($"File with ID '{fileId}' not found");
-        
+
         if (file.AnnouncementId != announcementId)
             throw new InvalidOperationException("File is not attached to the specified announcement");
-        
+
         file.AnnouncementId = null;
         await _dbContext.SaveChangesAsync();
     }
-    
+
     // -----------------
     // Assignment Operations
     // -----------------
-    
+
     public async Task<List<StudyFileDto>> GetFilesByAssignmentId(Guid assignmentId)
     {
         var assignmentExists = await _dbContext.Assignments
             .AnyAsync(a => a.Id == assignmentId);
-        
-        if(!assignmentExists)
+
+        if (!assignmentExists)
             throw new KeyNotFoundException($"Assignment with ID '{assignmentId}' not found");
-        
+
         var files = await _dbContext.StudyFiles
             .Where(f => f.AssignmentId == assignmentId)
             .ToListAsync();
-        
+
         return _mapper.Map<List<StudyFileDto>>(files);
     }
 
@@ -281,19 +276,19 @@ public class StudyFileService : IStudyFileService
     {
         var file = await _dbContext.StudyFiles
             .FirstOrDefaultAsync(f => f.Id == fileId);
-        
+
         if (file == null)
             throw new KeyNotFoundException($"File with ID '{fileId}' not found");
-        
+
         var assignmentExists = await _dbContext.Assignments
             .AnyAsync(a => a.Id == assignmentId);
-        
-        if(!assignmentExists)
+
+        if (!assignmentExists)
             throw new KeyNotFoundException($"Assignment with ID '{assignmentId}' not found");
-        
+
         if (file.AssignmentId == assignmentId)
             throw new InvalidOperationException("File is already attached to the target assignment");
-        
+
         file.AssignmentId = assignmentId;
         await _dbContext.SaveChangesAsync();
     }
@@ -302,19 +297,19 @@ public class StudyFileService : IStudyFileService
     {
         var file = await _dbContext.StudyFiles
             .FirstOrDefaultAsync(f => f.Id == fileId);
-        
+
         if (file == null)
             throw new KeyNotFoundException($"File with ID '{fileId}' not found");
-        
+
         var assignmentExists = await _dbContext.Assignments
             .AnyAsync(a => a.Id == assignmentId);
-        
-        if(!assignmentExists)
+
+        if (!assignmentExists)
             throw new KeyNotFoundException($"Assignment with ID '{assignmentId}' not found");
-        
+
         if (file.AssignmentId != assignmentId)
             throw new InvalidOperationException("File is not attached to the specified assignment");
-        
+
         file.AssignmentId = null;
         await _dbContext.SaveChangesAsync();
     }
@@ -385,41 +380,194 @@ public class StudyFileService : IStudyFileService
 
         await _dbContext.SaveChangesAsync();
     }
-    
-    
+
+
     // -----------------
-     // Helper Methods
-     // -----------------
-     
-     private FileType GetFileType(IFormFile file)
-     {
-         var contentType = file.ContentType.ToLower();
+    // Helper Methods
+    // -----------------
 
-         if (contentType.StartsWith("image/"))
-             return FileType.Image;
+    private FileType GetFileType(IFormFile file)
+    {
+        var contentType = file.ContentType.ToLower();
 
-         if (contentType.StartsWith("video/"))
-             return FileType.Video;
+        if (contentType.StartsWith("image/"))
+            return FileType.Image;
 
-         if (contentType.StartsWith("audio/"))
-             return FileType.Audio;
+        if (contentType.StartsWith("video/"))
+            return FileType.Video;
 
-         if (contentType == "application/pdf")
-             return FileType.Pdf;
+        if (contentType.StartsWith("audio/"))
+            return FileType.Audio;
 
-         if (contentType.StartsWith("text/") ||
-             contentType.Contains("word") ||
-             contentType.Contains("document") ||
-             contentType.Contains("officedocument") ||
-             contentType.Contains("excel") ||
-             contentType.Contains("spreadsheet") ||
-             contentType.Contains("powerpoint") ||
-             contentType.Contains("presentation"))
-             return FileType.Document;
+        if (contentType == "application/pdf")
+            return FileType.Pdf;
 
-         return FileType.Other;
-     }
+        if (contentType.StartsWith("text/") ||
+            contentType.Contains("word") ||
+            contentType.Contains("document") ||
+            contentType.Contains("officedocument") ||
+            contentType.Contains("excel") ||
+            contentType.Contains("spreadsheet") ||
+            contentType.Contains("powerpoint") ||
+            contentType.Contains("presentation"))
+            return FileType.Document;
 
+        return FileType.Other;
+    }
 
+    private async Task<StudyFile> VerifyUserAccessToFile(Guid userId, Guid fileId)
+    {
+        var file = await _dbContext.StudyFiles
+            .FirstOrDefaultAsync(f => f.Id == fileId);
 
+        if (file == null)
+            throw new KeyNotFoundException($"File with ID '{fileId}' not found");
+
+        var user = await _dbContext.Users
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null)
+            throw new KeyNotFoundException($"User with ID '{userId}' not found");
+
+        return user.Role switch
+        {
+            UserRole.Student => await VerifyStudentAccessToFile(userId, file),
+            // UserRole.Teacher => await VerifyTeacherAccessToFile(userId, file),
+            UserRole.Admin => file, // Admin has access to all files
+            _ => throw new InvalidOperationException("Invalid user role")
+        };
+    }
+
+    private async Task<StudyFile> VerifyStudentAccessToFile(Guid studentId, StudyFile file)
+    {
+        if (file.AssignmentId.HasValue)
+        {
+            var assignment = await _dbContext.Assignments
+                .Include(a => a.Course)
+                .FirstOrDefaultAsync(a => a.Id == file.AssignmentId.Value);
+
+            if (assignment != null)
+            {
+                var isEnrolled = await _dbContext.CourseStudents
+                    .AnyAsync(cs =>
+                        cs.CourseId == assignment.CourseId &&
+                        cs.StudentId == studentId);
+
+                if (isEnrolled)
+                    return file;
+            }
+        }
+
+        if (file.AnnouncementId.HasValue)
+        {
+            var announcement = await _dbContext.Announcements
+                .Include(a => a.Course)
+                .FirstOrDefaultAsync(a => a.Id == file.AnnouncementId.Value);
+
+            if (announcement != null)
+            {
+                var isEnrolled = await _dbContext.CourseStudents
+                    .AnyAsync(cs =>
+                        cs.CourseId == announcement.CourseId &&
+                        cs.StudentId == studentId);
+
+                if (isEnrolled)
+                    return file;
+            }
+        }
+
+        if (file.StudyFolderId.HasValue)
+        {
+            var folder = await _dbContext.StudyFolders
+                .Include(f => f.Course)
+                .FirstOrDefaultAsync(f => f.Id == file.StudyFolderId.Value);
+
+            if (folder != null)
+            {
+                var isEnrolled = await _dbContext.CourseStudents
+                    .AnyAsync(cs =>
+                        cs.CourseId == folder.CourseId &&
+                        cs.StudentId == studentId);
+
+                if (isEnrolled)
+                    return file;
+            }
+        }
+
+        if (file.SubmissionId.HasValue)
+        {
+            var submission = await _dbContext.Submissions
+                .Include(s => s.Assignment)
+                .ThenInclude(a => a.Course)
+                .FirstOrDefaultAsync(s => s.Id == file.SubmissionId.Value);
+
+            if (submission != null &&
+                submission.StudentId == studentId)
+            {
+                return file;
+            }
+        }
+
+        throw new UnauthorizedAccessException(
+            "Student does not have access to this file");
+    }
+
+    private async Task<StudyFile> VerifyTeacherAccessToFile(Guid teacherId, StudyFile file)
+    {
+        if (file.AssignmentId.HasValue)
+        {
+            var assignment = await _dbContext.Assignments
+                .Include(a => a.Course)
+                .FirstOrDefaultAsync(a => a.Id == file.AssignmentId.Value);
+
+            if (assignment != null &&
+                assignment.Course.TeacherId == teacherId)
+            {
+                return file;
+            }
+        }
+
+        if (file.AnnouncementId.HasValue)
+        {
+            var announcement = await _dbContext.Announcements
+                .Include(a => a.Course)
+                .FirstOrDefaultAsync(a => a.Id == file.AnnouncementId.Value);
+
+            if (announcement != null &&
+                announcement.Course.TeacherId == teacherId)
+            {
+                return file;
+            }
+        }
+
+        if (file.StudyFolderId.HasValue)
+        {
+            var folder = await _dbContext.StudyFolders
+                .Include(f => f.Course)
+                .FirstOrDefaultAsync(f => f.Id == file.StudyFolderId.Value);
+
+            if (folder != null &&
+                folder.Course.TeacherId == teacherId)
+            {
+                return file;
+            }
+        }
+
+        if (file.SubmissionId.HasValue)
+        {
+            var submission = await _dbContext.Submissions
+                .Include(s => s.Assignment)
+                .ThenInclude(a => a.Course)
+                .FirstOrDefaultAsync(s => s.Id == file.SubmissionId.Value);
+
+            if (submission != null &&
+                submission.Assignment.Course.TeacherId == teacherId)
+            {
+                return file;
+            }
+        }
+
+        throw new UnauthorizedAccessException(
+            "Teacher does not have access to this file");
+    }
 }
