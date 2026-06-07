@@ -16,6 +16,9 @@ public interface IStudyFolderService
     Task<StudyFolderDto> Create(CreateStudyFolderDto dto);
     Task<StudyFolderDto> Update(Guid id, UpdateStudyFolderDto dto);
     Task Delete(Guid id);
+    
+    // Admin Methods
+    Task<List<StudyFileDto>> GetFiles(Guid folderId);
 
     // Teacher Folder Methods
     Task<List<StudyFolderDto>> GetFoldersByCourseIdAndTeacherId(Guid teacherId, Guid courseId,
@@ -162,6 +165,23 @@ public class StudyFolderService : IStudyFolderService
         _dbContext.StudyFolders.Remove(folder);
 
         await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<List<StudyFileDto>> GetFiles(Guid folderId)
+    {
+        var folderExists = await _dbContext.StudyFolders
+            .AnyAsync(f => f.Id == folderId);
+
+        if (!folderExists)
+            throw new KeyNotFoundException($"StudyFolder with id '{folderId}' not found.");
+
+        var files = await _dbContext.StudyFiles
+            .Include(f => f.UploadedBy)
+            .Where(f => f.StudyFolderId == folderId)
+            .OrderBy(f => f.FileName)
+            .ToListAsync();
+
+        return _mapper.Map<List<StudyFileDto>>(files);
     }
 
     // -----------------

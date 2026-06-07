@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Authentication;
 using StudyCentral.API.Models;
 using StudyCentral.API.Models.ApiModels.Account;
+using StudyCentral.API.Models.DTOs.Admin.User;
 using StudyCentral.API.Models.DTOs.User;
 using StudyCentral.API.Models.Entities;
 
@@ -16,6 +17,10 @@ public interface IUserService
     Task<UserDto> Create(CreateUserDto dto);
     Task<UserDto> Update(Guid userId, UpdateUserDto dto);
     Task Delete(Guid userId);
+    
+    // Admin User Management
+    Task<UserDto> AdminUpdateUser(Guid userId, AdminUpdateUserDto dto);
+    Task AdminUpdatePassword(Guid userId, AdminUpdateUserPasswordDto dto);
     
     // User Management
     Task<UserDto> GetMe(Guid userId);
@@ -121,6 +126,16 @@ public class UserService : IUserService
         
         _dbContext.Users.Remove(user);
         await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<UserDto> AdminUpdateUser(Guid userId, AdminUpdateUserDto dto)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task AdminUpdatePassword(Guid userId, AdminUpdateUserPasswordDto dto)
+    {
+        throw new NotImplementedException();
     }
 
     // --------------

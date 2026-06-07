@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Models;
+using StudyCentral.API.Models.DTOs.Admin.Assignment;
 using StudyCentral.API.Models.DTOs.Assignment;
 using StudyCentral.API.Models.DTOs.StudyFile;
 using StudyCentral.API.Models.Entities;
@@ -15,6 +16,10 @@ public interface IAssignmentService
     Task<AssignmentDto> Create(CreateAssignmentDto dto);
     Task<AssignmentDto> Update(Guid assignmentId, UpdateAssignmentDto dto);
     Task Delete(Guid assignmentId);
+    
+    // Admin Methods
+    Task<AssignmentDto> AdminUpdateAssignment(Guid assignmentId, AdminUpdateAssignmentDto dto);
+    Task<List<StudyFileDto>> GetFiles(Guid assignmentId);
 
     // Teacher CRUD Methods
     Task<List<AssignmentDto>> GetAssignmentsByTeacherId(
@@ -188,6 +193,20 @@ public class AssignmentService : IAssignmentService
 
         _dbContext.Assignments.Remove(assignment);
         await _dbContext.SaveChangesAsync();
+    }
+
+    // --------------
+    //  ADMIN METHODS
+    // --------------
+    
+    public async Task<AssignmentDto> AdminUpdateAssignment(Guid assignmentId, AdminUpdateAssignmentDto dto)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<List<StudyFileDto>> GetFiles(Guid assignmentId)
+    {
+        throw new NotImplementedException();
     }
 
     // --------------

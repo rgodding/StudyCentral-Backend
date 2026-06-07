@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Middleware;
 using StudyCentral.API.Models;
+using StudyCentral.API.Models.DTOs.Admin.Announcement;
 using StudyCentral.API.Models.DTOs.Announcement;
 using StudyCentral.API.Models.DTOs.StudyFile;
 using StudyCentral.API.Models.Entities;
@@ -16,6 +17,10 @@ public interface IAnnouncementService
     Task<AnnouncementDto> Create(CreateAnnouncementDto dto);
     Task<AnnouncementDto> Update(Guid announcementId, UpdateAnnouncementDto dto);
     Task Delete(Guid announcementId);
+
+    // Admin Methods
+    Task<AnnouncementDto> AdminUpdateAnnouncement(Guid announcementId, AdminUpdateAnnouncementDto dto);
+    Task<List<StudyFileDto>> GetFiles(Guid announcementId);
 
     // Teacher Methods
     Task<List<AnnouncementDto>> GetAnnouncementsByTeacherId(Guid teacherId);
@@ -36,7 +41,7 @@ public interface IAnnouncementService
     Task DeleteAnnouncementByTeacherId(
         Guid teacherId,
         Guid announcementId);
-    
+
     // Teacher Methods
     Task<List<AnnouncementDto>> GetAnnouncementsByCourseIdAndTeacherId(
         Guid teacherId,
@@ -48,7 +53,7 @@ public interface IAnnouncementService
         Guid announcementId,
         IFormFile file,
         string? altText = null);
-    
+
     Task<List<StudyFileDto>> GetFilesByAnnouncementIdAndTeacherId(
         Guid teacherId,
         Guid announcementId);
@@ -65,7 +70,7 @@ public interface IAnnouncementService
 
     // Student Methods
     Task<List<AnnouncementDto>> GetAnnouncementsByStudentId(Guid studentId);
-    
+
     Task<List<AnnouncementDto>> GetAnnouncementsByCourseIdAndStudentId(
         Guid studentId,
         Guid courseId);
@@ -96,7 +101,7 @@ public class AnnouncementService : IAnnouncementService
     // ----------------
     // CRUD METHODS
     // ----------------
-    
+
     public async Task<List<AnnouncementDto>> GetAll()
     {
         var announcements = await _dbContext.Announcements
@@ -166,7 +171,21 @@ public class AnnouncementService : IAnnouncementService
         _dbContext.Announcements.Remove(announcement);
         await _dbContext.SaveChangesAsync();
     }
-    
+
+    // -----------------
+    // ADMIN METHODS
+    // -----------------
+
+    public async Task<AnnouncementDto> AdminUpdateAnnouncement(Guid announcementId, AdminUpdateAnnouncementDto dto)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<List<StudyFileDto>> GetFiles(Guid announcementId)
+    {
+        throw new NotImplementedException();
+    }
+
 
     // -----------------
     // TEACHER METHODS
@@ -196,34 +215,35 @@ public class AnnouncementService : IAnnouncementService
     public async Task<AnnouncementDto> CreateAnnouncementByTeacherId(Guid teacherId, CreateAnnouncementDto dto)
     {
         await VerifyTeacherCourse(teacherId, dto.CourseId);
-        
+
         var exists = await _dbContext.Announcements
             .AnyAsync(a =>
                 a.Name == dto.Name &&
                 a.CourseId == dto.CourseId);
-        
+
         if (exists)
             throw new ExceptionMiddleware.ConflictException(
                 "Announcement with this Name already exists in this course");
-        
+
         var announcement = _mapper.Map<Announcement>(dto);
-        
+
         _dbContext.Announcements.Add(announcement);
-        
+
         await _dbContext.SaveChangesAsync();
-        
+
         announcement = await _dbContext.Announcements
             .Include(a => a.Course)
             .Include(a => a.StudyFiles)
             .FirstAsync(a => a.Id == announcement.Id);
-        
+
         return _mapper.Map<AnnouncementDto>(announcement);
     }
 
-    public async Task<AnnouncementDto> UpdateAnnouncementByTeacherId(Guid teacherId, Guid announcementId, UpdateAnnouncementDto dto)
+    public async Task<AnnouncementDto> UpdateAnnouncementByTeacherId(Guid teacherId, Guid announcementId,
+        UpdateAnnouncementDto dto)
     {
         var announcement = await VerifyTeacherAnnouncement(teacherId, announcementId);
-        
+
         announcement.Name = dto.Name ?? announcement.Name;
         announcement.Content = dto.Content ?? announcement.Content;
         announcement.UpdatedAt = DateTime.UtcNow;
@@ -244,7 +264,7 @@ public class AnnouncementService : IAnnouncementService
     public async Task<List<AnnouncementDto>> GetAnnouncementsByCourseIdAndTeacherId(Guid teacherId, Guid courseId)
     {
         await VerifyTeacherCourse(teacherId, courseId);
-        
+
         var announcements = await _dbContext.Announcements
             .Include(a => a.Course)
             .Include(a => a.StudyFiles)
@@ -254,37 +274,38 @@ public class AnnouncementService : IAnnouncementService
 
         return _mapper.Map<List<AnnouncementDto>>(announcements);
     }
-    
+
     // Teacher File Methods
-    public async Task<StudyFileDto> UploadFileToAnnouncementByTeacherId(Guid teacherId, Guid announcementId, IFormFile file, string? altText = null)
+    public async Task<StudyFileDto> UploadFileToAnnouncementByTeacherId(Guid teacherId, Guid announcementId,
+        IFormFile file, string? altText = null)
     {
         await VerifyTeacherAnnouncement(teacherId, announcementId);
-        
+
         var uploadedFile = await _studyFileService.UploadFile(file, teacherId, altText);
-        
+
         await _studyFileService.AttachToAnnouncement(uploadedFile.Id, announcementId);
-        
+
         return _mapper.Map<StudyFileDto>(uploadedFile);
     }
-    
+
     public async Task<List<StudyFileDto>> GetFilesByAnnouncementIdAndTeacherId(Guid teacherId, Guid announcementId)
     {
         await VerifyTeacherAnnouncement(teacherId, announcementId);
-        
+
         return await _studyFileService.GetFilesByAnnouncementId(announcementId);
     }
 
     public async Task AttachFileToAnnouncementByTeacherId(Guid teacherId, Guid announcementId, Guid fileId)
     {
         await VerifyTeacherAnnouncement(teacherId, announcementId);
-        
+
         await _studyFileService.AttachToAnnouncement(fileId, announcementId);
     }
 
     public async Task RemoveFileFromAnnouncementByTeacherId(Guid teacherId, Guid announcementId, Guid fileId)
     {
         await VerifyTeacherAnnouncement(teacherId, announcementId);
-        
+
         await _studyFileService.RemoveFromAnnouncement(fileId, announcementId);
     }
 
@@ -307,7 +328,7 @@ public class AnnouncementService : IAnnouncementService
     public async Task<List<AnnouncementDto>> GetAnnouncementsByCourseIdAndStudentId(Guid studentId, Guid courseId)
     {
         await VerifyStudentCourse(studentId, courseId);
-        
+
         var announcements = await _dbContext.Announcements
             .Include(a => a.StudyFiles)
             .Include(a => a.Course)
@@ -329,12 +350,11 @@ public class AnnouncementService : IAnnouncementService
     public async Task<List<StudyFileDto>> GetFilesByAnnouncementIdAndStudentId(Guid studentId, Guid announcementId)
     {
         await VerifyStudentAnnouncement(studentId, announcementId);
-        
+
         return await _studyFileService.GetFilesByAnnouncementId(announcementId);
     }
-    
 
-    
+
     // -----------------
     // HELPER METHODS
     // -----------------
@@ -355,7 +375,7 @@ public class AnnouncementService : IAnnouncementService
 
         return course;
     }
-    
+
     private async Task<Announcement> VerifyTeacherAnnouncement(
         Guid teacherId,
         Guid announcementId)
@@ -375,7 +395,7 @@ public class AnnouncementService : IAnnouncementService
 
         return announcement;
     }
-    
+
     private async Task<Course> VerifyStudentCourse(
         Guid studentId,
         Guid courseId)
@@ -397,7 +417,7 @@ public class AnnouncementService : IAnnouncementService
 
         return course;
     }
-    
+
     private async Task<Announcement> VerifyStudentAnnouncement(
         Guid studentId,
         Guid announcementId)

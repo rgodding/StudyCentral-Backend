@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Models;
+using StudyCentral.API.Models.DTOs.Admin.Course;
 using StudyCentral.API.Models.DTOs.Course;
 using StudyCentral.API.Models.DTOs.User;
 using StudyCentral.API.Models.Entities;
@@ -16,7 +17,10 @@ public interface ICourseService
     Task<CourseDto> Create(CreateCourseDto dto);
     Task<CourseDto> Update(Guid courseId, UpdateCourseDto dto);
     Task Delete(Guid courseId);
-
+    
+    // Admin Methods
+    Task<CourseDto> AdminUpdateCourse(Guid courseId, AdminUpdateCourseDto dto);
+    
     // Teacher Methods
     Task<List<CourseDto>> GetCoursesByTeacherId(Guid teacherId);
     Task<CourseDto> GetCourseByTeacherId(Guid teacherId, Guid courseId);
@@ -105,6 +109,14 @@ public class CourseService : ICourseService
 
         _dbContext.Courses.Remove(course);
         await _dbContext.SaveChangesAsync();
+    }
+
+    // ----------------
+    // ADMIN METHODS
+    // ----------------
+    public async Task<CourseDto> AdminUpdateCourse(Guid courseId, AdminUpdateCourseDto dto)
+    {
+        throw new NotImplementedException();
     }
 
     // ----------------

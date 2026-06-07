@@ -3,6 +3,7 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Models;
 using StudyCentral.API.Models.ApiModels.Submission;
+using StudyCentral.API.Models.DTOs.Admin.Submission;
 using StudyCentral.API.Models.DTOs.StudyFile;
 using StudyCentral.API.Models.DTOs.Submission;
 using StudyCentral.API.Models.Entities;
@@ -17,6 +18,9 @@ public interface ISubmissionService
     Task<SubmissionDto> Create(CreateSubmissionDto dto);
     Task<SubmissionDto> Update(Guid submissionId, UpdateSubmissionDto dto);
     Task Delete(Guid submissionId);
+    
+    // Admin Methods
+    Task<SubmissionDto> AdminUpdateSubmission(Guid submissionId, AdminUpdateSubmissionDto dto);
 
     // Teacher Methods
     Task<List<SubmissionDto>> GetSubmissionsByAssignmentIdAndTeacherId(Guid teacherId, Guid assignmentId);
@@ -190,6 +194,29 @@ public class SubmissionService : ISubmissionService
 
         _dbContext.Submissions.Remove(submission);
         await _dbContext.SaveChangesAsync();
+    }
+
+    // ----------------
+    // ADMIN METHODS
+    // ----------------
+    public async Task<SubmissionDto> AdminUpdateSubmission(Guid submissionId, AdminUpdateSubmissionDto dto)
+    {
+        var submission = await _dbContext.Submissions
+            .Include(s => s.Assignment)
+            .Include(s => s.Student)
+            .Include(s => s.StudyFiles)
+            .FirstOrDefaultAsync(s => s.Id == submissionId);
+        
+        if (submission == null)
+            throw new KeyNotFoundException("Submission not found");
+        
+        submission.Comment = dto.Comment ?? submission.Comment;
+        submission.Grade = dto.Grade ?? submission.Grade;
+        submission.Feedback = dto.Feedback ?? submission.Feedback;
+        submission.UpdatedAt = DateTime.UtcNow;
+        await _dbContext.SaveChangesAsync();
+        
+        return _mapper.Map<SubmissionDto>(submission);
     }
 
     // ----------------
