@@ -119,9 +119,13 @@ public class AssignmentService : IAssignmentService
             .Include(a => a.StudyFiles)
             .FirstOrDefaultAsync(a => a.Id == assignmentId);
 
+        Console.WriteLine("Deadline Value in Service (GetById): " + assignment?.Deadline);
+        
         if (assignment == null)
             throw new KeyNotFoundException("Assignment not found");
 
+        Console.WriteLine("Deadline Value in Service after null check: " + assignment.Deadline);
+        
         return _mapper.Map<AssignmentDto>(assignment);
     }
 
@@ -226,11 +230,14 @@ public class AssignmentService : IAssignmentService
 
         if (exists)
             throw new InvalidOperationException("Assignment with this name already exists in this course");
-
+        Console.WriteLine("Deadline Value in Service: " + dto.Deadline);
         var assignment = _mapper.Map<Assignment>(dto);
+        Console.WriteLine("Deadline Value in Service after mapping: " + assignment.Deadline);
 
         _dbContext.Assignments.Add(assignment);
         await _dbContext.SaveChangesAsync();
+
+        Console.WriteLine("Deadline Value after Save: " + assignment.Deadline);
 
         assignment = await _dbContext.Assignments
             .Include(a => a.Course)
@@ -245,7 +252,10 @@ public class AssignmentService : IAssignmentService
     {
         var assignment = await VerifyTeacherAssignment(teacherId, assignmentId);
 
-        _mapper.Map(dto, assignment);
+        
+        assignment.Name = dto.Name ?? assignment.Name;
+        assignment.Description = dto.Description ?? assignment.Description;
+        assignment.Deadline = dto.Deadline ?? assignment.Deadline;
         assignment.UpdatedAt = DateTime.UtcNow;
 
         await _dbContext.SaveChangesAsync();

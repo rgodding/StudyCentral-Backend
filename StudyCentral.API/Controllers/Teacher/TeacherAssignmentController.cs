@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using StudyCentral.API.Models.DTOs.Assignment;
+using StudyCentral.API.Models.DTOs.StudyFile;
 using StudyCentral.API.Services;
 
 namespace StudyCentral.API.Controllers.Teacher;
@@ -36,6 +37,8 @@ public class TeacherAssignmentController : BaseTeacherController
                 CurrentUser.Id,
                 assignmentId);
 
+        Console.WriteLine("Deadline Value in Controller: " + assignment.Deadline);
+
         return Ok(assignment);
     }
 
@@ -43,10 +46,12 @@ public class TeacherAssignmentController : BaseTeacherController
     public async Task<IActionResult> CreateAssignment(
         [FromBody] CreateAssignmentDto dto)
     {
+        Console.WriteLine("1st Deadline Value: " + dto.Deadline);
         var createdAssignment = await _assignmentService
             .CreateAssignmentByTeacherId(
                 CurrentUser.Id,
                 dto);
+        Console.WriteLine("2nd Deadline Value: " + createdAssignment.Deadline);
 
         return CreatedAtAction(
             nameof(GetAssignment),
@@ -103,13 +108,13 @@ public class TeacherAssignmentController : BaseTeacherController
     [HttpPost("{assignmentId:guid}/files")]
     public async Task<IActionResult> UploadFile(
         Guid assignmentId,
-        [FromForm] IFormFile file)
+        [FromForm] UploadFileDto file)
     {
         var uploadedFile = await _assignmentService
             .UploadFileToAssignmentByTeacherId(
                 CurrentUser.Id,
                 assignmentId,
-                file);
+                file.File);
 
         return CreatedAtAction(
             nameof(GetFiles),

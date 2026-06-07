@@ -7,7 +7,7 @@ using StudyCentral.API.Services;
 namespace StudyCentral.API.Controllers.Student;
 
 [ApiController]
-[Route("api/student/[controller]")]
+[Route("api/student/courses")]
 public class StudentCourseController : BaseStudentController
 {
     private readonly ICourseService _courseService;
@@ -27,7 +27,9 @@ public class StudentCourseController : BaseStudentController
     [HttpGet("{courseId:guid}")]
     public async Task<ActionResult<CourseDto>> GetCourse(Guid courseId)
     {
+        Console.WriteLine($"Getting course with ID: {courseId} for student ID: {CurrentUser.Id}");
         var course = await _courseService.GetCourseByStudentId(CurrentUser.Id, courseId);
+        Console.WriteLine($"Course id: {course.Id}, Course name: {course.Name}");
         return Ok(course);
     }
     

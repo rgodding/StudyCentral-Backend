@@ -51,7 +51,6 @@ public class MappingProfile : Profile
                 opt => opt.MapFrom(src => src.Course.Name))
             .ForMember(dest => dest.FileCount,
                 opt => opt.MapFrom(src => src.StudyFiles.Count));
-        CreateMap<Assignment, AssignmentDto>();
         CreateMap<CreateAssignmentDto, Assignment>();
     }
     private void CreateSubmissionMappings()
