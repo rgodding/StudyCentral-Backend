@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Configurations;
 using StudyCentral.API.Middleware;
 using StudyCentral.API.Models;
 
 namespace StudyCentral.API;
 
+[ExcludeFromCodeCoverage]
 public class Startup
 {
     public Startup(IConfiguration configuration)

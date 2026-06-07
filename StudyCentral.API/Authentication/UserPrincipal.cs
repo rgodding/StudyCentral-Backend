@@ -1,5 +1,8 @@
-﻿namespace StudyCentral.API.Authentication;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace StudyCentral.API.Authentication;
+
+[ExcludeFromCodeCoverage]
 public class UserPrincipal
 {
     public Guid Id { get; set; }

@@ -1,5 +1,8 @@
-﻿namespace StudyCentral.API.Utilities;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace StudyCentral.API.Utilities;
+
+[ExcludeFromCodeCoverage]
 public static class FileExtensionMappings
 {
     public static string GetContentTypeFromExtension(

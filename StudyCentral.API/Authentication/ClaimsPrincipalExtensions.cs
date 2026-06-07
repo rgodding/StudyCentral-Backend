@@ -1,7 +1,10 @@
 ﻿using System.Security.Claims;
+using System.Diagnostics.CodeAnalysis;
+using System.Security.Claims;
 
 namespace StudyCentral.API.Authentication;
 
+[ExcludeFromCodeCoverage]
 public static class ClaimsPrincipalExtensions
 {
     public static UserPrincipal GetUser(this ClaimsPrincipal claims)

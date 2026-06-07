@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 namespace StudyCentral.API.Configurations;
 
+[ExcludeFromCodeCoverage]
 public static class AuthenticationConfig
 {
     public static void Configure(

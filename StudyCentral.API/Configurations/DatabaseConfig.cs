@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Models;
 
 namespace StudyCentral.API.Configurations;
 
+[ExcludeFromCodeCoverage]
 public static class DatabaseConfig
 {
     public static void Configure(IServiceCollection services, string connectionString)
