@@ -37,8 +37,12 @@ public class MappingProfile : Profile
     }
     private void CreateCourseMappings()
     {
-        CreateMap<Course, CourseDto>();
+        CreateMap<Course, CourseDto>()
+            .ForMember(dest => dest.StudentCount,
+                opt => opt.MapFrom(src => src.CourseStudents.Count));
+
         CreateMap<CreateCourseDto, Course>();
+        CreateMap<UpdateCourseDto, Course>();
     }
     private void CreateAssignmentMappings()
     {
@@ -53,6 +57,7 @@ public class MappingProfile : Profile
                 opt => opt.MapFrom(src => src.StudyFiles.Count));
         CreateMap<CreateAssignmentDto, Assignment>();
     }
+    
     private void CreateSubmissionMappings()
     {
         CreateMap<Submission, SubmissionDto>()

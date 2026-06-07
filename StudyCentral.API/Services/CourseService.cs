@@ -114,6 +114,7 @@ public class CourseService : ICourseService
     public async Task<List<CourseDto>> GetCoursesByTeacherId(Guid teacherId)
     {
         var courses = await _dbContext.Courses
+            .Include(c => c.CourseStudents)
             .Where(c => c.TeacherId == teacherId)
             .ToListAsync();
         return _mapper.Map<List<CourseDto>>(courses);

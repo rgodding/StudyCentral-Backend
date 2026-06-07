@@ -1,6 +1,4 @@
-﻿using StudyCentral.API.Models.DTOs.User;
-
-namespace StudyCentral.API.Models.DTOs.Course;
+﻿namespace StudyCentral.API.Models.DTOs.Course;
 
 public class CourseDto
 {
