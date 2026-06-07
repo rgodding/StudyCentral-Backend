@@ -308,7 +308,7 @@ public static class SeedData
             new Submission
             {
                 Id = TestSubmission1Id,
-                AssignmentId = TestAssignmentId,
+                AssignmentId = AssignmentId,
                 StudentId = TestStudentId,
                 Comment = "Test student submission 1",
                 Status = SubmissionStatus.Submitted,
@@ -316,8 +316,8 @@ public static class SeedData
             },
             new Submission
             {
-                Id = TestSubmission2Id,
-                AssignmentId = TestAssignmentId,
+                Id = AssignmentId,
+                AssignmentId = AssignmentId,
                 StudentId = TestSubmissionStudent1Id,
                 Comment = "Test student submission 2",
                 Status = SubmissionStatus.Passed,

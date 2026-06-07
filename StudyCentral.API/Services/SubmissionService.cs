@@ -177,7 +177,15 @@ public class SubmissionService : ISubmissionService
                 s.AssignmentId == assignmentId &&
                 s.Assignment.Course.TeacherId == teacherId)
             .ToListAsync();
-        
+        Console.WriteLine($"Found {submissions.Count} submissions");
+
+        foreach (var submission in submissions)
+        {
+            Console.WriteLine(
+                $"SubmissionId={submission.Id}, " +
+                $"AssignmentId={submission.AssignmentId}, " +
+                $"StudentId={submission.StudentId}");
+        }
         return _mapper.Map<List<SubmissionDto>>(submissions);
     }
 
