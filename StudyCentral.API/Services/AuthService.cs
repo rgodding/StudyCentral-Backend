@@ -1,6 +1,4 @@
-﻿
-
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Authentication;
 using StudyCentral.API.Middleware;
@@ -8,6 +6,7 @@ using StudyCentral.API.Models;
 using StudyCentral.API.Models.DTOs.Auth;
 using StudyCentral.API.Models.DTOs.User;
 using StudyCentral.API.Models.Entities;
+using StudyCentral.API.Models.Entities.Enums;
 
 namespace StudyCentral.API.Services;
 

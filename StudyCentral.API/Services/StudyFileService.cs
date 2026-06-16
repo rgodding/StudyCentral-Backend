@@ -4,6 +4,7 @@ using StudyCentral.API.Middleware;
 using StudyCentral.API.Models;
 using StudyCentral.API.Models.DTOs.StudyFile;
 using StudyCentral.API.Models.Entities;
+using StudyCentral.API.Models.Entities.Enums;
 
 namespace StudyCentral.API.Services;
 

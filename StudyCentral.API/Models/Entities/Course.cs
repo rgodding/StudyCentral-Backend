@@ -30,20 +30,4 @@ public class Course
     // Audit
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
-    
-    public override string ToString()
-    {
-        return $"Course {{ " +
-               $"Id = {Id}, " +
-               $"Name = {Name}, " +
-               $"Description = {Description}, " +
-               $"TeacherId = {TeacherId}, " +
-               $"StudentCount = {CourseStudents.Count}, " +
-               $"AssignmentCount = {Assignments.Count}, " +
-               $"AnnouncementCount = {Announcements.Count}, " +
-               $"FolderCount = {StudyFolders.Count}, " +
-               $"CreatedAt = {CreatedAt:o}, " +
-               $"UpdatedAt = {UpdatedAt:o} " +
-               $"}}";
-    }
 }

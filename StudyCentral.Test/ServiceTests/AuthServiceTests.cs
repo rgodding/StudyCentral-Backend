@@ -5,6 +5,7 @@ using StudyCentral.API.Middleware;
 using StudyCentral.API.Models;
 using StudyCentral.API.Models.DTOs.Auth;
 using StudyCentral.API.Models.Entities;
+using StudyCentral.API.Models.Entities.Enums;
 using StudyCentral.API.Services;
 using StudyCentral.Test.Generators;
 using Xunit;

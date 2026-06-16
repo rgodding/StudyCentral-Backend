@@ -1,4 +1,6 @@
-﻿namespace StudyCentral.API.Models.Entities;
+﻿using StudyCentral.API.Models.Entities.Enums;
+
+namespace StudyCentral.API.Models.Entities;
 
 public class StudyFile
 {
@@ -35,14 +37,4 @@ public class StudyFile
     public User UploadedBy { get; set; } = null!;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
-}
-
-public enum FileType
-{
-    Image,
-    Video,
-    Audio,
-    Pdf,
-    Document,
-    Other
 }

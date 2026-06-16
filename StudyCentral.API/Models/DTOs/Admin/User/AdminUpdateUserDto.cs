@@ -1,6 +1,4 @@
-﻿
-
-using StudyCentral.API.Models.Entities;
+﻿using StudyCentral.API.Models.Entities.Enums;
 
 namespace StudyCentral.API.Models.DTOs.Admin.User;
 

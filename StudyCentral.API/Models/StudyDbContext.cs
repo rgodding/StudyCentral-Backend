@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Design;
 using StudyCentral.API.Configurations;
 using StudyCentral.API.Models.Entities;
+using StudyCentral.API.Models.Entities.Chat;
 using StudyCentral.API.Models.Entities.Relationship;
 
 namespace StudyCentral.API.Models;
@@ -54,6 +55,11 @@ public class StudyDbContext : DbContext
         ConfigureStudyFolder(modelBuilder);
         ConfigureStudyFile(modelBuilder);
         ConfigureCourseStudent(modelBuilder);
+
+        // Chat Configurations
+        ConfigureChatRoom(modelBuilder);
+        ConfigureChatMessage(modelBuilder);
+        ConfigureChatRoomMember(modelBuilder);
 
         // Seed Data
         SeedData.Seed(modelBuilder);
@@ -278,5 +284,47 @@ public class StudyDbContext : DbContext
                 .WithMany(u => u.EnrolledCourses)
                 .HasForeignKey(cs => cs.StudentId);
         });
+    }
+
+    private static void ConfigureChatRoom(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ChatRoom>()
+            .HasOne(x => x.Course)
+            .WithMany()
+            .HasForeignKey(x => x.CourseId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+
+    private static void ConfigureChatMessage(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ChatMessage>()
+            .HasOne(x => x.ChatRoom)
+            .WithMany(x => x.Messages)
+            .HasForeignKey(x => x.ChatRoomId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<ChatMessage>()
+            .HasOne(x => x.Sender)
+            .WithMany()
+            .HasForeignKey(x => x.SenderId)
+            .OnDelete(DeleteBehavior.Restrict);
+    }
+
+    private static void ConfigureChatRoomMember(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ChatRoomMember>()
+            .HasKey(x => new { x.UserId, x.ChatRoomId });
+
+        modelBuilder.Entity<ChatRoomMember>()
+            .HasOne(x => x.User)
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<ChatRoomMember>()
+            .HasOne(x => x.ChatRoom)
+            .WithMany(x => x.Members)
+            .HasForeignKey(x => x.ChatRoomId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

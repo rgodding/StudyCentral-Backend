@@ -3,6 +3,7 @@ using StudyCentral.API.Authentication;
 using StudyCentral.API.Models;
 using StudyCentral.API.Models.DTOs.User;
 using StudyCentral.API.Models.Entities;
+using StudyCentral.API.Models.Entities.Enums;
 using StudyCentral.API.Services;
 using StudyCentral.Test.Factories;
 using StudyCentral.Test.Generators;

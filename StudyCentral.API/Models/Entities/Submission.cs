@@ -1,4 +1,6 @@
-﻿namespace StudyCentral.API.Models.Entities;
+﻿using StudyCentral.API.Models.Entities.Enums;
+
+namespace StudyCentral.API.Models.Entities;
 
 public class Submission
 {
@@ -28,22 +30,4 @@ public class Submission
     // Audit
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
-}
-
-public enum GradeLetter
-{
-    A,
-    B,
-    C,
-    D,
-    F
-}
-
-public enum SubmissionStatus
-{
-    NotSubmitted,
-    Submitted,
-    SubmittedLate,
-    Passed,
-    Failed
 }

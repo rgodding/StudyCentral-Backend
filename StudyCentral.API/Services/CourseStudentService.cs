@@ -4,6 +4,7 @@ using StudyCentral.API.Models;
 using StudyCentral.API.Models.DTOs.Course;
 using StudyCentral.API.Models.DTOs.User;
 using StudyCentral.API.Models.Entities;
+using StudyCentral.API.Models.Entities.Enums;
 using StudyCentral.API.Models.Entities.Relationship;
 
 namespace StudyCentral.API.Services;

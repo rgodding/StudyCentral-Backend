@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Models;
 using StudyCentral.API.Models.DTOs.Submission;
 using StudyCentral.API.Models.Entities;
+using StudyCentral.API.Models.Entities.Enums;
 using StudyCentral.API.Models.Entities.Relationship;
 using StudyCentral.API.Services;
 using StudyCentral.Test.Factories;

@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
 using StudyCentral.API.Models.DTOs.Announcement;
 using StudyCentral.API.Models.DTOs.Assignment;
+using StudyCentral.API.Models.DTOs.Chat.ChatMessage;
+using StudyCentral.API.Models.DTOs.Chat.ChatRoom;
 using StudyCentral.API.Models.DTOs.Course;
 using StudyCentral.API.Models.DTOs.StudyFile;
 using StudyCentral.API.Models.DTOs.StudyFolder;
 using StudyCentral.API.Models.DTOs.Submission;
 using StudyCentral.API.Models.DTOs.User;
 using StudyCentral.API.Models.Entities;
+using StudyCentral.API.Models.Entities.Chat;
 
 namespace StudyCentral.API.Models;
 
@@ -21,6 +24,7 @@ public class MappingProfile : Profile
         CreateAnnouncementMappings();
         CreateStudyFolderMappings();
         CreateStudyFileMappings();
+        CreateChatMappings();
     }
 
     private void CreateUserMappings()
@@ -57,7 +61,6 @@ public class MappingProfile : Profile
                 opt => opt.MapFrom(src => src.StudyFiles.Count));
         CreateMap<CreateAssignmentDto, Assignment>();
     }
-    
     private void CreateSubmissionMappings()
     {
         CreateMap<Submission, SubmissionDto>()
@@ -123,7 +126,6 @@ public class MappingProfile : Profile
 
         CreateMap<CreateStudyFolderDto, StudyFolder>();
     }
-
     private void CreateStudyFileMappings()
     {
         CreateMap<StudyFile, StudyFileDto>()
@@ -149,5 +151,27 @@ public class MappingProfile : Profile
                     src.AssignmentId ??
                     src.AnnouncementId ??
                     src.SubmissionId));
+    }
+    private void CreateChatMappings()
+    {
+        CreateMap<ChatRoom, ChatRoomDto>()
+            .ForMember(dest => dest.CourseName,
+                opt => opt.MapFrom(src => src.Course != null ? src.Course.Name : null))
+            .ForMember(dest => dest.MemberCount,
+                opt => opt.MapFrom(src => src.Members.Count))
+            .ForMember(dest => dest.LastMessagePreview,
+                opt => opt.MapFrom(src => src.Messages
+                    .OrderByDescending(m => m.CreatedAt)
+                    .Select(m => m.Content)
+                    .FirstOrDefault()))
+            .ForMember(dest => dest.LastMessageAt,
+                opt => opt.MapFrom(src => src.Messages
+                    .OrderByDescending(m => m.CreatedAt)
+                    .Select(m => (DateTime?)m.CreatedAt)
+                    .FirstOrDefault()));
+
+        CreateMap<ChatMessage, ChatMessageDto>()
+            .ForMember(dest => dest.SenderName,
+                opt => opt.MapFrom(src => $"{src.Sender.FirstName} {src.Sender.LastName}"));
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Models.Entities;
+using StudyCentral.API.Models.Entities.Enums;
 using StudyCentral.API.Models.Entities.Relationship;
 
 namespace StudyCentral.API.Configurations;

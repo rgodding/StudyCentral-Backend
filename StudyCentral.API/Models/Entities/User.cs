@@ -1,4 +1,5 @@
-﻿using StudyCentral.API.Models.Entities.Relationship;
+﻿using StudyCentral.API.Models.Entities.Enums;
+using StudyCentral.API.Models.Entities.Relationship;
 
 namespace StudyCentral.API.Models.Entities;
 
@@ -29,11 +30,4 @@ public class User
     // Audit
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
-}
-
-public enum UserRole
-{
-    Student,
-    Teacher,
-    Admin
 }
