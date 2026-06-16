@@ -46,7 +46,7 @@ public class AuthController : BaseController
             new CookieOptions
             {
                 Secure = true,
-                SameSite = SameSiteMode.Strict
+                SameSite = SameSiteMode.None
             });
 
         return NoContent();

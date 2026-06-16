@@ -123,10 +123,6 @@ public class ChatService : IChatService
 
         var messageDto = _mapper.Map<ChatMessageDto>(createdMessage);
 
-        await _chatHub.Clients
-            .Group(ChatHub.GetRoomGroupName(chatRoomId))
-            .SendAsync("ReceiveMessage", messageDto);
-
         return messageDto;
     }
     
