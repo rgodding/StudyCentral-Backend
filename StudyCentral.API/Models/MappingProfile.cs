@@ -24,7 +24,8 @@ public class MappingProfile : Profile
         CreateAnnouncementMappings();
         CreateStudyFolderMappings();
         CreateStudyFileMappings();
-        CreateChatMappings();
+        CreateChatRoomMappings();
+        CreateChatMessageMappings();
     }
 
     private void CreateUserMappings()
@@ -152,7 +153,8 @@ public class MappingProfile : Profile
                     src.AnnouncementId ??
                     src.SubmissionId));
     }
-    private void CreateChatMappings()
+
+    private void CreateChatRoomMappings()
     {
         CreateMap<ChatRoom, ChatRoomDto>()
             .ForMember(dest => dest.CourseName,
@@ -169,7 +171,10 @@ public class MappingProfile : Profile
                     .OrderByDescending(m => m.CreatedAt)
                     .Select(m => (DateTime?)m.CreatedAt)
                     .FirstOrDefault()));
-
+    }
+    
+    private void CreateChatMessageMappings()
+    {
         CreateMap<ChatMessage, ChatMessageDto>()
             .ForMember(dest => dest.SenderName,
                 opt => opt.MapFrom(src => $"{src.Sender.FirstName} {src.Sender.LastName}"));

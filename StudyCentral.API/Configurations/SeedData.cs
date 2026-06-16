@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Models.Entities;
+using StudyCentral.API.Models.Entities.Chat;
 using StudyCentral.API.Models.Entities.Enums;
 using StudyCentral.API.Models.Entities.Relationship;
 
@@ -99,6 +100,24 @@ public static class SeedData
 
     private static readonly DateTime SeedDate =
         new DateTime(2026, 1, 1, 12, 0, 0, DateTimeKind.Utc);
+
+    private static readonly Guid CourseChatRoomId =
+        Guid.Parse("15151515-1515-1515-1515-151515151515");
+
+    private static readonly Guid ChatMessage1Id =
+        Guid.Parse("16161616-1616-1616-1616-161616161616");
+
+    private static readonly Guid ChatMessage2Id =
+        Guid.Parse("17171717-1717-1717-1717-171717171717");
+
+    private static readonly Guid ChatMessage3Id =
+        Guid.Parse("18181818-1818-1818-1818-181818181818");
+
+    private static readonly Guid ChatMessage4Id =
+        Guid.Parse("19191919-1919-1919-1919-191919191919");
+
+    private static readonly Guid ChatMessage5Id =
+        Guid.Parse("20202020-2020-2020-2020-202020202020");
 
     public static void Seed(ModelBuilder modelBuilder)
     {
@@ -448,4 +467,91 @@ public static class SeedData
             
             );
     }
+    
+    private static void SeedChat(ModelBuilder modelBuilder)
+{
+    modelBuilder.Entity<ChatRoom>().HasData(
+        new ChatRoom
+        {
+            Id = CourseChatRoomId,
+            Name = "System Integration Chat",
+            Type = ChatRoomType.Course,
+            CourseId = CourseId,
+            CreatedAt = SeedDate
+        });
+
+    modelBuilder.Entity<ChatRoomMember>().HasData(
+        new ChatRoomMember
+        {
+            ChatRoomId = CourseChatRoomId,
+            UserId = TeacherId,
+            JoinedAt = SeedDate
+        },
+        new ChatRoomMember
+        {
+            ChatRoomId = CourseChatRoomId,
+            UserId = StudentId,
+            JoinedAt = SeedDate
+        },
+        new ChatRoomMember
+        {
+            ChatRoomId = CourseChatRoomId,
+            UserId = TestStudentId,
+            JoinedAt = SeedDate
+        },
+        new ChatRoomMember
+        {
+            ChatRoomId = CourseChatRoomId,
+            UserId = TestSubmissionStudent1Id,
+            JoinedAt = SeedDate
+        },
+        new ChatRoomMember
+        {
+            ChatRoomId = CourseChatRoomId,
+            UserId = TestSubmissionStudent2Id,
+            JoinedAt = SeedDate
+        });
+
+    modelBuilder.Entity<ChatMessage>().HasData(
+        new ChatMessage
+        {
+            Id = ChatMessage1Id,
+            ChatRoomId = CourseChatRoomId,
+            SenderId = TeacherId,
+            Content = "Welcome to the System Integration course chat.",
+            CreatedAt = SeedDate.AddMinutes(1)
+        },
+        new ChatMessage
+        {
+            Id = ChatMessage2Id,
+            ChatRoomId = CourseChatRoomId,
+            SenderId = StudentId,
+            Content = "Thanks. Is the first assignment already available?",
+            CreatedAt = SeedDate.AddMinutes(2)
+        },
+        new ChatMessage
+        {
+            Id = ChatMessage3Id,
+            ChatRoomId = CourseChatRoomId,
+            SenderId = TeacherId,
+            Content = "Yes, you can find it under assignments.",
+            CreatedAt = SeedDate.AddMinutes(3)
+        },
+        new ChatMessage
+        {
+            Id = ChatMessage4Id,
+            ChatRoomId = CourseChatRoomId,
+            SenderId = TestStudentId,
+            Content = "Should we submit individually or as a group?",
+            CreatedAt = SeedDate.AddMinutes(4)
+        },
+        new ChatMessage
+        {
+            Id = ChatMessage5Id,
+            ChatRoomId = CourseChatRoomId,
+            SenderId = TeacherId,
+            Content = "This one should be submitted individually.",
+            CreatedAt = SeedDate.AddMinutes(5)
+        });
+}
 }

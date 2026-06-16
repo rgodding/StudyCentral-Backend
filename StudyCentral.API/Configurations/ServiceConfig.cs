@@ -38,6 +38,7 @@ public class ServiceConfig
         services.AddScoped<IAnnouncementService, AnnouncementService>();
         services.AddScoped<IStudyFolderService, StudyFolderService>();
         services.AddScoped<IStudyFileService, StudyFileService>();
+        services.AddScoped<IChatService, ChatService>();
     }
 
     private static void JsonConfig(IServiceCollection services)

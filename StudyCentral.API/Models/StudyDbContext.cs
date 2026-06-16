@@ -43,6 +43,9 @@ public class StudyDbContext : DbContext
     public DbSet<StudyFolder> StudyFolders { get; set; } = null!;
     public DbSet<StudyFile> StudyFiles { get; set; } = null!;
     public DbSet<CourseStudent> CourseStudents { get; set; } = null!;
+    public DbSet<ChatRoom> ChatRooms { get; set; } = null!;
+    public DbSet<ChatMessage> ChatMessages { get; set; } = null!;
+    public DbSet<ChatRoomMember> ChatRoomMembers { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
