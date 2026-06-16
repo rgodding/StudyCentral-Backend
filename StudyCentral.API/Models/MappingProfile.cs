@@ -178,5 +178,8 @@ public class MappingProfile : Profile
         CreateMap<ChatMessage, ChatMessageDto>()
             .ForMember(dest => dest.SenderName,
                 opt => opt.MapFrom(src => $"{src.Sender.FirstName} {src.Sender.LastName}"));
+        
+        CreateMap<SendChatMessageDto, ChatMessage>();
+
     }
 }

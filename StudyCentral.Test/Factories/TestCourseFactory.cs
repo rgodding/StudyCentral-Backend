@@ -8,6 +8,7 @@ public static class TestCourseFactory
         Guid? id = null,
         string? name = null,
         string? description = null,
+        Guid? teacherId = null,
         DateTime? createdAt = null,
         DateTime? updatedAt = null
     )
@@ -17,6 +18,7 @@ public static class TestCourseFactory
             Id = id ?? Guid.NewGuid(),
             Name = name ?? $"NAME_${Guid.NewGuid()}",
             Description = description,
+            TeacherId = teacherId,
             CreatedAt = createdAt ?? DateTime.UtcNow,
             UpdatedAt = updatedAt
         };

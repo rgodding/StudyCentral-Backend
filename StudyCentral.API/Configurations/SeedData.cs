@@ -130,6 +130,7 @@ public static class SeedData
         SeedSubmissions(modelBuilder);
         SeedFolders(modelBuilder);
         SeedFiles(modelBuilder);
+        SeedChat(modelBuilder);
     }
 
     private static void SeedUsers(ModelBuilder modelBuilder)
