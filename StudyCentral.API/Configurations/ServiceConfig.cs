@@ -19,6 +19,9 @@ public class ServiceConfig
     {
         // AutoMapper
         services.AddAutoMapper(typeof(MappingProfile));
+        
+        // SignalR
+        services.AddSignalR();
 
         // JWT
         services.AddScoped<IJwtService, JwtService>();
@@ -28,7 +31,7 @@ public class ServiceConfig
 
         // File Services
         services.AddScoped<IStudyFileService, StudyFileService>();
-
+        
         // Services
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();

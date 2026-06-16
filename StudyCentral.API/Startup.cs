@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using StudyCentral.API.Configurations;
+using StudyCentral.API.Hubs;
 using StudyCentral.API.Middleware;
 using StudyCentral.API.Models;
 
@@ -86,6 +87,7 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
+            endpoints.MapHub<ChatHub>("/hubs/chat");
         });
     }
 }

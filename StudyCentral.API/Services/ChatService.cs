@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using StudyCentral.API.Hubs;
 using StudyCentral.API.Models;
 using StudyCentral.API.Models.DTOs.Chat.ChatMessage;
 using StudyCentral.API.Models.DTOs.Chat.ChatRoom;
@@ -21,11 +23,13 @@ public class ChatService : IChatService
 {
     private readonly StudyDbContext _dbContext;
     private readonly IMapper _mapper;
+    private readonly IHubContext<ChatHub> _chatHub;
 
-    public ChatService(StudyDbContext dbContext, IMapper mapper)
+    public ChatService(StudyDbContext dbContext, IMapper mapper, IHubContext<ChatHub> chatHub)
     {
         _dbContext = dbContext;
         _mapper = mapper;
+        _chatHub = chatHub;
     }
 
     // --------------------
@@ -114,10 +118,16 @@ public class ChatService : IChatService
         await _dbContext.SaveChangesAsync();
         
         var createdMessage = await _dbContext.ChatMessages
-            .Include(cm => cm.Sender)
-            .FirstOrDefaultAsync(cm => cm.Id == message.Id);
-        
-        return _mapper.Map<ChatMessageDto>(createdMessage);
+            .Include(m => m.Sender)
+            .FirstAsync(m => m.Id == message.Id);
+
+        var messageDto = _mapper.Map<ChatMessageDto>(createdMessage);
+
+        await _chatHub.Clients
+            .Group(ChatHub.GetRoomGroupName(chatRoomId))
+            .SendAsync("ReceiveMessage", messageDto);
+
+        return messageDto;
     }
     
     // --------------------
