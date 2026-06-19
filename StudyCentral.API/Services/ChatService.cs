@@ -5,6 +5,7 @@ using StudyCentral.API.Hubs;
 using StudyCentral.API.Models;
 using StudyCentral.API.Models.DTOs.Chat.ChatMessage;
 using StudyCentral.API.Models.DTOs.Chat.ChatRoom;
+using StudyCentral.API.Models.DTOs.Chat.ChatRoomMember;
 using StudyCentral.API.Models.Entities.Chat;
 using StudyCentral.API.Models.Entities.Enums;
 
@@ -12,16 +13,18 @@ namespace StudyCentral.API.Services;
 
 public interface IChatService
 {
+    Task<ChatCurrentUserDto> GetCurrentUser(Guid currentUserId);
+
     Task<List<ChatRoomDto>> GetCourseChatRooms(Guid currentUserId);
-    
+
     Task<ChatRoomDto> GetOrCreateCourseChatRoom(Guid currentUserId, Guid courseId);
-    
+
     Task<List<Guid>> GetChatRoomMemberIds(Guid chatRoomId);
-    
+
     Task<List<ChatMessageDto>> GetMessages(Guid currentUserId, Guid chatRoomId);
 
     Task<ChatMessageDto> SendMessage(Guid currentUserId, Guid chatRoomId, SendChatMessageDto dto);
-    
+
     Task MarkChatRoomAsSeen(Guid currentUserId, Guid chatRoomId);
 }
 
@@ -41,6 +44,27 @@ public class ChatService : IChatService
     // --------------------
     // METHODS
     // --------------------
+    public async Task<ChatCurrentUserDto> GetCurrentUser(Guid currentUserId)
+    {
+        var user = await _dbContext.Users
+            .Include(u => u.ProfilePicture)
+            .FirstOrDefaultAsync(u => u.Id == currentUserId);
+
+        if (user == null)
+            throw new KeyNotFoundException("User not found");
+
+        var name = $"{user.FirstName} {user.LastName}".Trim();
+
+        return new ChatCurrentUserDto
+        {
+            Id = user.Id,
+            Name = string.IsNullOrWhiteSpace(name)
+                ? user.Email
+                : name,
+            ProfilePictureUrl = user.ProfilePicture?.BlobName
+        };
+    }
+
     public async Task<List<ChatRoomDto>> GetCourseChatRooms(Guid currentUserId)
     {
         var courses = await _dbContext.Courses
@@ -80,22 +104,22 @@ public class ChatService : IChatService
             .OrderByDescending(cr => cr.LastMessageAt ?? cr.CreatedAt)
             .ToList();
     }
-    
+
     public async Task<ChatRoomDto> GetOrCreateCourseChatRoom(Guid currentUserId, Guid courseId)
     {
         var course = await _dbContext.Courses
             .Include(c => c.CourseStudents)
             .FirstOrDefaultAsync(c => c.Id == courseId);
-        
+
         if (course == null)
             throw new KeyNotFoundException("Course not found");
-        
+
         var hasAccess = course.TeacherId == currentUserId ||
                         course.CourseStudents.Any(cs => cs.StudentId == currentUserId);
-        
+
         if (!hasAccess)
             throw new UnauthorizedAccessException("User does not have access to this course");
-        
+
         var chatRoom = await _dbContext.ChatRooms
             .Include(cr => cr.Course)
             .Include(cr => cr.Members)
@@ -112,7 +136,7 @@ public class ChatService : IChatService
                 Type = ChatRoomType.Course,
                 CourseId = courseId
             };
-            
+
             _dbContext.ChatRooms.Add(chatRoom);
 
             if (course.TeacherId != null)
@@ -132,10 +156,10 @@ public class ChatService : IChatService
                     ChatRoomId = chatRoom.Id
                 });
             }
-            
+
             await _dbContext.SaveChangesAsync();
         }
-        
+
         return _mapper.Map<ChatRoomDto>(chatRoom);
     }
 
@@ -150,7 +174,7 @@ public class ChatService : IChatService
     public async Task<List<ChatMessageDto>> GetMessages(Guid currentUserId, Guid chatRoomId)
     {
         await VerifyChatRoomAccess(currentUserId, chatRoomId);
-        
+
         var messages = await _dbContext.ChatMessages
             .Include(cm => cm.Sender)
             .Where(cm => cm.ChatRoomId == chatRoomId)
@@ -163,14 +187,14 @@ public class ChatService : IChatService
     public async Task<ChatMessageDto> SendMessage(Guid currentUserId, Guid chatRoomId, SendChatMessageDto dto)
     {
         await VerifyChatRoomAccess(currentUserId, chatRoomId);
-        
+
         var message = _mapper.Map<ChatMessage>(dto);
         message.ChatRoomId = chatRoomId;
         message.SenderId = currentUserId;
-        
+
         _dbContext.ChatMessages.Add(message);
         await _dbContext.SaveChangesAsync();
-        
+
         var createdMessage = await _dbContext.ChatMessages
             .Include(m => m.Sender)
             .FirstAsync(m => m.Id == message.Id);

@@ -23,6 +23,7 @@ public class ChatHub : Hub
     {
         public Guid UserId { get; set; }
         public string Name { get; set; } = null!;
+        public string? ProfilePictureUrl { get; set; }
         public Guid ChatRoomId { get; set; }
     }
 
@@ -38,10 +39,13 @@ public class ChatHub : Hub
             Context.ConnectionId,
             GetRoomGroupName(chatRoom.Id));
 
+        var chatUser = await _chatService.GetCurrentUser(currentUser.Id);
+
         Connections[Context.ConnectionId] = new ChatConnectionInfo
         {
-            UserId = currentUser.Id,
-            Name = currentUser.Email,
+            UserId = chatUser.Id,
+            Name = chatUser.Name,
+            ProfilePictureUrl = chatUser.ProfilePictureUrl,
             ChatRoomId = chatRoom.Id
         };
 
@@ -90,11 +94,6 @@ public class ChatHub : Hub
             GetRoomGroupName(chatRoomId));
     }
 
-    public static string GetRoomGroupName(Guid chatRoomId)
-    {
-        return $"chat-room-{chatRoomId}";
-    }
-
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         if (Connections.TryGetValue(Context.ConnectionId, out var connectionInfo))
@@ -123,11 +122,6 @@ public class ChatHub : Hub
     // ----------------
     // HELPER METHODS
     // ----------------
-    private static string GetUserChatOverviewGroupName(Guid userId)
-    {
-        return $"user-{userId}-chat-overview";
-    }
-
     private async Task SendRoomUsers(Guid chatRoomId)
     {
         var users = Connections.Values
@@ -136,12 +130,23 @@ public class ChatHub : Hub
             .Select(g => new ChatOnlineUserDto
             {
                 UserId = g.Key,
-                Name = g.First().Name
+                Name = g.First().Name,
+                ProfilePictureUrl = g.First().ProfilePictureUrl
             })
             .ToList();
 
         await Clients
             .Group(GetRoomGroupName(chatRoomId))
             .SendAsync("RoomUsersChanged", users);
+    }
+
+    private static string GetUserChatOverviewGroupName(Guid userId)
+    {
+        return $"user-{userId}-chat-overview";
+    }
+
+    private static string GetRoomGroupName(Guid chatRoomId)
+    {
+        return $"chat-room-{chatRoomId}";
     }
 }
