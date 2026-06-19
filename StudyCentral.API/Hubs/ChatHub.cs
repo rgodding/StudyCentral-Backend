@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using StudyCentral.API.Authentication;
 using StudyCentral.API.Models.DTOs.Chat.ChatMessage;
+using StudyCentral.API.Models.DTOs.Chat.ChatRoomMember;
 using StudyCentral.API.Services;
 
 namespace StudyCentral.API.Hubs;
@@ -16,7 +17,14 @@ public class ChatHub : Hub
         _chatService = chatService;
     }
 
-    private static readonly Dictionary<string, Guid> ConnectionRooms = new();
+    private static readonly Dictionary<string, ChatConnectionInfo> Connections = new();
+
+    private class ChatConnectionInfo
+    {
+        public Guid UserId { get; set; }
+        public string Name { get; set; } = null!;
+        public Guid ChatRoomId { get; set; }
+    }
 
     public async Task JoinCourseRoom(Guid courseId)
     {
@@ -30,7 +38,12 @@ public class ChatHub : Hub
             Context.ConnectionId,
             GetRoomGroupName(chatRoom.Id));
 
-        ConnectionRooms[Context.ConnectionId] = chatRoom.Id;
+        Connections[Context.ConnectionId] = new ChatConnectionInfo
+        {
+            UserId = currentUser.Id,
+            Name = currentUser.Email,
+            ChatRoomId = chatRoom.Id
+        };
 
         var messages = await _chatService.GetMessages(
             currentUser.Id,
@@ -42,6 +55,8 @@ public class ChatHub : Hub
 
         await Clients.Caller.SendAsync("JoinedRoom", chatRoom);
         await Clients.Caller.SendAsync("ChatMessagesLoaded", messages);
+
+        await SendRoomUsers(chatRoom.Id);
     }
 
     public async Task SendMessage(Guid chatRoomId, SendChatMessageDto dto)
@@ -82,24 +97,11 @@ public class ChatHub : Hub
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        if (ConnectionRooms.TryGetValue(Context.ConnectionId, out var chatRoomId))
+        if (Connections.TryGetValue(Context.ConnectionId, out var connectionInfo))
         {
-            ConnectionRooms.Remove(Context.ConnectionId);
+            Connections.Remove(Context.ConnectionId);
 
-            var currentUser = Context.User?.GetUser();
-
-            if (currentUser != null)
-            {
-                await Clients
-                    .Group(GetRoomGroupName(chatRoomId))
-                    .SendAsync("UserDisconnected", new
-                    {
-                        chatRoomId,
-                        userId = currentUser.Id,
-                        message = $"{currentUser.Email} disconnected from chat.",
-                        disconnectedAt = DateTime.UtcNow
-                    });
-            }
+            await SendRoomUsers(connectionInfo.ChatRoomId);
         }
 
         await base.OnDisconnectedAsync(exception);
@@ -118,8 +120,28 @@ public class ChatHub : Hub
         await Clients.Caller.SendAsync("CourseChatRoomsLoaded", chatRooms);
     }
 
+    // ----------------
+    // HELPER METHODS
+    // ----------------
     private static string GetUserChatOverviewGroupName(Guid userId)
     {
         return $"user-{userId}-chat-overview";
+    }
+
+    private async Task SendRoomUsers(Guid chatRoomId)
+    {
+        var users = Connections.Values
+            .Where(c => c.ChatRoomId == chatRoomId)
+            .GroupBy(c => c.UserId)
+            .Select(g => new ChatOnlineUserDto
+            {
+                UserId = g.Key,
+                Name = g.First().Name
+            })
+            .ToList();
+
+        await Clients
+            .Group(GetRoomGroupName(chatRoomId))
+            .SendAsync("RoomUsersChanged", users);
     }
 }
