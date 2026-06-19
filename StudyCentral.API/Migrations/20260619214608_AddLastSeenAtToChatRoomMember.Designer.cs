@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StudyCentral.API.Models;
 
@@ -11,9 +12,11 @@ using StudyCentral.API.Models;
 namespace StudyCentral.API.Migrations
 {
     [DbContext(typeof(StudyDbContext))]
-    partial class StudyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260619214608_AddLastSeenAtToChatRoomMember")]
+    partial class AddLastSeenAtToChatRoomMember
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -319,6 +319,14 @@ public class StudyDbContext : DbContext
             .HasKey(x => new { x.UserId, x.ChatRoomId });
 
         modelBuilder.Entity<ChatRoomMember>()
+            .Property(x => x.JoinedAt)
+            .IsRequired();
+
+        modelBuilder.Entity<ChatRoomMember>()
+            .Property(x => x.LastSeenAt)
+            .IsRequired(false);
+
+        modelBuilder.Entity<ChatRoomMember>()
             .HasOne(x => x.User)
             .WithMany()
             .HasForeignKey(x => x.UserId)

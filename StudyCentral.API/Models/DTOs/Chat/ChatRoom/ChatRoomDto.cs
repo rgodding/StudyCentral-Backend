@@ -16,6 +16,8 @@ public class ChatRoomDto
     public string? CourseName { get; set; }
 
     public int MemberCount { get; set; }
+    
+    public int UnreadCount { get; set; }
 
     public string? LastMessagePreview { get; set; }
 

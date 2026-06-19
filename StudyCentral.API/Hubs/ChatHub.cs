@@ -15,7 +15,7 @@ public class ChatHub : Hub
     {
         _chatService = chatService;
     }
-    
+
     private static readonly Dictionary<string, Guid> ConnectionRooms = new();
 
     public async Task JoinCourseRoom(Guid courseId)
@@ -29,15 +29,22 @@ public class ChatHub : Hub
         await Groups.AddToGroupAsync(
             Context.ConnectionId,
             GetRoomGroupName(chatRoom.Id));
-        
+
         ConnectionRooms[Context.ConnectionId] = chatRoom.Id;
 
+        var messages = await _chatService.GetMessages(
+            currentUser.Id,
+            chatRoom.Id);
+
+        await _chatService.MarkChatRoomAsSeen(
+            currentUser.Id,
+            chatRoom.Id);
+
         await Clients.Caller.SendAsync("JoinedRoom", chatRoom);
+        await Clients.Caller.SendAsync("ChatMessagesLoaded", messages);
     }
-    
-    public async Task SendMessage(
-        Guid chatRoomId,
-        SendChatMessageDto dto)
+
+    public async Task SendMessage(Guid chatRoomId, SendChatMessageDto dto)
     {
         var currentUser = Context.User!.GetUser();
 
@@ -49,6 +56,16 @@ public class ChatHub : Hub
         await Clients
             .Group(GetRoomGroupName(chatRoomId))
             .SendAsync("ReceiveMessage", message);
+
+        var memberIds = await _chatService.GetChatRoomMemberIds(chatRoomId);
+
+        var overviewGroups = memberIds
+            .Select(GetUserChatOverviewGroupName)
+            .ToList();
+
+        await Clients
+            .Groups(overviewGroups)
+            .SendAsync("CourseChatRoomsChanged");
     }
 
     public async Task LeaveRoom(Guid chatRoomId)
@@ -62,7 +79,7 @@ public class ChatHub : Hub
     {
         return $"chat-room-{chatRoomId}";
     }
-    
+
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         if (ConnectionRooms.TryGetValue(Context.ConnectionId, out var chatRoomId))
@@ -86,5 +103,23 @@ public class ChatHub : Hub
         }
 
         await base.OnDisconnectedAsync(exception);
+    }
+
+    public async Task GetCourseChatRooms()
+    {
+        var currentUser = Context.User!.GetUser();
+
+        await Groups.AddToGroupAsync(
+            Context.ConnectionId,
+            GetUserChatOverviewGroupName(currentUser.Id));
+
+        var chatRooms = await _chatService.GetCourseChatRooms(currentUser.Id);
+
+        await Clients.Caller.SendAsync("CourseChatRoomsLoaded", chatRooms);
+    }
+
+    private static string GetUserChatOverviewGroupName(Guid userId)
+    {
+        return $"user-{userId}-chat-overview";
     }
 }

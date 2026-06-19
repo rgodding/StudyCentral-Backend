@@ -12,11 +12,17 @@ namespace StudyCentral.API.Services;
 
 public interface IChatService
 {
+    Task<List<ChatRoomDto>> GetCourseChatRooms(Guid currentUserId);
+    
     Task<ChatRoomDto> GetOrCreateCourseChatRoom(Guid currentUserId, Guid courseId);
+    
+    Task<List<Guid>> GetChatRoomMemberIds(Guid chatRoomId);
     
     Task<List<ChatMessageDto>> GetMessages(Guid currentUserId, Guid chatRoomId);
 
     Task<ChatMessageDto> SendMessage(Guid currentUserId, Guid chatRoomId, SendChatMessageDto dto);
+    
+    Task MarkChatRoomAsSeen(Guid currentUserId, Guid chatRoomId);
 }
 
 public class ChatService : IChatService
@@ -35,6 +41,46 @@ public class ChatService : IChatService
     // --------------------
     // METHODS
     // --------------------
+    public async Task<List<ChatRoomDto>> GetCourseChatRooms(Guid currentUserId)
+    {
+        var courses = await _dbContext.Courses
+            .Include(c => c.CourseStudents)
+            .Where(c =>
+                c.TeacherId == currentUserId ||
+                c.CourseStudents.Any(cs => cs.StudentId == currentUserId))
+            .ToListAsync();
+
+        var chatRooms = new List<ChatRoomDto>();
+
+        foreach (var course in courses)
+        {
+            var chatRoomDto = await GetOrCreateCourseChatRoom(
+                currentUserId,
+                course.Id);
+
+            var member = await _dbContext.ChatRoomMembers
+                .FirstOrDefaultAsync(m =>
+                    m.ChatRoomId == chatRoomDto.Id &&
+                    m.UserId == currentUserId);
+
+            var unreadCount = await _dbContext.ChatMessages
+                .CountAsync(m =>
+                    m.ChatRoomId == chatRoomDto.Id &&
+                    m.SenderId != currentUserId &&
+                    (member == null ||
+                     member.LastSeenAt == null ||
+                     m.CreatedAt > member.LastSeenAt));
+
+            chatRoomDto.UnreadCount = unreadCount;
+
+            chatRooms.Add(chatRoomDto);
+        }
+
+        return chatRooms
+            .OrderByDescending(cr => cr.LastMessageAt ?? cr.CreatedAt)
+            .ToList();
+    }
+    
     public async Task<ChatRoomDto> GetOrCreateCourseChatRoom(Guid currentUserId, Guid courseId)
     {
         var course = await _dbContext.Courses
@@ -93,6 +139,14 @@ public class ChatService : IChatService
         return _mapper.Map<ChatRoomDto>(chatRoom);
     }
 
+    public async Task<List<Guid>> GetChatRoomMemberIds(Guid chatRoomId)
+    {
+        return await _dbContext.ChatRoomMembers
+            .Where(m => m.ChatRoomId == chatRoomId)
+            .Select(m => m.UserId)
+            .ToListAsync();
+    }
+
     public async Task<List<ChatMessageDto>> GetMessages(Guid currentUserId, Guid chatRoomId)
     {
         await VerifyChatRoomAccess(currentUserId, chatRoomId);
@@ -125,7 +179,22 @@ public class ChatService : IChatService
 
         return messageDto;
     }
-    
+
+    public async Task MarkChatRoomAsSeen(Guid currentUserId, Guid chatRoomId)
+    {
+        var member = await _dbContext.ChatRoomMembers
+            .FirstOrDefaultAsync(m =>
+                m.ChatRoomId == chatRoomId &&
+                m.UserId == currentUserId);
+
+        if (member == null)
+            throw new UnauthorizedAccessException("You do not have access to this chat room");
+
+        member.LastSeenAt = DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync();
+    }
+
     // --------------------
     // HELPER METHODS
     // --------------------
