@@ -55,9 +55,7 @@ public class StudyFileService : IStudyFileService
 
     public async Task<BlobFileResult> DownloadFile(Guid userId, Guid fileId)
     {
-        Console.WriteLine("Verifying user access to file: " + fileId);
         var file = await VerifyUserAccessToFile(userId, fileId);
-        Console.WriteLine("Verified user access to file: " + file.FileName);
         return await _blobService.GetFile(file.BlobName);
     }
 

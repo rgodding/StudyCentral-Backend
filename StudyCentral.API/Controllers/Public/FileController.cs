@@ -20,9 +20,6 @@ public class FileController : BaseController
     [HttpGet("{fileId:guid}/download")]
     public async Task<IActionResult> DownloadFile(Guid fileId)
     {
-        Console.WriteLine("current user: " + CurrentUser.Id);
-        Console.WriteLine("file id: " + fileId);
-        Console.WriteLine("User Role: " + CurrentUser.Role + "\n");
         var file = await _studyFileService
             .DownloadFile(CurrentUser.Id, fileId);
 
@@ -30,5 +27,20 @@ public class FileController : BaseController
             file.Content,
             file.ContentType,
             file.FileName);
+    }
+
+    [HttpGet("{fileId:guid}/preview")]
+    public async Task<IActionResult> PreviewFile(Guid fileId)
+    {
+        var file = await _studyFileService
+            .DownloadFile(CurrentUser.Id, fileId);
+
+        Response.Headers.ContentDisposition =
+            $"inline; filename=\"{file.FileName}\"";
+
+
+        return File(
+            file.Content,
+            file.ContentType);
     }
 }
