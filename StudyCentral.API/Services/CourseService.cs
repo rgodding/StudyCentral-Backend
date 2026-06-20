@@ -260,20 +260,21 @@ public class CourseService : ICourseService
     // ----------------
     public async Task<List<CourseDto>> GetCoursesByStudentId(Guid studentId)
     {
-        var courses = await _dbContext.CourseStudents
-            .Where(cs => cs.StudentId == studentId)
-            .Select(cs => cs.Course)
+        var courses = await _dbContext.Courses
             .Include(c => c.Teacher)
+            .Include(c => c.CourseStudents)
+            .Where(c => c.CourseStudents.Any(cs => cs.StudentId == studentId))
             .ToListAsync();
         return _mapper.Map<List<CourseDto>>(courses);
     }
 
     public async Task<CourseDto> GetCourseByStudentId(Guid studentId, Guid courseId)
     {
-        var course = await _dbContext.CourseStudents
-            .Where(cs => cs.StudentId == studentId && cs.CourseId == courseId)
-            .Select(cs => cs.Course)
-            .FirstOrDefaultAsync();
+        var course = await _dbContext.Courses
+            .Include(c => c.Teacher)
+            .Include(c => c.CourseStudents)
+            .FirstOrDefaultAsync(c => c.Id == courseId && c.CourseStudents.Any(cs => cs.StudentId == studentId));
+            
 
         if (course == null)
             throw new KeyNotFoundException("Course not found");

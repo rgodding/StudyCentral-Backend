@@ -20,6 +20,9 @@ public class FileController : BaseController
     [HttpGet("{fileId:guid}/download")]
     public async Task<IActionResult> DownloadFile(Guid fileId)
     {
+        Console.WriteLine("current user: " + CurrentUser.Id);
+        Console.WriteLine("file id: " + fileId);
+        Console.WriteLine("User Role: " + CurrentUser.Role + "\n");
         var file = await _studyFileService
             .DownloadFile(CurrentUser.Id, fileId);
 

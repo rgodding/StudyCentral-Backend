@@ -55,7 +55,9 @@ public class StudyFileService : IStudyFileService
 
     public async Task<BlobFileResult> DownloadFile(Guid userId, Guid fileId)
     {
+        Console.WriteLine("Verifying user access to file: " + fileId);
         var file = await VerifyUserAccessToFile(userId, fileId);
+        Console.WriteLine("Verified user access to file: " + file.FileName);
         return await _blobService.GetFile(file.BlobName);
     }
 
@@ -433,7 +435,7 @@ public class StudyFileService : IStudyFileService
         return user.Role switch
         {
             UserRole.Student => await VerifyStudentAccessToFile(userId, file),
-            // UserRole.Teacher => await VerifyTeacherAccessToFile(userId, file),
+            UserRole.Teacher => await VerifyTeacherAccessToFile(userId, file),
             UserRole.Admin => file, // Admin has access to all files
             _ => throw new InvalidOperationException("Invalid user role")
         };
