@@ -29,6 +29,15 @@ public class StudentStudyFolderController : BaseStudentController
         
         return Ok(folders);
     }
+    
+    [HttpGet("course/{courseId:guid}/content")]
+    public async Task<IActionResult> GetCourseStudyFolderContent(Guid courseId)
+    {
+        var content = await _studyFolderService
+            .GetCourseStudyFolderContentByStudentId(CurrentUser.Id, courseId);
+
+        return Ok(content);
+    }
 
     [HttpGet("{folderId:guid}")]
     public async Task<ActionResult<StudyFolderDto>> GetFolder(

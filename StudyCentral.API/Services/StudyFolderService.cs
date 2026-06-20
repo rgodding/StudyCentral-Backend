@@ -15,7 +15,7 @@ public interface IStudyFolderService
     Task<StudyFolderDto> Create(CreateStudyFolderDto dto);
     Task<StudyFolderDto> Update(Guid id, UpdateStudyFolderDto dto);
     Task Delete(Guid id);
-    
+
     // Admin Methods
     Task<List<StudyFileDto>> GetFiles(Guid folderId);
 
@@ -24,6 +24,7 @@ public interface IStudyFolderService
         Guid? parentFolderId = null);
 
     Task<StudyFolderDto> GetFolderByTeacherId(Guid teacherId, Guid folderId);
+    Task<CourseStudyFolderContentDto> GetCourseStudyFolderContentByTeacherId(Guid teacherId, Guid courseId);
     Task<StudyFolderDto> CreateFolderByTeacherId(Guid teacherId, CreateStudyFolderDto dto);
     Task<StudyFolderDto> UpdateFolderByTeacherId(Guid teacherId, Guid folderId, UpdateStudyFolderDto dto);
     Task DeleteFolderByTeacherId(Guid teacherId, Guid folderId);
@@ -40,6 +41,7 @@ public interface IStudyFolderService
         Guid? parentFolderId = null);
 
     Task<StudyFolderDto> GetFolderByStudentId(Guid studentId, Guid folderId);
+    Task<CourseStudyFolderContentDto> GetCourseStudyFolderContentByStudentId(Guid studentId, Guid courseId);
     Task<List<StudyFileDto>> GetFilesByFolderIdAndStudentId(Guid studentId, Guid folderId);
     Task<StudyFileDto> GetFileByIdAndStudentId(Guid studentId, Guid fileId);
 }
@@ -222,6 +224,33 @@ public class StudyFolderService : IStudyFolderService
                 "Teacher does not have access to this folder");
 
         return _mapper.Map<StudyFolderDto>(folder);
+    }
+
+    public async Task<CourseStudyFolderContentDto> GetCourseStudyFolderContentByTeacherId(Guid teacherId, Guid courseId)
+    {
+        var course = await _dbContext.Courses
+            .Include(c => c.Teacher)
+            .FirstOrDefaultAsync(c => c.Id == courseId && c.TeacherId == teacherId);
+
+        if (course == null)
+            throw new KeyNotFoundException("Course not found");
+
+        var folders = await _dbContext.StudyFolders
+            .Where(sf => sf.CourseId == courseId)
+            .ToListAsync();
+
+        var files = await _dbContext.StudyFiles
+            .Include(f => f.UploadedBy)
+            .Where(sf => sf.StudyFolder != null && sf.StudyFolder.CourseId == courseId)
+            .ToListAsync();
+
+        return new CourseStudyFolderContentDto
+        {
+            CourseId = course.Id,
+            CourseName = course.Name,
+            Folders = _mapper.Map<List<StudyFolderDto>>(folders),
+            Files = _mapper.Map<List<StudyFileDto>>(files),
+        };
     }
 
     public async Task<StudyFolderDto> CreateFolderByTeacherId(Guid teacherId, CreateStudyFolderDto dto)
@@ -444,6 +473,34 @@ public class StudyFolderService : IStudyFolderService
                 "Student does not have access to this folder.");
 
         return _mapper.Map<StudyFolderDto>(folder);
+    }
+
+    public async Task<CourseStudyFolderContentDto> GetCourseStudyFolderContentByStudentId(Guid studentId, Guid courseId)
+    {
+        var course = await _dbContext.CourseStudents
+            .Where(cs => cs.StudentId == studentId && cs.CourseId == courseId)
+            .Select(cs => cs.Course)
+            .FirstOrDefaultAsync();
+
+        if (course == null)
+            throw new KeyNotFoundException("Course not found");
+
+        var folders = await _dbContext.StudyFolders
+            .Where(sf => sf.CourseId == courseId)
+            .ToListAsync();
+
+        var files = await _dbContext.StudyFiles
+            .Include(f => f.UploadedBy)
+            .Where(sf => sf.StudyFolder != null && sf.StudyFolder.CourseId == courseId)
+            .ToListAsync();
+
+        return new CourseStudyFolderContentDto
+        {
+            CourseId = course.Id,
+            CourseName = course.Name,
+            Folders = _mapper.Map<List<StudyFolderDto>>(folders),
+            Files = _mapper.Map<List<StudyFileDto>>(files),
+        };
     }
 
     public async Task<List<StudyFileDto>> GetFilesByFolderIdAndStudentId(Guid studentId, Guid folderId)
