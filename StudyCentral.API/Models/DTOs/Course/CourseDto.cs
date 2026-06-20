@@ -6,6 +6,9 @@ public class CourseDto
     public string Name { get; set; } = null!;
     public string Description { get; set; } = null!;
     public int StudentCount { get; set; }
+    public Guid? TeacherId { get; set; }
+    public string? TeacherFirstName { get; set; }
+    public string? TeacherLastName { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 }

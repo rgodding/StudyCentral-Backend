@@ -151,6 +151,7 @@ public class CourseService : ICourseService
     {
         var courses = await _dbContext.Courses
             .Include(c => c.CourseStudents)
+            .Include(c => c.Teacher)
             .Where(c => c.TeacherId == teacherId)
             .ToListAsync();
         return _mapper.Map<List<CourseDto>>(courses);
@@ -262,6 +263,7 @@ public class CourseService : ICourseService
         var courses = await _dbContext.CourseStudents
             .Where(cs => cs.StudentId == studentId)
             .Select(cs => cs.Course)
+            .Include(c => c.Teacher)
             .ToListAsync();
         return _mapper.Map<List<CourseDto>>(courses);
     }

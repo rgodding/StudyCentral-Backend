@@ -44,7 +44,11 @@ public class MappingProfile : Profile
     {
         CreateMap<Course, CourseDto>()
             .ForMember(dest => dest.StudentCount,
-                opt => opt.MapFrom(src => src.CourseStudents.Count));
+                opt => opt.MapFrom(src => src.CourseStudents.Count))
+            .ForMember(dest => dest.TeacherFirstName,
+                opt => opt.MapFrom(src => src.Teacher != null ? src.Teacher.FirstName : null))
+            .ForMember(dest => dest.TeacherLastName,
+                opt => opt.MapFrom(src => src.Teacher != null ? src.Teacher.LastName : null));
 
         CreateMap<CreateCourseDto, Course>();
         CreateMap<UpdateCourseDto, Course>();
@@ -103,13 +107,18 @@ public class MappingProfile : Profile
     private void CreateAnnouncementMappings()
     {
         CreateMap<Announcement, AnnouncementDto>()
-            .ForMember(
-                dest => dest.CourseName,
+            .ForMember(dest => dest.CourseName,
                 opt => opt.MapFrom(src => src.Course.Name))
-            .ForMember(
-                dest => dest.FileCount,
-                opt => opt.MapFrom(src => src.StudyFiles.Count));
-        
+            .ForMember(dest => dest.FileCount,
+                opt => opt.MapFrom(src => src.StudyFiles.Count))
+            .ForMember(dest => dest.TeacherId,
+                opt => opt.MapFrom(src => src.Course.TeacherId))
+            .ForMember(dest => dest.TeacherName,
+                opt => opt.MapFrom(src =>
+                    src.Course.Teacher != null
+                        ? $"{src.Course.Teacher.FirstName} {src.Course.Teacher.LastName}"
+                        : null));
+
         CreateMap<CreateAnnouncementDto, Announcement>();
     }
     private void CreateStudyFolderMappings()

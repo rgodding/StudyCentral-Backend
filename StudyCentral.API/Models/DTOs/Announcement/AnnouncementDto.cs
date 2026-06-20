@@ -8,6 +8,8 @@ public class AnnouncementDto
     public int FileCount { get; set; }
     public Guid CourseId { get; set; }
     public string CourseName { get; set; } = null!;
+    public Guid? TeacherId { get; set; }
+    public string? TeacherName { get; set; } 
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 }
