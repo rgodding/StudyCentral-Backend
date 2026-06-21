@@ -1,0 +1,540 @@
+{
+  "teachers": [
+    {
+      "key": "teacher_math",
+      "firstName": "Mikkel",
+      "lastName": "Nielsen",
+      "email": "mikkel.teacher@studycentral.dk",
+      "password": "Password123!"
+    },
+    {
+      "key": "teacher_software",
+      "firstName": "Sofie",
+      "lastName": "Jensen",
+      "email": "sofie.teacher@studycentral.dk",
+      "password": "Password123!"
+    },
+    {
+      "key": "teacher_database",
+      "firstName": "Jonas",
+      "lastName": "Madsen",
+      "email": "jonas.teacher@studycentral.dk",
+      "password": "Password123!"
+    }
+  ],
+  "students": [
+    {
+      "key": "student_anna",
+      "firstName": "Anna",
+      "lastName": "Larsen",
+      "email": "anna.student@studycentral.dk",
+      "password": "Password123!"
+    },
+    {
+      "key": "student_emil",
+      "firstName": "Emil",
+      "lastName": "Pedersen",
+      "email": "emil.student@studycentral.dk",
+      "password": "Password123!"
+    },
+    {
+      "key": "student_noah",
+      "firstName": "Noah",
+      "lastName": "Christensen",
+      "email": "noah.student@studycentral.dk",
+      "password": "Password123!"
+    },
+    {
+      "key": "student_freja",
+      "firstName": "Freja",
+      "lastName": "Andersen",
+      "email": "freja.student@studycentral.dk",
+      "password": "Password123!"
+    },
+    {
+      "key": "student_oliver",
+      "firstName": "Oliver",
+      "lastName": "Hansen",
+      "email": "oliver.student@studycentral.dk",
+      "password": "Password123!"
+    },
+    {
+      "key": "student_ida",
+      "firstName": "Ida",
+      "lastName": "Møller",
+      "email": "ida.student@studycentral.dk",
+      "password": "Password123!"
+    },
+    {
+      "key": "student_victor",
+      "firstName": "Victor",
+      "lastName": "Rasmussen",
+      "email": "victor.student@studycentral.dk",
+      "password": "Password123!"
+    },
+    {
+      "key": "student_clara",
+      "firstName": "Clara",
+      "lastName": "Olsen",
+      "email": "clara.student@studycentral.dk",
+      "password": "Password123!"
+    },
+    {
+      "key": "student_magnus",
+      "firstName": "Magnus",
+      "lastName": "Poulsen",
+      "email": "magnus.student@studycentral.dk",
+      "password": "Password123!"
+    },
+    {
+      "key": "student_liva",
+      "firstName": "Liva",
+      "lastName": "Kristensen",
+      "email": "liva.student@studycentral.dk",
+      "password": "Password123!"
+    },
+    {
+      "key": "student_malte",
+      "firstName": "Malte",
+      "lastName": "Sørensen",
+      "email": "malte.student@studycentral.dk",
+      "password": "Password123!"
+    },
+    {
+      "key": "student_alma",
+      "firstName": "Alma",
+      "lastName": "Johansen",
+      "email": "alma.student@studycentral.dk",
+      "password": "Password123!"
+    }
+  ],
+  "courses": [
+    {
+      "key": "course_math",
+      "name": "Mathematics A",
+      "description": "Core mathematics course focused on functions, algebra, statistics, and problem solving.",
+      "teacherKey": "teacher_math",
+      "studentKeys": [
+        "student_anna",
+        "student_emil",
+        "student_noah",
+        "student_freja",
+        "student_oliver",
+        "student_ida",
+        "student_victor",
+        "student_clara"
+      ],
+      "assignments": [
+        {
+          "key": "assignment_math_linear_functions",
+          "name": "Linear Functions",
+          "description": "Solve exercises about linear functions, slope, and intersections.",
+          "deadlineOffsetDays": 5,
+          "submissions": [
+            {
+              "studentKey": "student_anna",
+              "comment": "I finished all exercises and added notes for the graph questions.",
+              "submittedAtOffsetDays": -2,
+              "grade": "B",
+              "feedback": "Good work. Check your explanation of slope in exercise 4."
+            },
+            {
+              "studentKey": "student_emil",
+              "comment": "The last two questions were difficult, but I tried to show my process.",
+              "submittedAtOffsetDays": -1,
+              "grade": "C",
+              "feedback": "Acceptable solution. Add more intermediate steps next time."
+            },
+            {
+              "studentKey": "student_noah",
+              "comment": "Submitted late due to technical issues.",
+              "submittedAtOffsetDays": 7,
+              "status": "SubmittedLate",
+              "grade": "D",
+              "feedback": "Late submission. Some calculations are correct, but explanations are missing."
+            }
+          ]
+        },
+        {
+          "key": "assignment_math_statistics",
+          "name": "Descriptive Statistics",
+          "description": "Calculate mean, median, variance, and standard deviation from sample data.",
+          "deadlineOffsetDays": 10,
+          "submissions": [
+            {
+              "studentKey": "student_freja",
+              "comment": "Submitted with spreadsheet calculations.",
+              "submittedAtOffsetDays": -1,
+              "grade": "A",
+              "feedback": "Very clear calculations and good interpretation."
+            },
+            {
+              "studentKey": "student_ida",
+              "comment": "I was unsure about variance but included my calculations.",
+              "submittedAtOffsetDays": 0,
+              "status": "Submitted"
+            }
+          ]
+        },
+        {
+          "key": "assignment_math_exam_prep",
+          "name": "Exam Preparation Set",
+          "description": "Mixed exam-style questions covering previous topics.",
+          "deadlineOffsetDays": 18,
+          "submissions": []
+        }
+      ],
+      "announcements": [
+        {
+          "name": "Welcome to Mathematics A",
+          "content": "Welcome to the course. The first assignment is available under assignments."
+        },
+        {
+          "name": "Remember calculator rules",
+          "content": "Bring your approved calculator to class on Thursday. We will use it for statistics exercises."
+        },
+        {
+          "name": "Extra help session",
+          "content": "There will be an optional help session after class for students who want extra practice."
+        }
+      ],
+      "folders": [
+        {
+          "key": "folder_math_week_1",
+          "name": "Week 1 - Linear Functions"
+        },
+        {
+          "key": "folder_math_week_2",
+          "name": "Week 2 - Statistics"
+        },
+        {
+          "key": "folder_math_exam",
+          "name": "Exam Preparation"
+        },
+        {
+          "key": "folder_math_exam_solutions",
+          "name": "Solution Examples",
+          "parentFolderKey": "folder_math_exam"
+        }
+      ]
+    },
+    {
+      "key": "course_software",
+      "name": "Software Development",
+      "description": "Backend and frontend development using C#, ASP.NET Core, React, and TypeScript.",
+      "teacherKey": "teacher_software",
+      "studentKeys": [
+        "student_anna",
+        "student_emil",
+        "student_noah",
+        "student_freja",
+        "student_oliver",
+        "student_ida",
+        "student_victor",
+        "student_clara",
+        "student_magnus",
+        "student_liva"
+      ],
+      "assignments": [
+        {
+          "key": "assignment_software_rest_api",
+          "name": "Build a REST API",
+          "description": "Create a small ASP.NET Core API with CRUD endpoints and DTOs.",
+          "deadlineOffsetDays": 6,
+          "submissions": [
+            {
+              "studentKey": "student_anna",
+              "comment": "API includes controllers, services, and DTOs.",
+              "submittedAtOffsetDays": -2,
+              "grade": "A",
+              "feedback": "Strong structure and good separation of concerns."
+            },
+            {
+              "studentKey": "student_oliver",
+              "comment": "CRUD works, but validation is still basic.",
+              "submittedAtOffsetDays": -1,
+              "grade": "B",
+              "feedback": "Good result. Add more validation and error handling."
+            },
+            {
+              "studentKey": "student_magnus",
+              "comment": "I had trouble with AutoMapper but got the endpoints working.",
+              "submittedAtOffsetDays": 1,
+              "status": "Submitted"
+            }
+          ]
+        },
+        {
+          "key": "assignment_software_frontend",
+          "name": "React Course Dashboard",
+          "description": "Create a React dashboard that displays courses, assignments, and announcements.",
+          "deadlineOffsetDays": 12,
+          "submissions": [
+            {
+              "studentKey": "student_liva",
+              "comment": "Dashboard uses reusable components and TanStack Query.",
+              "submittedAtOffsetDays": -1,
+              "grade": "B",
+              "feedback": "Good component structure. Improve loading and error states."
+            },
+            {
+              "studentKey": "student_clara",
+              "comment": "The layout is done, but some API calls are mocked.",
+              "submittedAtOffsetDays": 0,
+              "status": "Submitted"
+            }
+          ]
+        },
+        {
+          "key": "assignment_software_testing",
+          "name": "Service Layer Testing",
+          "description": "Write unit tests for service methods using xUnit and mocked dependencies.",
+          "deadlineOffsetDays": 20,
+          "submissions": []
+        }
+      ],
+      "announcements": [
+        {
+          "name": "Project groups",
+          "content": "Project groups should be registered before Friday."
+        },
+        {
+          "name": "API review",
+          "content": "Next session will focus on REST API design, controller responsibilities, and service boundaries."
+        },
+        {
+          "name": "Frontend checkpoint",
+          "content": "Bring your current React dashboard to class for feedback."
+        }
+      ],
+      "folders": [
+        {
+          "key": "folder_software_backend",
+          "name": "Backend Materials"
+        },
+        {
+          "key": "folder_software_frontend",
+          "name": "Frontend Materials"
+        },
+        {
+          "key": "folder_software_testing",
+          "name": "Testing"
+        },
+        {
+          "key": "folder_software_examples",
+          "name": "Code Examples",
+          "parentFolderKey": "folder_software_backend"
+        }
+      ]
+    },
+    {
+      "key": "course_database",
+      "name": "Databases for Developers",
+      "description": "Relational database design, SQL, Entity Framework Core, and data modelling.",
+      "teacherKey": "teacher_database",
+      "studentKeys": [
+        "student_noah",
+        "student_freja",
+        "student_oliver",
+        "student_ida",
+        "student_victor",
+        "student_clara",
+        "student_magnus",
+        "student_liva",
+        "student_malte",
+        "student_alma"
+      ],
+      "assignments": [
+        {
+          "key": "assignment_database_er_model",
+          "name": "ER Model Design",
+          "description": "Design an ER model for a school management system.",
+          "deadlineOffsetDays": 4,
+          "submissions": [
+            {
+              "studentKey": "student_noah",
+              "comment": "ER diagram includes users, courses, assignments, and submissions.",
+              "submittedAtOffsetDays": -1,
+              "grade": "B",
+              "feedback": "Good model. Consider whether files need a separate relation."
+            },
+            {
+              "studentKey": "student_freja",
+              "comment": "Added cardinality and primary keys.",
+              "submittedAtOffsetDays": -2,
+              "grade": "A",
+              "feedback": "Very clear design with good normalization."
+            },
+            {
+              "studentKey": "student_malte",
+              "comment": "I submitted the first version of the diagram.",
+              "submittedAtOffsetDays": 5,
+              "status": "SubmittedLate"
+            }
+          ]
+        },
+        {
+          "key": "assignment_database_sql_queries",
+          "name": "SQL Query Exercises",
+          "description": "Write SQL queries using joins, grouping, filtering, and ordering.",
+          "deadlineOffsetDays": 11,
+          "submissions": [
+            {
+              "studentKey": "student_alma",
+              "comment": "All queries are included with comments.",
+              "submittedAtOffsetDays": 0,
+              "status": "Submitted"
+            },
+            {
+              "studentKey": "student_victor",
+              "comment": "I had issues with group by but completed most queries.",
+              "submittedAtOffsetDays": -1,
+              "grade": "C",
+              "feedback": "Queries mostly work. Review aggregate functions."
+            }
+          ]
+        },
+        {
+          "key": "assignment_database_efcore",
+          "name": "Entity Framework Core Mapping",
+          "description": "Create entity classes and configure relationships with EF Core.",
+          "deadlineOffsetDays": 17,
+          "submissions": []
+        }
+      ],
+      "announcements": [
+        {
+          "name": "Database tools",
+          "content": "Install MySQL Workbench or another database client before the next lesson."
+        },
+        {
+          "name": "ER model feedback",
+          "content": "Feedback for the ER model assignment will be added during the week."
+        },
+        {
+          "name": "SQL practice",
+          "content": "Additional SQL practice questions have been added to the course materials."
+        }
+      ],
+      "folders": [
+        {
+          "key": "folder_database_er",
+          "name": "ER Modelling"
+        },
+        {
+          "key": "folder_database_sql",
+          "name": "SQL Exercises"
+        },
+        {
+          "key": "folder_database_efcore",
+          "name": "Entity Framework Core"
+        },
+        {
+          "key": "folder_database_solutions",
+          "name": "Example Solutions",
+          "parentFolderKey": "folder_database_sql"
+        }
+      ]
+    },
+    {
+      "key": "course_system_integration",
+      "name": "System Integration",
+      "description": "Integration patterns, APIs, asynchronous communication, and real-time messaging.",
+      "teacherKey": "teacher_software",
+      "studentKeys": [
+        "student_anna",
+        "student_emil",
+        "student_victor",
+        "student_clara",
+        "student_magnus",
+        "student_liva",
+        "student_malte",
+        "student_alma"
+      ],
+      "assignments": [
+        {
+          "key": "assignment_integration_api_contract",
+          "name": "API Contract Documentation",
+          "description": "Document an API contract using Swagger/OpenAPI principles.",
+          "deadlineOffsetDays": 8,
+          "submissions": [
+            {
+              "studentKey": "student_emil",
+              "comment": "Swagger screenshots and endpoint descriptions included.",
+              "submittedAtOffsetDays": -1,
+              "grade": "B",
+              "feedback": "Good overview. Add more detail about request validation."
+            },
+            {
+              "studentKey": "student_clara",
+              "comment": "Focused on response DTOs and status codes.",
+              "submittedAtOffsetDays": 0,
+              "status": "Submitted"
+            }
+          ]
+        },
+        {
+          "key": "assignment_integration_realtime_chat",
+          "name": "Real-time Chat Prototype",
+          "description": "Build a small real-time chat prototype using WebSockets or SignalR.",
+          "deadlineOffsetDays": 15,
+          "submissions": [
+            {
+              "studentKey": "student_anna",
+              "comment": "SignalR hub and simple frontend client are included.",
+              "submittedAtOffsetDays": -1,
+              "grade": "A",
+              "feedback": "Strong implementation and good explanation of groups."
+            },
+            {
+              "studentKey": "student_malte",
+              "comment": "Basic WebSocket connection works, but messages are not persisted yet.",
+              "submittedAtOffsetDays": 2,
+              "status": "SubmittedLate"
+            }
+          ]
+        },
+        {
+          "key": "assignment_integration_final",
+          "name": "Integration Case Study",
+          "description": "Analyze an integration scenario and propose a technical solution.",
+          "deadlineOffsetDays": 22,
+          "submissions": []
+        }
+      ],
+      "announcements": [
+        {
+          "name": "SignalR introduction",
+          "content": "This week we introduce real-time communication using SignalR."
+        },
+        {
+          "name": "Integration diagrams",
+          "content": "Remember to include sequence diagrams in your integration case study."
+        },
+        {
+          "name": "Prototype review",
+          "content": "We will review chat prototypes in the next session."
+        }
+      ],
+      "folders": [
+        {
+          "key": "folder_integration_api",
+          "name": "API Contracts"
+        },
+        {
+          "key": "folder_integration_signalr",
+          "name": "SignalR"
+        },
+        {
+          "key": "folder_integration_diagrams",
+          "name": "Diagrams"
+        },
+        {
+          "key": "folder_integration_examples",
+          "name": "Example Projects",
+          "parentFolderKey": "folder_integration_signalr"
+        }
+      ]
+    }
+  ]
+}

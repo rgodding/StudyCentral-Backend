@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authorization;
 using StudyCentral.API.Authentication;
+using StudyCentral.API.Data.Seed;
 using StudyCentral.API.Models;
 using StudyCentral.API.Services;
 
@@ -42,6 +43,9 @@ public class ServiceConfig
         services.AddScoped<IStudyFolderService, StudyFolderService>();
         services.AddScoped<IStudyFileService, StudyFileService>();
         services.AddScoped<IChatService, ChatService>();
+        
+        // Test Data Seed
+        services.AddScoped<ISchoolDemoDataSeeder, SchoolDemoDataSeeder>();
     }
 
     private static void JsonConfig(IServiceCollection services)
