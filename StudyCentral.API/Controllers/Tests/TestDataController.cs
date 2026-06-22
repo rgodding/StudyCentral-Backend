@@ -1,21 +1,31 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using StudyCentral.API.Models;
 using StudyCentral.API.Services;
 
-namespace StudyCentral.API.Controllers;
+namespace StudyCentral.API.Controllers.Tests;
 
-[ApiController]
-[Route("api/public/test")]
-public class TestDataController : ControllerBase
+[Tags("Test - Seed Data")]
+public class TestDataController : BaseTestController
 {
     private readonly IWebHostEnvironment _environment;
     private readonly ICreateTestDataService _createTestDataService;
 
-    public TestDataController(
-        IWebHostEnvironment environment,
-        ICreateTestDataService createTestDataService)
+    public TestDataController(IMapper mapper, StudyDbContext dbContext, IWebHostEnvironment environment,
+        ICreateTestDataService createTestDataService) : base(mapper, dbContext)
     {
         _environment = environment;
         _createTestDataService = createTestDataService;
+    }
+    
+    [HttpGet("reset-seed-data")]
+    public async Task<IActionResult> ResetSeedData()
+    {
+        await _dbContext.Database.EnsureDeletedAsync();
+        await _dbContext.Database.MigrateAsync();
+
+        return Ok("Seed data reset.");
     }
 
     [HttpPost("create-test-data")]

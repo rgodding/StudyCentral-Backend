@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;
 
 namespace StudyCentral.API.Configurations;
@@ -32,11 +32,19 @@ public static class SwaggerConfig
                 Title = "StudyCentral Admin API",
                 Version = "v1"
             });
+            
+            c.SwaggerDoc("test", new OpenApiInfo
+            {
+                Title = "StudyCentral Test API",
+                Version = "v1"
+            });
+
+            c.EnableAnnotations();
 
             c.DocInclusionPredicate((docName, apiDesc) =>
             {
                 if (docName == "v1")
-                    return true; // Include everything
+                    return true;
 
                 return apiDesc.GroupName == docName;
             });

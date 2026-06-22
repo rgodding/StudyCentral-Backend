@@ -72,6 +72,7 @@ public class Startup
                 c.SwaggerEndpoint("/swagger/student/swagger.json", "Student API");
                 c.SwaggerEndpoint("/swagger/teacher/swagger.json", "Teacher API");
                 c.SwaggerEndpoint("/swagger/admin/swagger.json", "Admin API");
+                c.SwaggerEndpoint("/swagger/test/swagger.json", "Test API");
             });
         }
 

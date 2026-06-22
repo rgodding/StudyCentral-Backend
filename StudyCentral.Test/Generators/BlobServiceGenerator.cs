@@ -31,6 +31,41 @@ public class BlobServiceGenerator : IBlobService
     public Task<bool> FileExists(string blobName)
         => Task.FromResult(true);
 
+    public async Task<BlobStorageDataDto> GetBlobStorageDataAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<List<BlobStorageItemDto>> GetBlobStorageListAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<BlobStorageVerificationDto> VerifyStudyFilesAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<BlobStorageHealthDto> GetBlobStorageHealthAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<BlobStorageItemDto> CreateTestBlobAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<int> DeleteOrphanedBlobsAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<int> WipeBlobStorageAsync()
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<int> GetBlobCount()
         => Task.FromResult(1);
 
