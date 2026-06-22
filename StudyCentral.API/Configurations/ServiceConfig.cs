@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Authorization;
 using StudyCentral.API.Authentication;
 using StudyCentral.API.Data.Seed;
 using StudyCentral.API.Models;
@@ -46,6 +45,7 @@ public class ServiceConfig
         
         // Test Data Seed
         services.AddScoped<ISchoolDemoDataSeeder, SchoolDemoDataSeeder>();
+        services.AddScoped<ICreateTestDataService, CreateTestDataService>();
     }
 
     private static void JsonConfig(IServiceCollection services)

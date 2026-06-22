@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using StudyCentral.API.Data.Seed;
+using StudyCentral.API.Services;
 
 namespace StudyCentral.API.Controllers;
 
@@ -8,14 +8,14 @@ namespace StudyCentral.API.Controllers;
 public class TestDataController : ControllerBase
 {
     private readonly IWebHostEnvironment _environment;
-    private readonly ISchoolDemoDataSeeder _schoolDemoDataSeeder;
+    private readonly ICreateTestDataService _createTestDataService;
 
     public TestDataController(
         IWebHostEnvironment environment,
-        ISchoolDemoDataSeeder schoolDemoDataSeeder)
+        ICreateTestDataService createTestDataService)
     {
         _environment = environment;
-        _schoolDemoDataSeeder = schoolDemoDataSeeder;
+        _createTestDataService = createTestDataService;
     }
 
     [HttpPost("create-test-data")]
@@ -24,7 +24,18 @@ public class TestDataController : ControllerBase
         if (!_environment.IsDevelopment())
             return NotFound();
 
-        var result = await _schoolDemoDataSeeder.SeedAsync();
+        var result = await _createTestDataService.CreateBig();
+
+        return Ok(result);
+    }
+
+    [HttpPost("create-course-test-data")]
+    public async Task<IActionResult> CreateCourseTestData()
+    {
+        if (!_environment.IsDevelopment())
+            return NotFound();
+
+        var result = await _createTestDataService.CreateCourse();
 
         return Ok(result);
     }
