@@ -50,7 +50,7 @@ public static class CreateTestDataServiceData
                     FirstName = "Teacher",
                     LastName = "User",
                     Email = "teacher@studycentral.dk",
-                    Password = "Password123!"
+                    Password = "password"
                 }
             ],
             Students =
@@ -62,7 +62,7 @@ public static class CreateTestDataServiceData
                     FirstName = "Student",
                     LastName = "User",
                     Email = "student@studycentral.dk",
-                    Password = "Password123!"
+                    Password = "password"
                 },
                 new()
                 {
@@ -70,7 +70,7 @@ public static class CreateTestDataServiceData
                     FirstName = "Aksel",
                     LastName = "Berg",
                     Email = "single.aksel.berg@studycentral.dk",
-                    Password = "Password123!"
+                    Password = "password"
                 },
                 new()
                 {
@@ -78,7 +78,7 @@ public static class CreateTestDataServiceData
                     FirstName = "Nora",
                     LastName = "Holm",
                     Email = "single.nora.holm@studycentral.dk",
-                    Password = "Password123!"
+                    Password = "password"
                 },
                 new()
                 {
@@ -86,7 +86,7 @@ public static class CreateTestDataServiceData
                     FirstName = "Elias",
                     LastName = "Vestergaard",
                     Email = "single.elias.vestergaard@studycentral.dk",
-                    Password = "Password123!"
+                    Password = "password"
                 },
                 new()
                 {
@@ -94,7 +94,7 @@ public static class CreateTestDataServiceData
                     FirstName = "Maja",
                     LastName = "Kjeldsen",
                     Email = "single.maja.kjeldsen@studycentral.dk",
-                    Password = "Password123!"
+                    Password = "password"
                 },
                 new()
                 {
@@ -102,7 +102,7 @@ public static class CreateTestDataServiceData
                     FirstName = "Victor",
                     LastName = "Hald",
                     Email = "single.victor.hald@studycentral.dk",
-                    Password = "Password123!"
+                    Password = "password"
                 }
             ],
             Courses =
@@ -349,7 +349,7 @@ public sealed class CreateTestDataUserSeed
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
-    public string Password { get; set; } = "Password123!";
+    public string Password { get; set; } = "password";
 }
 
 public sealed class CreateTestDataCourseSeed
