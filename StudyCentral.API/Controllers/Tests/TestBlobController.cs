@@ -1,4 +1,3 @@
-﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using StudyCentral.API.Models;
 using StudyCentral.API.Models.DTOs.StudyFile;
@@ -7,23 +6,23 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace StudyCentral.API.Controllers.Tests;
 
+[ApiController]
 [Tags("Test - Blob Storage")]
 [Route("api/public/test/blob-storage")]
 public class TestBlobController : BaseTestController
 {
     private readonly IBlobService _blobService;
-    
-    public TestBlobController(IMapper mapper, StudyDbContext dbContext, IBlobService blobService) : base(mapper, dbContext)
+
+    public TestBlobController(StudyDbContext dbContext, IBlobService blobService) : base(dbContext)
     {
         _blobService = blobService;
     }
 
     [HttpGet("data")]
     [SwaggerOperation(
-        Summary = "Get blob storage overview",
-        Description = "Returns diagnostic information about the blob container, including blob count, total storage size, largest blob, newest blob, and oldest blob."
+        Summary = "Get blob storage data",
+        Description = "Gets a short blob storage overview."
     )]
-    [ProducesResponseType(typeof(BlobStorageDataDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetBlobStorageData()
     {
         var result = await _blobService.GetBlobStorageDataAsync();
@@ -32,10 +31,9 @@ public class TestBlobController : BaseTestController
 
     [HttpGet("list")]
     [SwaggerOperation(
-        Summary = "List all blobs",
-        Description = "Returns all blobs currently stored in the blob container, including name, content type, file size, file extension, and last modified date."
+        Summary = "Get blob storage list",
+        Description = "Gets the files in blob storage."
     )]
-    [ProducesResponseType(typeof(List<BlobStorageItemDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetBlobStorageList()
     {
         var result = await _blobService.GetBlobStorageListAsync();
@@ -44,10 +42,9 @@ public class TestBlobController : BaseTestController
 
     [HttpGet("health")]
     [SwaggerOperation(
-        Summary = "Check blob storage health",
-        Description = "Tests whether the API can connect to blob storage, create a temporary blob, and delete it again. Useful for checking Azurite or Azure Blob Storage configuration."
+        Summary = "Get blob storage health",
+        Description = "Checks if blob storage is working."
     )]
-    [ProducesResponseType(typeof(BlobStorageHealthDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetBlobStorageHealth()
     {
         var result = await _blobService.GetBlobStorageHealthAsync();
@@ -56,10 +53,9 @@ public class TestBlobController : BaseTestController
 
     [HttpPost("create-test-blob")]
     [SwaggerOperation(
-        Summary = "Create a test blob",
-        Description = "Creates a small text blob in the blob container. Useful for testing whether blob upload works without using the frontend."
+        Summary = "Create test blob",
+        Description = "Creates a small test file in blob storage."
     )]
-    [ProducesResponseType(typeof(BlobStorageItemDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateTestBlob()
     {
         var result = await _blobService.CreateTestBlobAsync();
@@ -69,9 +65,8 @@ public class TestBlobController : BaseTestController
     [HttpDelete]
     [SwaggerOperation(
         Summary = "Wipe blob storage",
-        Description = "Deletes every blob in the configured blob container. This is intended for local development and test cleanup only."
+        Description = "Deletes all files from blob storage."
     )]
-    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> WipeBlobStorage()
     {
         var deletedCount = await _blobService.WipeBlobStorageAsync();

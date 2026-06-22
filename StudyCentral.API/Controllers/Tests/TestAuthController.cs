@@ -1,24 +1,29 @@
-﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using StudyCentral.API.Constants.Tests;
 using StudyCentral.API.Models;
 using StudyCentral.API.Models.DTOs.User;
 using StudyCentral.API.Services;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace StudyCentral.API.Controllers.Tests;
 
+[ApiController]
 [Tags("Test - Auth")]
-[Route("api/test/auth")]
+[Route("api/public/test/auth")]
 public class TestAuthController : BaseTestController
 {
     private readonly IAuthService _authService;
-    
-    public TestAuthController(IMapper mapper, StudyDbContext dbContext, IAuthService authService) : base(mapper, dbContext)
+
+    public TestAuthController(StudyDbContext dbContext, IAuthService authService) : base(dbContext)
     {
         _authService = authService;
     }
 
     [HttpGet("login-admin")]
+    [SwaggerOperation(
+        Summary = "Login admin",
+        Description = "Logs in as the test admin user."
+    )]
     public async Task<ActionResult<UserDto>> LoginAdmin()
     {
         var result = await _authService.Login(TestLoginDto.Admin);
@@ -27,6 +32,10 @@ public class TestAuthController : BaseTestController
     }
 
     [HttpGet("login-teacher")]
+    [SwaggerOperation(
+        Summary = "Login teacher",
+        Description = "Logs in as the test teacher user."
+    )]
     public async Task<ActionResult<UserDto>> LoginTeacher()
     {
         var result = await _authService.Login(TestLoginDto.Teacher);
@@ -35,13 +44,17 @@ public class TestAuthController : BaseTestController
     }
 
     [HttpGet("login-student")]
+    [SwaggerOperation(
+        Summary = "Login student",
+        Description = "Logs in as the test student user."
+    )]
     public async Task<ActionResult<UserDto>> LoginStudent()
     {
         var result = await _authService.Login(TestLoginDto.Student);
         SetAuthCookie(result.Token);
         return Ok(result.User);
     }
-    
+
     // HELPER METHODS
     private void SetAuthCookie(string token)
     {

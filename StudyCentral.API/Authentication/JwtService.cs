@@ -42,7 +42,7 @@ public class JwtService : IJwtService
             new(ClaimTypes.Role, userDto.Role.ToString()),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
-        
+
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(jwtKey));
 
@@ -56,10 +56,10 @@ public class JwtService : IJwtService
                 key,
                 SecurityAlgorithms.HmacSha256)
         };
-        
+
         var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.CreateToken(tokenDescriptor);
-        
+
         return tokenHandler.WriteToken(token);
     }
 }
