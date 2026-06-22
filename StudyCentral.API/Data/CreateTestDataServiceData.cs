@@ -12,9 +12,8 @@ public static class CreateTestDataServiceData
 
     public static readonly Guid Student1Id =
         Guid.Parse("33333333-3333-3333-3333-333333333333");
-
-    public static readonly DateTime BaseDate =
-        new(2026, 2, 2, 8, 15, 0, DateTimeKind.Utc);
+    public static readonly DateTime BaseDate = DateTime.UtcNow;
+        // new(2026, 2, 2, 8, 15, 0, DateTimeKind.Utc);
 
     public const string Teacher1Key = "teacher_1";
     public const string Student1Key = "student_1";

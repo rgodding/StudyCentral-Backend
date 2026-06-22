@@ -98,8 +98,7 @@ public static class SeedData
     private static readonly Guid TestAssignmentId =
         Guid.Parse("efefefef-efef-efef-efef-efefefefefef");
 
-    private static readonly DateTime SeedDate =
-        new DateTime(2026, 1, 1, 12, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime SeedDate = DateTime.UtcNow;
 
     private static readonly Guid CourseChatRoomId =
         Guid.Parse("15151515-1515-1515-1515-151515151515");
@@ -309,7 +308,7 @@ public static class SeedData
                 Id = AssignmentId,
                 Name = "Demo Assignment",
                 Description = "Create a simple API",
-                Deadline = SeedDate.AddDays(14),
+                Deadline = SeedDate.AddDays(-3),
                 CourseId = CourseId
             },
             new Assignment
@@ -317,7 +316,7 @@ public static class SeedData
                 Id = TestAssignmentId,
                 Name = "Database Assignment",
                 Description = "Design and implement a relational database",
-                Deadline = SeedDate.AddDays(21),
+                Deadline = SeedDate.AddDays(5),
                 CourseId = CourseId
             },
             new Assignment

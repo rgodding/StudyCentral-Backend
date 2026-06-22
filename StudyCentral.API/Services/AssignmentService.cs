@@ -251,7 +251,8 @@ public class AssignmentService : IAssignmentService
             .Include(a => a.Course)
             .Include(a => a.StudyFiles)
             .Where(a => a.Course.TeacherId == teacherId)
-            .OrderBy(a => a.Deadline)
+            .OrderBy(a => a.Deadline == null)
+            .ThenBy(a => a.Deadline)
             .ToListAsync();
 
         return _mapper.Map<List<AssignmentDto>>(assignments);
