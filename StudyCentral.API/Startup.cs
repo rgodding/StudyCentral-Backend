@@ -69,6 +69,7 @@ public class Startup
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "StudyCentral API");
+                c.SwaggerEndpoint("/swagger/public/swagger.json", "Public API");
                 c.SwaggerEndpoint("/swagger/student/swagger.json", "Student API");
                 c.SwaggerEndpoint("/swagger/teacher/swagger.json", "Teacher API");
                 c.SwaggerEndpoint("/swagger/admin/swagger.json", "Admin API");

@@ -9,9 +9,8 @@ namespace StudyCentral.API.Controllers.Teacher;
 
 [ApiController]
 [Tags("Teacher - Study Folders")]
-[Authorize(Roles = "Teacher")]
 [Route("api/teacher/study-folders")]
-public class TeacherStudyFolderController : BaseController
+public class TeacherStudyFolderController : BaseTeacherController
 {
     private readonly IStudyFolderService _studyFolderService;
 

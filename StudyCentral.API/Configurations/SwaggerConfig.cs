@@ -14,6 +14,13 @@ public static class SwaggerConfig
                 Title = "StudyCentral API",
                 Version = "v1"
             });
+            
+            c.SwaggerDoc("public", new OpenApiInfo
+            {
+                Title = "StudyCentral Public API",
+                Version = "v1"
+            });
+
 
             c.SwaggerDoc("student", new OpenApiInfo
             {
