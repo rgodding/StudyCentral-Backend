@@ -6,7 +6,7 @@
       "firstName": "Teacher",
       "lastName": "User",
       "email": "teacher@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "teacher_2",
@@ -14,7 +14,7 @@
       "firstName": "Maria",
       "lastName": "Lund",
       "email": "maria.lund.teacher@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     }
   ],
   "students": [
@@ -24,350 +24,350 @@
       "firstName": "Student",
       "lastName": "User",
       "email": "student@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_02",
       "firstName": "Alma",
       "lastName": "Larsen",
       "email": "alma.larsen.02@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_03",
       "firstName": "Anton",
       "lastName": "Madsen",
       "email": "anton.madsen.03@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_04",
       "firstName": "Clara",
       "lastName": "Nielsen",
       "email": "clara.nielsen.04@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_05",
       "firstName": "Daniel",
       "lastName": "Pedersen",
       "email": "daniel.pedersen.05@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_06",
       "firstName": "Emma",
       "lastName": "Hansen",
       "email": "emma.hansen.06@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_07",
       "firstName": "Felix",
       "lastName": "Kristensen",
       "email": "felix.kristensen.07@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_08",
       "firstName": "Freja",
       "lastName": "Rasmussen",
       "email": "freja.rasmussen.08@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_09",
       "firstName": "Gustav",
       "lastName": "Olsen",
       "email": "gustav.olsen.09@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_10",
       "firstName": "Ida",
       "lastName": "Poulsen",
       "email": "ida.poulsen.10@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_11",
       "firstName": "Jakob",
       "lastName": "Johansen",
       "email": "jakob.johansen.11@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_12",
       "firstName": "Karla",
       "lastName": "Sorensen",
       "email": "karla.sorensen.12@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_13",
       "firstName": "Lucas",
       "lastName": "Andersen",
       "email": "lucas.andersen.13@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_14",
       "firstName": "Maja",
       "lastName": "Thomsen",
       "email": "maja.thomsen.14@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_15",
       "firstName": "Noah",
       "lastName": "Jensen",
       "email": "noah.jensen.15@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_16",
       "firstName": "Olivia",
       "lastName": "Christensen",
       "email": "olivia.christensen.16@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_17",
       "firstName": "Oscar",
       "lastName": "Mortensen",
       "email": "oscar.mortensen.17@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_18",
       "firstName": "Rosa",
       "lastName": "Knudsen",
       "email": "rosa.knudsen.18@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_19",
       "firstName": "Theo",
       "lastName": "Holm",
       "email": "theo.holm.19@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_20",
       "firstName": "Victoria",
       "lastName": "Berg",
       "email": "victoria.berg.20@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_21",
       "firstName": "William",
       "lastName": "Vestergaard",
       "email": "william.vestergaard.21@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_22",
       "firstName": "Aksel",
       "lastName": "Kjeldsen",
       "email": "aksel.kjeldsen.22@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_23",
       "firstName": "Nora",
       "lastName": "Hald",
       "email": "nora.hald.23@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_24",
       "firstName": "Elias",
       "lastName": "Bach",
       "email": "elias.bach.24@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_25",
       "firstName": "Sofia",
       "lastName": "Lund",
       "email": "sofia.lund.25@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_26",
       "firstName": "Malthe",
       "lastName": "Skov",
       "email": "malthe.skov.26@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_27",
       "firstName": "Liva",
       "lastName": "Dahl",
       "email": "liva.dahl.27@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_28",
       "firstName": "Magnus",
       "lastName": "Bruun",
       "email": "magnus.bruun.28@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_29",
       "firstName": "Selma",
       "lastName": "Nygaard",
       "email": "selma.nygaard.29@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_30",
       "firstName": "Villads",
       "lastName": "Moller",
       "email": "villads.moller.30@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_31",
       "firstName": "Laura",
       "lastName": "Brandt",
       "email": "laura.brandt.31@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_32",
       "firstName": "Emil",
       "lastName": "Lykke",
       "email": "emil.lykke.32@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_33",
       "firstName": "Josefine",
       "lastName": "Bjerre",
       "email": "josefine.bjerre.33@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_34",
       "firstName": "Mathias",
       "lastName": "Fog",
       "email": "mathias.fog.34@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_35",
       "firstName": "Sara",
       "lastName": "Winther",
       "email": "sara.winther.35@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_36",
       "firstName": "Oliver",
       "lastName": "Bonde",
       "email": "oliver.bonde.36@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_37",
       "firstName": "Julie",
       "lastName": "Krogh",
       "email": "julie.krogh.37@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_38",
       "firstName": "Victor",
       "lastName": "Frandsen",
       "email": "victor.frandsen.38@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_39",
       "firstName": "Mille",
       "lastName": "Aagaard",
       "email": "mille.aagaard.39@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_40",
       "firstName": "Mikkel",
       "lastName": "Bertelsen",
       "email": "mikkel.bertelsen.40@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_41",
       "firstName": "Anna",
       "lastName": "Ditlevsen",
       "email": "anna.ditlevsen.41@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_42",
       "firstName": "Jonathan",
       "lastName": "Hedegaard",
       "email": "jonathan.hedegaard.42@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_43",
       "firstName": "Nicoline",
       "lastName": "Iversen",
       "email": "nicoline.iversen.43@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_44",
       "firstName": "Tobias",
       "lastName": "Jespersen",
       "email": "tobias.jespersen.44@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_45",
       "firstName": "Frida",
       "lastName": "Koch",
       "email": "frida.koch.45@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_46",
       "firstName": "Benjamin",
       "lastName": "Lind",
       "email": "benjamin.lind.46@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_47",
       "firstName": "Caroline",
       "lastName": "Overgaard",
       "email": "caroline.overgaard.47@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_48",
       "firstName": "Alexander",
       "lastName": "Riis",
       "email": "alexander.riis.48@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_49",
       "firstName": "Katrine",
       "lastName": "Toft",
       "email": "katrine.toft.49@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     },
     {
       "key": "student_50",
       "firstName": "Simon",
       "lastName": "Vang",
       "email": "simon.vang.50@studycentral.dk",
-      "password": "Password123!"
+      "password": "password"
     }
   ],
   "courses": [
