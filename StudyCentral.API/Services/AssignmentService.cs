@@ -73,14 +73,14 @@ public interface IAssignmentService
         Guid fileId);
 
     // Student Methods
-    Task<List<AssignmentDto>> GetAssignmentsByStudentId(
+    Task<List<StudentAssignmentDto>> GetAssignmentsByStudentId(
         Guid studentId);
 
-    Task<List<AssignmentDto>> GetAssignmentsByCourseIdAndStudentId(
+    Task<List<StudentAssignmentDto>> GetAssignmentsByCourseIdAndStudentId(
         Guid studentId,
         Guid courseId);
 
-    Task<AssignmentDto> GetAssignmentByStudentId(
+    Task<StudentAssignmentDto> GetAssignmentByIdAndStudentId(
         Guid studentId,
         Guid assignmentId);
 
@@ -382,7 +382,7 @@ public class AssignmentService : IAssignmentService
     // --------------
 
     // Student Methods
-    public async Task<List<AssignmentDto>> GetAssignmentsByStudentId(
+    public async Task<List<StudentAssignmentDto>> GetAssignmentsByStudentId(
         Guid studentId)
     {
         var assignments = await _dbContext.Assignments
@@ -393,10 +393,10 @@ public class AssignmentService : IAssignmentService
             .OrderBy(a => a.Deadline)
             .ToListAsync();
 
-        return _mapper.Map<List<AssignmentDto>>(assignments);
+        return _mapper.Map<List<StudentAssignmentDto>>(assignments);
     }
 
-    public async Task<List<AssignmentDto>> GetAssignmentsByCourseIdAndStudentId(
+    public async Task<List<StudentAssignmentDto>> GetAssignmentsByCourseIdAndStudentId(
         Guid studentId,
         Guid courseId)
     {
@@ -407,17 +407,19 @@ public class AssignmentService : IAssignmentService
         var assignments = await _dbContext.Assignments
             .Include(a => a.Course)
             .Include(a => a.StudyFiles)
+            .Include(a => a.Submissions.Where(s => s.StudentId == studentId))
             .Where(a => a.CourseId == courseId)
-            .OrderBy(a => a.Deadline)
+            .OrderBy(a => a.Deadline == null)
+            .ThenBy(a => a.Deadline)
             .ToListAsync();
-
-        return _mapper.Map<List<AssignmentDto>>(assignments);
+        
+        return _mapper.Map<List<StudentAssignmentDto>>(assignments);
     }
 
-    public async Task<AssignmentDto> GetAssignmentByStudentId(Guid studentId, Guid assignmentId)
+    public async Task<StudentAssignmentDto> GetAssignmentByIdAndStudentId(Guid studentId, Guid assignmentId)
     {
         var assignment = await VerifyStudentAssignment(studentId, assignmentId);
-        return _mapper.Map<AssignmentDto>(assignment);
+        return _mapper.Map<StudentAssignmentDto>(assignment);
     }
 
     // Student File Methods

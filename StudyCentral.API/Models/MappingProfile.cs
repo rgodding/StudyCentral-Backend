@@ -40,6 +40,7 @@ public class MappingProfile : Profile
 
         CreateMap<CreateUserDto, User>();
     }
+
     private void CreateCourseMappings()
     {
         CreateMap<Course, CourseDto>()
@@ -53,6 +54,7 @@ public class MappingProfile : Profile
         CreateMap<CreateCourseDto, Course>();
         CreateMap<UpdateCourseDto, Course>();
     }
+
     private void CreateAssignmentMappings()
     {
         CreateMap<Assignment, AssignmentDto>()
@@ -64,8 +66,18 @@ public class MappingProfile : Profile
                 opt => opt.MapFrom(src => src.Course.Name))
             .ForMember(dest => dest.FileCount,
                 opt => opt.MapFrom(src => src.StudyFiles.Count));
+
+        CreateMap<Assignment, StudentAssignmentDto>()
+            .IncludeBase<Assignment, AssignmentDto>()
+            .ForMember(dest => dest.SubmissionStatus,
+                opt => opt.MapFrom(src =>
+                    src.Submissions
+                        .Select(s => s.Status)
+                        .FirstOrDefault()));
+
         CreateMap<CreateAssignmentDto, Assignment>();
     }
+
     private void CreateSubmissionMappings()
     {
         CreateMap<Submission, SubmissionDto>()
@@ -104,6 +116,7 @@ public class MappingProfile : Profile
 
         CreateMap<CreateSubmissionDto, Submission>();
     }
+
     private void CreateAnnouncementMappings()
     {
         CreateMap<Announcement, AnnouncementDto>()
@@ -121,6 +134,7 @@ public class MappingProfile : Profile
 
         CreateMap<CreateAnnouncementDto, Announcement>();
     }
+
     private void CreateStudyFolderMappings()
     {
         CreateMap<StudyFolder, StudyFolderDto>()
@@ -136,6 +150,7 @@ public class MappingProfile : Profile
 
         CreateMap<CreateStudyFolderDto, StudyFolder>();
     }
+
     private void CreateStudyFileMappings()
     {
         CreateMap<StudyFile, StudyFileDto>()
@@ -181,14 +196,13 @@ public class MappingProfile : Profile
                     .Select(m => (DateTime?)m.CreatedAt)
                     .FirstOrDefault()));
     }
-    
+
     private void CreateChatMessageMappings()
     {
         CreateMap<ChatMessage, ChatMessageDto>()
             .ForMember(dest => dest.SenderName,
                 opt => opt.MapFrom(src => $"{src.Sender.FirstName} {src.Sender.LastName}"));
-        
-        CreateMap<SendChatMessageDto, ChatMessage>();
 
+        CreateMap<SendChatMessageDto, ChatMessage>();
     }
 }

@@ -38,7 +38,7 @@ public class StudentAssignmentController : BaseStudentController
         Guid assignmentId)
     {
         var assignment = await _assignmentService
-            .GetAssignmentByStudentId(
+            .GetAssignmentByIdAndStudentId(
                 CurrentUserId,
                 assignmentId);
 
