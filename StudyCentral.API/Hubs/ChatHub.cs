@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Collections.Concurrent;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using StudyCentral.API.Authentication;
 using StudyCentral.API.Models.DTOs.Chat.ChatMessage;
@@ -17,7 +18,7 @@ public class ChatHub : Hub
         _chatService = chatService;
     }
 
-    private static readonly Dictionary<string, ChatConnectionInfo> Connections = new();
+    private static readonly ConcurrentDictionary<string, ChatConnectionInfo> Connections = new();
 
     private class ChatConnectionInfo
     {
@@ -61,6 +62,7 @@ public class ChatHub : Hub
         await Clients.Caller.SendAsync("ChatMessagesLoaded", messages);
 
         await SendRoomUsers(chatRoom.Id);
+        await NotifyChatOverviewChanged(chatRoom.Id);
     }
 
     public async Task SendMessage(Guid chatRoomId, SendChatMessageDto dto)
@@ -72,19 +74,13 @@ public class ChatHub : Hub
             chatRoomId,
             dto);
 
+        await MarkActiveRoomUsersAsSeen(chatRoomId);
+
         await Clients
             .Group(GetRoomGroupName(chatRoomId))
             .SendAsync("ReceiveMessage", message);
 
-        var memberIds = await _chatService.GetChatRoomMemberIds(chatRoomId);
-
-        var overviewGroups = memberIds
-            .Select(GetUserChatOverviewGroupName)
-            .ToList();
-
-        await Clients
-            .Groups(overviewGroups)
-            .SendAsync("CourseChatRoomsChanged");
+        await NotifyChatOverviewChanged(chatRoomId);
     }
 
     public async Task LeaveRoom(Guid chatRoomId)
@@ -92,18 +88,11 @@ public class ChatHub : Hub
         await Groups.RemoveFromGroupAsync(
             Context.ConnectionId,
             GetRoomGroupName(chatRoomId));
-    }
 
-    public override async Task OnDisconnectedAsync(Exception? exception)
-    {
-        if (Connections.TryGetValue(Context.ConnectionId, out var connectionInfo))
-        {
-            Connections.Remove(Context.ConnectionId);
+        Connections.TryRemove(Context.ConnectionId, out _);
 
-            await SendRoomUsers(connectionInfo.ChatRoomId);
-        }
-
-        await base.OnDisconnectedAsync(exception);
+        await SendRoomUsers(chatRoomId);
+        await NotifyChatOverviewChanged(chatRoomId);
     }
 
     public async Task GetCourseChatRooms()
@@ -119,9 +108,48 @@ public class ChatHub : Hub
         await Clients.Caller.SendAsync("CourseChatRoomsLoaded", chatRooms);
     }
 
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        if (Connections.TryRemove(Context.ConnectionId, out var connectionInfo))
+        {
+            await SendRoomUsers(connectionInfo.ChatRoomId);
+            await NotifyChatOverviewChanged(connectionInfo.ChatRoomId);
+        }
+
+        await base.OnDisconnectedAsync(exception);
+    }
+
     // ----------------
     // HELPER METHODS
     // ----------------
+
+    private async Task MarkActiveRoomUsersAsSeen(Guid chatRoomId)
+    {
+        var activeRoomUserIds = Connections.Values
+            .Where(c => c.ChatRoomId == chatRoomId)
+            .Select(c => c.UserId)
+            .Distinct()
+            .ToList();
+
+        foreach (var userId in activeRoomUserIds)
+        {
+            await _chatService.MarkChatRoomAsSeen(userId, chatRoomId);
+        }
+    }
+
+    private async Task NotifyChatOverviewChanged(Guid chatRoomId)
+    {
+        var memberIds = await _chatService.GetChatRoomMemberIds(chatRoomId);
+
+        var overviewGroups = memberIds
+            .Select(GetUserChatOverviewGroupName)
+            .ToList();
+
+        await Clients
+            .Groups(overviewGroups)
+            .SendAsync("CourseChatRoomsChanged");
+    }
+
     private async Task SendRoomUsers(Guid chatRoomId)
     {
         var users = Connections.Values
