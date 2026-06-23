@@ -74,6 +74,21 @@ public static class SeedData
     private static readonly Guid ChildFolderId =
         Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff");
 
+    private static readonly Guid Week6FolderId =
+        Guid.Parse("a6000000-0000-0000-0000-000000000006");
+
+    private static readonly Guid Week5FolderId =
+        Guid.Parse("a5000000-0000-0000-0000-000000000005");
+
+    private static readonly Guid Week4FolderId =
+        Guid.Parse("a4000000-0000-0000-0000-000000000004");
+
+    private static readonly Guid Week3FolderId =
+        Guid.Parse("a3000000-0000-0000-0000-000000000003");
+
+    private static readonly Guid Week2FolderId =
+        Guid.Parse("a2000000-0000-0000-0000-000000000002");
+
     private static readonly Guid StudyFileId =
         Guid.Parse("56565656-5656-5656-5656-565656565656");
 
@@ -402,8 +417,7 @@ public static class SeedData
             });
     }
 
-    private static void SeedFolders(
-        ModelBuilder modelBuilder)
+    private static void SeedFolders(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<StudyFolder>().HasData(
             new StudyFolder
@@ -414,17 +428,53 @@ public static class SeedData
             },
             new StudyFolder
             {
+                Id = Week6FolderId,
+                Name = "Week 6",
+                CourseId = CourseId,
+                ParentFolderId = FolderId
+            },
+            new StudyFolder
+            {
+                Id = Week5FolderId,
+                Name = "Week 5",
+                CourseId = CourseId,
+                ParentFolderId = Week6FolderId
+            },
+            new StudyFolder
+            {
+                Id = Week4FolderId,
+                Name = "Week 4",
+                CourseId = CourseId,
+                ParentFolderId = Week5FolderId
+            },
+            new StudyFolder
+            {
+                Id = Week3FolderId,
+                Name = "Week 3",
+                CourseId = CourseId,
+                ParentFolderId = Week4FolderId
+            },
+            new StudyFolder
+            {
+                Id = Week2FolderId,
+                Name = "Week 2",
+                CourseId = CourseId,
+                ParentFolderId = Week3FolderId
+            },
+            new StudyFolder
+            {
                 Id = ChildFolderId,
                 Name = "Week 1",
                 CourseId = CourseId,
-                ParentFolderId = FolderId
+                ParentFolderId = Week2FolderId
             },
             new StudyFolder
             {
                 Id = TestFolderId,
                 Name = "Assignments",
                 CourseId = CourseId
-            });
+            }
+        );
     }
 
     private static void SeedFiles(ModelBuilder modelBuilder)
