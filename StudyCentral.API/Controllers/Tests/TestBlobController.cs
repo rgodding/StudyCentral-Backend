@@ -115,7 +115,7 @@ public class TestBlobController : BaseTestController
         {
             var fileName = Path.GetFileName(filePath);
             var safeBlobFileName = fileName.Replace(" ", "_");
-            var blobName = $"resource-testdata/{safeBlobFileName}";
+            var blobName = $"{safeBlobFileName}";
             var contentType = GetContentType(filePath);
             var fileInfo = new FileInfo(filePath);
 
