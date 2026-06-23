@@ -23,6 +23,7 @@ public interface IBlobService
     Task<BlobStorageHealthDto> GetBlobStorageHealthAsync();
     Task<BlobStorageItemDto> CreateTestBlobAsync();
     Task<int> WipeBlobStorageAsync();
+    Task<BlobUploadResult> UploadFileTest(string fileName, IFormFile file, string? blobName = null);
 }
 
 public class BlobService : IBlobService

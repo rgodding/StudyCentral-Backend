@@ -52,7 +52,7 @@ public static class SeedData
 
     private static readonly Guid AssignmentId =
         Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
-    
+
     private static readonly Guid Assignment2Id =
         Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddabc");
 
@@ -82,10 +82,10 @@ public static class SeedData
 
     private static readonly Guid FileAttachedToAnnouncementId =
         Guid.Parse("78787878-7878-7878-7878-787878787878");
-    
+
     private static readonly Guid FileAttachedToSubmission1Id =
         Guid.Parse("89898989-8989-8989-8989-898989898989");
-    
+
     private static readonly Guid FileAttachedToSubmission2Id =
         Guid.Parse("90909090-9090-9090-9090-909090909090");
 
@@ -117,6 +117,33 @@ public static class SeedData
 
     private static readonly Guid ChatMessage5Id =
         Guid.Parse("20202020-2020-2020-2020-202020202020");
+
+    private static readonly Guid AssignmentTestAudioFileId =
+        Guid.Parse("f1000001-0000-0000-0000-000000000001");
+
+    private static readonly Guid AssignmentTestDocFileId =
+        Guid.Parse("f1000002-0000-0000-0000-000000000002");
+
+    private static readonly Guid AssignmentTestImageJpgFileId =
+        Guid.Parse("f1000003-0000-0000-0000-000000000003");
+
+    private static readonly Guid AssignmentTestImagePngFileId =
+        Guid.Parse("f1000004-0000-0000-0000-000000000004");
+
+    private static readonly Guid AssignmentTestMovieFileId =
+        Guid.Parse("f1000005-0000-0000-0000-000000000005");
+
+    private static readonly Guid AssignmentTestPdfNoTitleFileId =
+        Guid.Parse("f1000006-0000-0000-0000-000000000006");
+
+    private static readonly Guid AssignmentTestPdfTitleFileId =
+        Guid.Parse("f1000007-0000-0000-0000-000000000007");
+
+    private static readonly Guid AssignmentTestTextFileId =
+        Guid.Parse("f1000008-0000-0000-0000-000000000008");
+
+    private static readonly Guid AssignmentTestVideoFileId =
+        Guid.Parse("f1000009-0000-0000-0000-000000000009");
 
     public static void Seed(ModelBuilder modelBuilder)
     {
@@ -326,7 +353,7 @@ public static class SeedData
                 Description = "Submit a proposal for your group project",
                 CourseId = CourseId
             }
-            );
+        );
     }
 
     private static void SeedSubmissions(
@@ -400,10 +427,12 @@ public static class SeedData
             });
     }
 
-    private static void SeedFiles(
-        ModelBuilder modelBuilder)
+    private static void SeedFiles(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<StudyFile>().HasData(
+            // -----------------
+            // ASSIGNMENT FILES - Demo Assignment
+            // -----------------
             new StudyFile
             {
                 Id = StudyFileId,
@@ -412,8 +441,8 @@ public static class SeedData
                 FileType = FileType.Document,
                 ContentType = "application/vnd.oasis.opendocument.text",
                 Size = 9172,
-                AltText = "Course syllabus",
-                StudyFolderId = FolderId,
+                AltText = "Assignment test file 1",
+                AssignmentId = AssignmentId,
                 UploadedById = TeacherId
             },
             new StudyFile
@@ -424,8 +453,8 @@ public static class SeedData
                 FileType = FileType.Document,
                 ContentType = "application/vnd.oasis.opendocument.text",
                 Size = 9207,
-                AltText = "Week 1 lecture slides",
-                StudyFolderId = ChildFolderId,
+                AltText = "Assignment test file 2",
+                AssignmentId = AssignmentId,
                 UploadedById = TeacherId
             },
             new StudyFile
@@ -436,8 +465,8 @@ public static class SeedData
                 FileType = FileType.Pdf,
                 ContentType = "application/pdf",
                 Size = 17797,
-                AltText = "Announcement file",
-                AnnouncementId = AnnouncementWithFileId,
+                AltText = "Assignment PDF test file",
+                AssignmentId = AssignmentId,
                 UploadedById = TeacherId
             },
             new StudyFile
@@ -448,110 +477,225 @@ public static class SeedData
                 FileType = FileType.Document,
                 ContentType = "application/vnd.oasis.opendocument.text",
                 Size = 204800,
-                AltText = "Submission 1 code",
-                SubmissionId = SubmissionId,
-                UploadedById = StudentId
+                AltText = "Assignment document test file",
+                AssignmentId = AssignmentId,
+                UploadedById = TeacherId
             },
             new StudyFile
             {
                 Id = FileAttachedToSubmission2Id,
                 FileName = "studycentral-testfile5.pdf",
                 BlobName = "studycentral-testfile5.pdf",
-                FileType = FileType.Document,
+                FileType = FileType.Pdf,
                 ContentType = "application/pdf",
                 Size = 409600,
-                AltText = "Submission 2 code",
-                SubmissionId = SubmissionId,
-                UploadedById = StudentId
+                AltText = "Assignment PDF test file",
+                AssignmentId = AssignmentId,
+                UploadedById = TeacherId
+            },
+
+            // -----------------
+            // ASSIGNMENT FILES - Database Assignment
+            // -----------------
+            new StudyFile
+            {
+                Id = AssignmentTestAudioFileId,
+                FileName = "testaudio.mp3",
+                BlobName = "testaudio.mp3",
+                FileType = FileType.Audio,
+                ContentType = "audio/mpeg",
+                Size = 1536000,
+                AltText = "Assignment audio test file",
+                AssignmentId = TestAssignmentId,
+                UploadedById = TeacherId
+            },
+            new StudyFile
+            {
+                Id = AssignmentTestDocFileId,
+                FileName = "testdoc.odt",
+                BlobName = "testdoc.odt",
+                FileType = FileType.Document,
+                ContentType = "application/vnd.oasis.opendocument.text",
+                Size = 9172,
+                AltText = "Assignment document test file",
+                AssignmentId = TestAssignmentId,
+                UploadedById = TeacherId
+            },
+            new StudyFile
+            {
+                Id = AssignmentTestImageJpgFileId,
+                FileName = "testimage.jpg",
+                BlobName = "testimage.jpg",
+                FileType = FileType.Image,
+                ContentType = "image/jpeg",
+                Size = 245760,
+                AltText = "Assignment JPG image test file",
+                AssignmentId = TestAssignmentId,
+                UploadedById = TeacherId
+            },
+            new StudyFile
+            {
+                Id = AssignmentTestImagePngFileId,
+                FileName = "testimage.png",
+                BlobName = "testimage.png",
+                FileType = FileType.Image,
+                ContentType = "image/png",
+                Size = 196608,
+                AltText = "Assignment PNG image test file",
+                AssignmentId = TestAssignmentId,
+                UploadedById = TeacherId
+            },
+            new StudyFile
+            {
+                Id = AssignmentTestMovieFileId,
+                FileName = "testmovie.mov",
+                BlobName = "testmovie.mov",
+                FileType = FileType.Video,
+                ContentType = "video/quicktime",
+                Size = 5242880,
+                AltText = "Assignment MOV video test file",
+                AssignmentId = TestAssignmentId,
+                UploadedById = TeacherId
+            },
+
+            // -----------------
+            // ASSIGNMENT FILES - Project Proposal
+            // -----------------
+            new StudyFile
+            {
+                Id = AssignmentTestPdfNoTitleFileId,
+                FileName = "testpdf-notitle.pdf",
+                BlobName = "testpdf-notitle.pdf",
+                FileType = FileType.Pdf,
+                ContentType = "application/pdf",
+                Size = 17797,
+                AltText = "Assignment PDF without title test file",
+                AssignmentId = Assignment2Id,
+                UploadedById = TeacherId
+            },
+            new StudyFile
+            {
+                Id = AssignmentTestPdfTitleFileId,
+                FileName = "testpdf-title.pdf",
+                BlobName = "testpdf-title.pdf",
+                FileType = FileType.Pdf,
+                ContentType = "application/pdf",
+                Size = 17797,
+                AltText = "Assignment PDF with title test file",
+                AssignmentId = Assignment2Id,
+                UploadedById = TeacherId
+            },
+            new StudyFile
+            {
+                Id = AssignmentTestTextFileId,
+                FileName = "testtext.txt",
+                BlobName = "testtext.txt",
+                FileType = FileType.Document,
+                ContentType = "text/plain",
+                Size = 2048,
+                AltText = "Assignment text test file",
+                AssignmentId = Assignment2Id,
+                UploadedById = TeacherId
+            },
+            new StudyFile
+            {
+                Id = AssignmentTestVideoFileId,
+                FileName = "testvideo.mp4",
+                BlobName = "testvideo.mp4",
+                FileType = FileType.Video,
+                ContentType = "video/mp4",
+                Size = 4194304,
+                AltText = "Assignment MP4 video test file",
+                AssignmentId = Assignment2Id,
+                UploadedById = TeacherId
             }
-            
-            );
+        );
     }
-    
+
     private static void SeedChat(ModelBuilder modelBuilder)
-{
-    modelBuilder.Entity<ChatRoom>().HasData(
-        new ChatRoom
-        {
-            Id = CourseChatRoomId,
-            Name = "System Integration Chat",
-            Type = ChatRoomType.Course,
-            CourseId = CourseId,
-            CreatedAt = SeedDate
-        });
+    {
+        modelBuilder.Entity<ChatRoom>().HasData(
+            new ChatRoom
+            {
+                Id = CourseChatRoomId,
+                Name = "System Integration Chat",
+                Type = ChatRoomType.Course,
+                CourseId = CourseId,
+                CreatedAt = SeedDate
+            });
 
-    modelBuilder.Entity<ChatRoomMember>().HasData(
-        new ChatRoomMember
-        {
-            ChatRoomId = CourseChatRoomId,
-            UserId = TeacherId,
-            JoinedAt = SeedDate
-        },
-        new ChatRoomMember
-        {
-            ChatRoomId = CourseChatRoomId,
-            UserId = StudentId,
-            JoinedAt = SeedDate
-        },
-        new ChatRoomMember
-        {
-            ChatRoomId = CourseChatRoomId,
-            UserId = TestStudentId,
-            JoinedAt = SeedDate
-        },
-        new ChatRoomMember
-        {
-            ChatRoomId = CourseChatRoomId,
-            UserId = TestSubmissionStudent1Id,
-            JoinedAt = SeedDate
-        },
-        new ChatRoomMember
-        {
-            ChatRoomId = CourseChatRoomId,
-            UserId = TestSubmissionStudent2Id,
-            JoinedAt = SeedDate
-        });
+        modelBuilder.Entity<ChatRoomMember>().HasData(
+            new ChatRoomMember
+            {
+                ChatRoomId = CourseChatRoomId,
+                UserId = TeacherId,
+                JoinedAt = SeedDate
+            },
+            new ChatRoomMember
+            {
+                ChatRoomId = CourseChatRoomId,
+                UserId = StudentId,
+                JoinedAt = SeedDate
+            },
+            new ChatRoomMember
+            {
+                ChatRoomId = CourseChatRoomId,
+                UserId = TestStudentId,
+                JoinedAt = SeedDate
+            },
+            new ChatRoomMember
+            {
+                ChatRoomId = CourseChatRoomId,
+                UserId = TestSubmissionStudent1Id,
+                JoinedAt = SeedDate
+            },
+            new ChatRoomMember
+            {
+                ChatRoomId = CourseChatRoomId,
+                UserId = TestSubmissionStudent2Id,
+                JoinedAt = SeedDate
+            });
 
-    modelBuilder.Entity<ChatMessage>().HasData(
-        new ChatMessage
-        {
-            Id = ChatMessage1Id,
-            ChatRoomId = CourseChatRoomId,
-            SenderId = TeacherId,
-            Content = "Welcome to the System Integration course chat.",
-            CreatedAt = SeedDate.AddMinutes(1)
-        },
-        new ChatMessage
-        {
-            Id = ChatMessage2Id,
-            ChatRoomId = CourseChatRoomId,
-            SenderId = StudentId,
-            Content = "Thanks. Is the first assignment already available?",
-            CreatedAt = SeedDate.AddMinutes(2)
-        },
-        new ChatMessage
-        {
-            Id = ChatMessage3Id,
-            ChatRoomId = CourseChatRoomId,
-            SenderId = TeacherId,
-            Content = "Yes, you can find it under assignments.",
-            CreatedAt = SeedDate.AddMinutes(3)
-        },
-        new ChatMessage
-        {
-            Id = ChatMessage4Id,
-            ChatRoomId = CourseChatRoomId,
-            SenderId = TestStudentId,
-            Content = "Should we submit individually or as a group?",
-            CreatedAt = SeedDate.AddMinutes(4)
-        },
-        new ChatMessage
-        {
-            Id = ChatMessage5Id,
-            ChatRoomId = CourseChatRoomId,
-            SenderId = TeacherId,
-            Content = "This one should be submitted individually.",
-            CreatedAt = SeedDate.AddMinutes(5)
-        });
-}
+        modelBuilder.Entity<ChatMessage>().HasData(
+            new ChatMessage
+            {
+                Id = ChatMessage1Id,
+                ChatRoomId = CourseChatRoomId,
+                SenderId = TeacherId,
+                Content = "Welcome to the System Integration course chat.",
+                CreatedAt = SeedDate.AddMinutes(1)
+            },
+            new ChatMessage
+            {
+                Id = ChatMessage2Id,
+                ChatRoomId = CourseChatRoomId,
+                SenderId = StudentId,
+                Content = "Thanks. Is the first assignment already available?",
+                CreatedAt = SeedDate.AddMinutes(2)
+            },
+            new ChatMessage
+            {
+                Id = ChatMessage3Id,
+                ChatRoomId = CourseChatRoomId,
+                SenderId = TeacherId,
+                Content = "Yes, you can find it under assignments.",
+                CreatedAt = SeedDate.AddMinutes(3)
+            },
+            new ChatMessage
+            {
+                Id = ChatMessage4Id,
+                ChatRoomId = CourseChatRoomId,
+                SenderId = TestStudentId,
+                Content = "Should we submit individually or as a group?",
+                CreatedAt = SeedDate.AddMinutes(4)
+            },
+            new ChatMessage
+            {
+                Id = ChatMessage5Id,
+                ChatRoomId = CourseChatRoomId,
+                SenderId = TeacherId,
+                Content = "This one should be submitted individually.",
+                CreatedAt = SeedDate.AddMinutes(5)
+            });
+    }
 }
