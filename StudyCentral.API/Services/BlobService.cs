@@ -41,6 +41,11 @@ public class BlobService : IBlobService
         _containerClient.CreateIfNotExists();
     }
 
+    public BlobService(BlobContainerClient containerClient)
+    {
+        _containerClient = containerClient;
+    }
+
     public async Task<BlobFileResult> GetFile(string blobName)
     {
         var blobClient = _containerClient.GetBlobClient(blobName);
@@ -79,7 +84,10 @@ public class BlobService : IBlobService
 
         using var stream = file.OpenReadStream();
 
-        await blobClient.UploadAsync(stream, httpHeaders);
+        await blobClient.UploadAsync(stream, new BlobUploadOptions
+        {
+            HttpHeaders = httpHeaders
+        });
 
         return new BlobUploadResult
         {
@@ -298,7 +306,10 @@ public class BlobService : IBlobService
 
         using var stream = file.OpenReadStream();
 
-        await blobClient.UploadAsync(stream, httpHeaders);
+        await blobClient.UploadAsync(stream, new BlobUploadOptions
+        {
+            HttpHeaders = httpHeaders
+        });
 
         return new BlobUploadResult
         {
