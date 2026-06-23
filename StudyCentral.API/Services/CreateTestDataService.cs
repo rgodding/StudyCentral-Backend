@@ -31,7 +31,7 @@ public class CreateTestDataService : ICreateTestDataService
     {
         var data = await LoadBigData();
 
-        await ResetAcademicDemoData();
+        await ResetAcademicDemoData(data);
 
         return await SeedData(data);
     }
@@ -64,45 +64,113 @@ public class CreateTestDataService : ICreateTestDataService
         return data;
     }
 
-    private async Task ResetAcademicDemoData()
+    private async Task ResetAcademicDemoData(CreateTestDataSet data)
     {
-        var usersWithPictures = await _dbContext.Users
-            .Where(u => u.ProfilePictureId != null)
+        var teacherEmails = data.Teachers
+            .Select(t => t.Email)
+            .Where(email => !string.IsNullOrWhiteSpace(email))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var demoCourseNames = data.Courses
+            .Select(c => c.Name)
+            .Where(name => !string.IsNullOrWhiteSpace(name))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var demoCourseIds = await _dbContext.Courses
+            .Where(c =>
+                demoCourseNames.Contains(c.Name) &&
+                c.TeacherId.HasValue &&
+                _dbContext.Users.Any(u =>
+                    u.Id == c.TeacherId.Value &&
+                    teacherEmails.Contains(u.Email)))
+            .Select(c => c.Id)
             .ToListAsync();
 
-        foreach (var user in usersWithPictures)
-            user.ProfilePictureId = null;
+        if (demoCourseIds.Count == 0)
+            return;
 
-        await _dbContext.SaveChangesAsync();
-
-        _dbContext.ChatMessages.RemoveRange(await _dbContext.ChatMessages.ToListAsync());
-        _dbContext.ChatRoomMembers.RemoveRange(await _dbContext.ChatRoomMembers.ToListAsync());
-        _dbContext.ChatRooms.RemoveRange(await _dbContext.ChatRooms.ToListAsync());
-        _dbContext.StudyFiles.RemoveRange(await _dbContext.StudyFiles.ToListAsync());
-        _dbContext.Submissions.RemoveRange(await _dbContext.Submissions.ToListAsync());
-
-        var folders = await _dbContext.StudyFolders.ToListAsync();
-        _dbContext.StudyFolders.RemoveRange(OrderFoldersForDeletion(folders));
-
-        _dbContext.Assignments.RemoveRange(await _dbContext.Assignments.ToListAsync());
-        _dbContext.Announcements.RemoveRange(await _dbContext.Announcements.ToListAsync());
-        _dbContext.CourseStudents.RemoveRange(await _dbContext.CourseStudents.ToListAsync());
-        _dbContext.Courses.RemoveRange(await _dbContext.Courses.ToListAsync());
-
-        await _dbContext.SaveChangesAsync();
-
-        var keepUserIds = new HashSet<Guid>
-        {
-            CreateTestDataServiceData.AdminId,
-            CreateTestDataServiceData.Teacher1Id,
-            CreateTestDataServiceData.Student1Id
-        };
-
-        var extraUsers = await _dbContext.Users
-            .Where(u => !keepUserIds.Contains(u.Id))
+        var demoAssignmentIds = await _dbContext.Assignments
+            .Where(a => demoCourseIds.Contains(a.CourseId))
+            .Select(a => a.Id)
             .ToListAsync();
 
-        _dbContext.Users.RemoveRange(extraUsers);
+        var demoAnnouncementIds = await _dbContext.Announcements
+            .Where(a => demoCourseIds.Contains(a.CourseId))
+            .Select(a => a.Id)
+            .ToListAsync();
+
+        var demoFolderIds = await _dbContext.StudyFolders
+            .Where(f => demoCourseIds.Contains(f.CourseId))
+            .Select(f => f.Id)
+            .ToListAsync();
+
+        var demoSubmissionIds = await _dbContext.Submissions
+            .Where(s => demoAssignmentIds.Contains(s.AssignmentId))
+            .Select(s => s.Id)
+            .ToListAsync();
+
+        var demoChatRoomIds = await _dbContext.ChatRooms
+            .Where(cr =>
+                cr.Type == ChatRoomType.Course &&
+                cr.CourseId.HasValue &&
+                demoCourseIds.Contains(cr.CourseId.Value))
+            .Select(cr => cr.Id)
+            .ToListAsync();
+
+        _dbContext.ChatMessages.RemoveRange(
+            await _dbContext.ChatMessages
+                .Where(m => demoChatRoomIds.Contains(m.ChatRoomId))
+                .ToListAsync());
+
+        _dbContext.ChatRoomMembers.RemoveRange(
+            await _dbContext.ChatRoomMembers
+                .Where(m => demoChatRoomIds.Contains(m.ChatRoomId))
+                .ToListAsync());
+
+        _dbContext.ChatRooms.RemoveRange(
+            await _dbContext.ChatRooms
+                .Where(cr => demoChatRoomIds.Contains(cr.Id))
+                .ToListAsync());
+
+        _dbContext.StudyFiles.RemoveRange(
+            await _dbContext.StudyFiles
+                .Where(f =>
+                    (f.AssignmentId.HasValue && demoAssignmentIds.Contains(f.AssignmentId.Value)) ||
+                    (f.AnnouncementId.HasValue && demoAnnouncementIds.Contains(f.AnnouncementId.Value)) ||
+                    (f.StudyFolderId.HasValue && demoFolderIds.Contains(f.StudyFolderId.Value)) ||
+                    (f.SubmissionId.HasValue && demoSubmissionIds.Contains(f.SubmissionId.Value)))
+                .ToListAsync());
+
+        _dbContext.Submissions.RemoveRange(
+            await _dbContext.Submissions
+                .Where(s => demoSubmissionIds.Contains(s.Id))
+                .ToListAsync());
+
+        var demoFolders = await _dbContext.StudyFolders
+            .Where(f => demoCourseIds.Contains(f.CourseId))
+            .ToListAsync();
+
+        _dbContext.StudyFolders.RemoveRange(OrderFoldersForDeletion(demoFolders));
+
+        _dbContext.Assignments.RemoveRange(
+            await _dbContext.Assignments
+                .Where(a => demoCourseIds.Contains(a.CourseId))
+                .ToListAsync());
+
+        _dbContext.Announcements.RemoveRange(
+            await _dbContext.Announcements
+                .Where(a => demoCourseIds.Contains(a.CourseId))
+                .ToListAsync());
+
+        _dbContext.CourseStudents.RemoveRange(
+            await _dbContext.CourseStudents
+                .Where(cs => demoCourseIds.Contains(cs.CourseId))
+                .ToListAsync());
+
+        _dbContext.Courses.RemoveRange(
+            await _dbContext.Courses
+                .Where(c => demoCourseIds.Contains(c.Id))
+                .ToListAsync());
 
         await _dbContext.SaveChangesAsync();
     }
@@ -213,7 +281,8 @@ public class CreateTestDataService : ICreateTestDataService
 
         await SeedCourseStudents(course.Id, courseSeed.StudentKeys, userIdsByKey, result);
         await SeedAnnouncements(course.Id, courseSeed.Announcements, announcementIdsByKey, result);
-        await SeedAssignments(course.Id, courseSeed.Assignments, userIdsByKey, assignmentIdsByKey, submissionIdsByKey, result);
+        await SeedAssignments(course.Id, courseSeed.Assignments, userIdsByKey, assignmentIdsByKey, submissionIdsByKey,
+            result);
         await SeedFolders(course.Id, courseSeed.Folders, folderIdsByKey, result);
         await SeedFiles(
             courseSeed.Files,
@@ -267,6 +336,11 @@ public class CreateTestDataService : ICreateTestDataService
             var announcement = await _dbContext.Announcements
                 .FirstOrDefaultAsync(a => a.CourseId == courseId && a.Name == announcementSeed.Name);
 
+            var createdAt = ResolvePastCreatedAt(
+                announcementSeed.CreatedAtOffsetDays,
+                announcementSeed.CreatedAtOffsetMinutes,
+                $"announcement '{announcementSeed.Key}'");
+
             if (announcement == null)
             {
                 announcement = new Announcement
@@ -275,7 +349,7 @@ public class CreateTestDataService : ICreateTestDataService
                     CourseId = courseId,
                     Name = announcementSeed.Name,
                     Content = announcementSeed.Content,
-                    CreatedAt = CreateTestDataServiceData.BaseDate
+                    CreatedAt = createdAt
                 };
 
                 _dbContext.Announcements.Add(announcement);
@@ -284,6 +358,7 @@ public class CreateTestDataService : ICreateTestDataService
             else
             {
                 announcement.Content = announcementSeed.Content;
+                announcement.CreatedAt = createdAt;
             }
 
             announcementIdsByKey[announcementSeed.Key] = announcement.Id;
@@ -676,6 +751,20 @@ public class CreateTestDataService : ICreateTestDataService
             return parsedValue;
 
         throw new InvalidOperationException($"Could not parse {typeof(TEnum).Name} for {description}.");
+    }
+
+    private static DateTime ResolvePastCreatedAt(int offsetDays, int offsetMinutes, string description)
+    {
+        var createdAt = CreateTestDataServiceData.BaseDate
+            .Date
+            .AddDays(offsetDays)
+            .AddMinutes(offsetMinutes);
+
+        if (createdAt >= DateTime.UtcNow)
+            throw new InvalidOperationException(
+                $"CreatedAt for {description} must be in the past. Offset days: {offsetDays}, offset minutes: {offsetMinutes}.");
+
+        return createdAt;
     }
 
     private static List<StudyFolder> OrderFoldersForDeletion(List<StudyFolder> folders)

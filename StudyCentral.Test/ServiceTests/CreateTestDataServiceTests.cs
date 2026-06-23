@@ -27,8 +27,17 @@ public class CreateTestDataServiceTests
         await service.CreateBig();
 
         // Assert
-        Assert.Equal(2, await dbContext.Users.CountAsync(u => u.Role == UserRole.Teacher));
-        Assert.Equal(50, await dbContext.Users.CountAsync(u => u.Role == UserRole.Student));
+        Assert.Equal(2, await dbContext.Users
+            .CountAsync(u =>
+                u.Role == UserRole.Teacher &&
+                (u.Email == "teacher@studycentral.dk" ||
+                 u.Email == "maria.lund.teacher@studycentral.dk")));
+
+        Assert.Equal(50, await dbContext.Users
+            .CountAsync(u =>
+                u.Role == UserRole.Student &&
+                u.Email.EndsWith("@studycentral.dk") &&
+                u.Email != "teststudent@studycentral.dk"));
         Assert.Equal(5, await dbContext.Courses.CountAsync());
         Assert.Equal(100, await dbContext.Assignments.CountAsync());
         Assert.Equal(200, await dbContext.Announcements.CountAsync());
@@ -42,7 +51,7 @@ public class CreateTestDataServiceTests
             .CountAsync(c => c.TeacherId == CreateTestDataServiceData.Teacher1Id));
 
         var otherTeacherId = await dbContext.Users
-            .Where(u => u.Role == UserRole.Teacher && u.Id != CreateTestDataServiceData.Teacher1Id)
+            .Where(u => u.Role == UserRole.Teacher && u.Email == "maria.lund.teacher@studycentral.dk")
             .Select(u => u.Id)
             .SingleAsync();
 
@@ -57,6 +66,12 @@ public class CreateTestDataServiceTests
         Assert.Equal(150, await dbContext.Announcements
             .Include(a => a.Course)
             .CountAsync(a => a.Course.TeacherId == CreateTestDataServiceData.Teacher1Id));
+
+        var announcements = await dbContext.Announcements.ToListAsync();
+        Assert.All(announcements, announcement =>
+            Assert.True(announcement.CreatedAt < DateTime.UtcNow));
+
+        Assert.True(announcements.Select(a => a.CreatedAt.Date).Distinct().Count() > 10);
 
         Assert.Equal(80, await dbContext.Assignments
             .Include(a => a.Course)
@@ -142,6 +157,8 @@ public class CreateTestDataServiceTests
         Assert.Equal(1, await dbContext.Courses.CountAsync());
         Assert.Equal(2, await dbContext.Assignments.CountAsync());
         Assert.Equal(3, await dbContext.Announcements.CountAsync());
+        Assert.All(await dbContext.Announcements.ToListAsync(), announcement =>
+            Assert.True(announcement.CreatedAt < DateTime.UtcNow));
         Assert.Equal(4, await dbContext.Submissions.CountAsync());
         Assert.Equal(5, await dbContext.StudyFolders.CountAsync());
         Assert.Equal(2, await dbContext.StudyFiles.CountAsync());

@@ -130,21 +130,27 @@ public static class CreateTestDataServiceData
                             Key = "single_announcement_welcome",
                             Name = "Welcome and Weekly Rhythm",
                             Content =
-                                "Welcome to the demo course. We will use announcements for lesson reminders, assignment notes, and small schedule changes."
+                                "Welcome to the demo course. We will use announcements for lesson reminders, assignment notes, and small schedule changes.",
+                            CreatedAtOffsetDays = -14,
+                            CreatedAtOffsetMinutes = 480
                         },
                         new()
                         {
                             Key = "single_announcement_lab",
                             Name = "Lab Groups for Wednesday",
                             Content =
-                                "On Wednesday we will work in pairs. Bring your notes from the first lecture and be ready to explain your approach."
+                                "On Wednesday we will work in pairs. Bring your notes from the first lecture and be ready to explain your approach.",
+                            CreatedAtOffsetDays = -9,
+                            CreatedAtOffsetMinutes = 615
                         },
                         new()
                         {
                             Key = "single_announcement_feedback",
                             Name = "Feedback Window",
                             Content =
-                                "Feedback for the first assignment will be posted before Friday afternoon. Use it before starting the next task."
+                                "Feedback for the first assignment will be posted before Friday afternoon. Use it before starting the next task.",
+                            CreatedAtOffsetDays = -4,
+                            CreatedAtOffsetMinutes = 900
                         }
                     ],
                     Assignments =
@@ -391,6 +397,8 @@ public sealed class CreateTestDataAnnouncementSeed
     public string Key { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
+    public int CreatedAtOffsetDays { get; set; }
+    public int CreatedAtOffsetMinutes { get; set; }
 }
 
 public sealed class CreateTestDataFolderSeed
