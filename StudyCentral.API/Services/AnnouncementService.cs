@@ -297,6 +297,7 @@ public class AnnouncementService : IAnnouncementService
 
         var announcements = await _dbContext.Announcements
             .Include(a => a.Course)
+            .ThenInclude(c => c.Teacher)
             .Include(a => a.StudyFiles)
             .Where(a => a.CourseId == courseId)
             .OrderByDescending(a => a.CreatedAt)
@@ -362,6 +363,7 @@ public class AnnouncementService : IAnnouncementService
         var announcements = await _dbContext.Announcements
             .Include(a => a.StudyFiles)
             .Include(a => a.Course)
+            .ThenInclude(c => c.Teacher)
             .Where(a => a.CourseId == courseId)
             .OrderByDescending(a => a.CreatedAt)
             .ToListAsync();
