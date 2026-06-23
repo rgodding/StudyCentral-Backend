@@ -74,12 +74,13 @@ public class TestBlobController : BaseTestController
         return Ok(result);
     }
 
-    [HttpPost("assign-testdata-to-assignments")]
+    [HttpPost("assign-testdata-to-resource-assignments-folder")]
     [SwaggerOperation(
-        Summary = "Assign testdata files to assignments",
-        Description = "Uploads every file from testdata and assigns the resulting StudyFile rows to assignments."
+        Summary = "Assign testdata files to resource Assignments folder",
+        Description =
+            "Uploads every file from wwwroot/testdata and assigns the resulting StudyFile rows to the Resources page Assignments folder."
     )]
-    public async Task<IActionResult> AssignTestDataFilesToAssignments()
+    public async Task<IActionResult> AssignTestDataFilesToResourceAssignmentsFolder()
     {
         var testDataPath = ResolveTestDataPath();
 
@@ -94,15 +95,14 @@ public class TestBlobController : BaseTestController
         if (filePaths.Count == 0)
             return NotFound($"No files found in test data directory: {testDataPath}");
 
-        var assignments = await _dbContext.Assignments
-            .Include(a => a.Course)
-            .OrderBy(a => a.Course.Name)
-            .ThenBy(a => a.CreatedAt)
-            .ThenBy(a => a.Name)
-            .ToListAsync();
+        var assignmentsFolder = await _dbContext.StudyFolders
+            .Include(f => f.Course)
+            .Where(f => f.Name == "Assignments")
+            .OrderBy(f => f.Course.Name)
+            .FirstOrDefaultAsync();
 
-        if (assignments.Count == 0)
-            return BadRequest("No assignments found. Create assignment test data first.");
+        if (assignmentsFolder == null)
+            return BadRequest("Resources folder named 'Assignments' was not found. Create seed folders first.");
 
         var fallbackUploaderId = await GetFallbackUploaderId();
 
@@ -111,14 +111,11 @@ public class TestBlobController : BaseTestController
 
         var results = new List<object>();
 
-        for (var index = 0; index < filePaths.Count; index++)
+        foreach (var filePath in filePaths)
         {
-            var filePath = filePaths[index];
-            var assignment = assignments[index % assignments.Count];
-
             var fileName = Path.GetFileName(filePath);
             var safeBlobFileName = fileName.Replace(" ", "_");
-            var blobName = $"assignments-testdata/{safeBlobFileName}";
+            var blobName = $"resource-testdata/{safeBlobFileName}";
             var contentType = GetContentType(filePath);
             var fileInfo = new FileInfo(filePath);
 
@@ -145,8 +142,6 @@ public class TestBlobController : BaseTestController
                     blobName);
             }
 
-            var uploaderId = assignment.Course.TeacherId ?? fallbackUploaderId.Value;
-
             var studyFile = await _dbContext.StudyFiles
                 .FirstOrDefaultAsync(f => f.BlobName == blobName);
 
@@ -159,11 +154,16 @@ public class TestBlobController : BaseTestController
                     ContentType = contentType,
                     Size = fileInfo.Length,
                     FileType = GetFileType(contentType, fileName),
-                    UploadedById = uploaderId,
-                    AssignmentId = assignment.Id,
-                    StudyFolderId = null,
+                    UploadedById = fallbackUploaderId.Value,
+
+                    // Resource page ownership
+                    StudyFolderId = assignmentsFolder.Id,
+
+                    // Clear other ownership
+                    AssignmentId = null,
                     AnnouncementId = null,
                     SubmissionId = null,
+
                     CreatedAt = DateTime.UtcNow
                 };
 
@@ -175,12 +175,16 @@ public class TestBlobController : BaseTestController
                 studyFile.ContentType = contentType;
                 studyFile.Size = fileInfo.Length;
                 studyFile.FileType = GetFileType(contentType, fileName);
-                studyFile.UploadedById = uploaderId;
-                studyFile.AssignmentId = assignment.Id;
-                studyFile.StudyFolderId = null;
+                studyFile.UploadedById = fallbackUploaderId.Value;
+                studyFile.UpdatedAt = DateTime.UtcNow;
+
+                // Resource page ownership
+                studyFile.StudyFolderId = assignmentsFolder.Id;
+
+                // Clear other ownership
+                studyFile.AssignmentId = null;
                 studyFile.AnnouncementId = null;
                 studyFile.SubmissionId = null;
-                studyFile.UpdatedAt = DateTime.UtcNow;
             }
 
             results.Add(new
@@ -189,10 +193,10 @@ public class TestBlobController : BaseTestController
                 BlobName = blobName,
                 ContentType = contentType,
                 Size = fileInfo.Length,
-                AssignmentId = assignment.Id,
-                AssignmentName = assignment.Name,
-                CourseId = assignment.CourseId,
-                CourseName = assignment.Course.Name,
+                StudyFolderId = assignmentsFolder.Id,
+                StudyFolderName = assignmentsFolder.Name,
+                CourseId = assignmentsFolder.CourseId,
+                CourseName = assignmentsFolder.Course.Name,
                 BlobAlreadyExisted = blobAlreadyExisted
             });
         }
@@ -201,10 +205,11 @@ public class TestBlobController : BaseTestController
 
         return Ok(new
         {
-            Message = "Testdata files assigned to assignments.",
+            Message = "Testdata files assigned to the Resources page Assignments folder.",
             TestDataPath = testDataPath,
             FileCount = results.Count,
-            AssignmentCount = assignments.Count,
+            StudyFolderId = assignmentsFolder.Id,
+            StudyFolderName = assignmentsFolder.Name,
             Files = results
         });
     }
@@ -223,7 +228,7 @@ public class TestBlobController : BaseTestController
     private string ResolveTestDataPath()
     {
         var webRootPath = _environment.WebRootPath
-            ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                          ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
 
         var webRootTestDataPath = Path.Combine(webRootPath, "testdata");
 

@@ -118,31 +118,31 @@ public static class SeedData
     private static readonly Guid ChatMessage5Id =
         Guid.Parse("20202020-2020-2020-2020-202020202020");
 
-    private static readonly Guid AssignmentTestAudioFileId =
+    private static readonly Guid ResourceTestAudioFileId =
         Guid.Parse("f1000001-0000-0000-0000-000000000001");
 
-    private static readonly Guid AssignmentTestDocFileId =
+    private static readonly Guid ResourceTestDocFileId =
         Guid.Parse("f1000002-0000-0000-0000-000000000002");
 
-    private static readonly Guid AssignmentTestImageJpgFileId =
+    private static readonly Guid ResourceTestImageJpgFileId =
         Guid.Parse("f1000003-0000-0000-0000-000000000003");
 
-    private static readonly Guid AssignmentTestImagePngFileId =
+    private static readonly Guid ResourceTestImagePngFileId =
         Guid.Parse("f1000004-0000-0000-0000-000000000004");
 
-    private static readonly Guid AssignmentTestMovieFileId =
+    private static readonly Guid ResourceTestMovieFileId =
         Guid.Parse("f1000005-0000-0000-0000-000000000005");
 
-    private static readonly Guid AssignmentTestPdfNoTitleFileId =
+    private static readonly Guid ResourceTestPdfNoTitleFileId =
         Guid.Parse("f1000006-0000-0000-0000-000000000006");
 
-    private static readonly Guid AssignmentTestPdfTitleFileId =
+    private static readonly Guid ResourceTestPdfTitleFileId =
         Guid.Parse("f1000007-0000-0000-0000-000000000007");
 
-    private static readonly Guid AssignmentTestTextFileId =
+    private static readonly Guid ResourceTestTextFileId =
         Guid.Parse("f1000008-0000-0000-0000-000000000008");
 
-    private static readonly Guid AssignmentTestVideoFileId =
+    private static readonly Guid ResourceTestVideoFileId =
         Guid.Parse("f1000009-0000-0000-0000-000000000009");
 
     public static void Seed(ModelBuilder modelBuilder)
@@ -431,7 +431,7 @@ public static class SeedData
     {
         modelBuilder.Entity<StudyFile>().HasData(
             // -----------------
-            // ASSIGNMENT FILES - Demo Assignment
+            // RESOURCE FILES - Course Materials
             // -----------------
             new StudyFile
             {
@@ -441,8 +441,8 @@ public static class SeedData
                 FileType = FileType.Document,
                 ContentType = "application/vnd.oasis.opendocument.text",
                 Size = 9172,
-                AltText = "Assignment test file 1",
-                AssignmentId = AssignmentId,
+                AltText = "Course syllabus",
+                StudyFolderId = FolderId,
                 UploadedById = TeacherId
             },
             new StudyFile
@@ -453,10 +453,14 @@ public static class SeedData
                 FileType = FileType.Document,
                 ContentType = "application/vnd.oasis.opendocument.text",
                 Size = 9207,
-                AltText = "Assignment test file 2",
-                AssignmentId = AssignmentId,
+                AltText = "Week 1 lecture slides",
+                StudyFolderId = ChildFolderId,
                 UploadedById = TeacherId
             },
+
+            // -----------------
+            // RESOURCE FILES - Assignments folder
+            // -----------------
             new StudyFile
             {
                 Id = FileAttachedToAnnouncementId,
@@ -465,8 +469,8 @@ public static class SeedData
                 FileType = FileType.Pdf,
                 ContentType = "application/pdf",
                 Size = 17797,
-                AltText = "Assignment PDF test file",
-                AssignmentId = AssignmentId,
+                AltText = "Assignment resource PDF",
+                StudyFolderId = TestFolderId,
                 UploadedById = TeacherId
             },
             new StudyFile
@@ -477,8 +481,8 @@ public static class SeedData
                 FileType = FileType.Document,
                 ContentType = "application/vnd.oasis.opendocument.text",
                 Size = 204800,
-                AltText = "Assignment document test file",
-                AssignmentId = AssignmentId,
+                AltText = "Assignment resource document",
+                StudyFolderId = TestFolderId,
                 UploadedById = TeacherId
             },
             new StudyFile
@@ -489,124 +493,116 @@ public static class SeedData
                 FileType = FileType.Pdf,
                 ContentType = "application/pdf",
                 Size = 409600,
-                AltText = "Assignment PDF test file",
-                AssignmentId = AssignmentId,
+                AltText = "Assignment resource PDF",
+                StudyFolderId = TestFolderId,
                 UploadedById = TeacherId
             },
-
-            // -----------------
-            // ASSIGNMENT FILES - Database Assignment
-            // -----------------
             new StudyFile
             {
-                Id = AssignmentTestAudioFileId,
+                Id = ResourceTestAudioFileId,
                 FileName = "testaudio.mp3",
                 BlobName = "testaudio.mp3",
                 FileType = FileType.Audio,
                 ContentType = "audio/mpeg",
                 Size = 1536000,
-                AltText = "Assignment audio test file",
-                AssignmentId = TestAssignmentId,
+                AltText = "Assignment resource audio",
+                StudyFolderId = TestFolderId,
                 UploadedById = TeacherId
             },
             new StudyFile
             {
-                Id = AssignmentTestDocFileId,
+                Id = ResourceTestDocFileId,
                 FileName = "testdoc.odt",
                 BlobName = "testdoc.odt",
                 FileType = FileType.Document,
                 ContentType = "application/vnd.oasis.opendocument.text",
                 Size = 9172,
-                AltText = "Assignment document test file",
-                AssignmentId = TestAssignmentId,
+                AltText = "Assignment resource document",
+                StudyFolderId = TestFolderId,
                 UploadedById = TeacherId
             },
             new StudyFile
             {
-                Id = AssignmentTestImageJpgFileId,
+                Id = ResourceTestImageJpgFileId,
                 FileName = "testimage.jpg",
                 BlobName = "testimage.jpg",
                 FileType = FileType.Image,
                 ContentType = "image/jpeg",
                 Size = 245760,
-                AltText = "Assignment JPG image test file",
-                AssignmentId = TestAssignmentId,
+                AltText = "Assignment resource JPG image",
+                StudyFolderId = TestFolderId,
                 UploadedById = TeacherId
             },
             new StudyFile
             {
-                Id = AssignmentTestImagePngFileId,
+                Id = ResourceTestImagePngFileId,
                 FileName = "testimage.png",
                 BlobName = "testimage.png",
                 FileType = FileType.Image,
                 ContentType = "image/png",
                 Size = 196608,
-                AltText = "Assignment PNG image test file",
-                AssignmentId = TestAssignmentId,
+                AltText = "Assignment resource PNG image",
+                StudyFolderId = TestFolderId,
                 UploadedById = TeacherId
             },
             new StudyFile
             {
-                Id = AssignmentTestMovieFileId,
+                Id = ResourceTestMovieFileId,
                 FileName = "testmovie.mov",
                 BlobName = "testmovie.mov",
                 FileType = FileType.Video,
                 ContentType = "video/quicktime",
                 Size = 5242880,
-                AltText = "Assignment MOV video test file",
-                AssignmentId = TestAssignmentId,
+                AltText = "Assignment resource MOV video",
+                StudyFolderId = TestFolderId,
                 UploadedById = TeacherId
             },
-
-            // -----------------
-            // ASSIGNMENT FILES - Project Proposal
-            // -----------------
             new StudyFile
             {
-                Id = AssignmentTestPdfNoTitleFileId,
+                Id = ResourceTestPdfNoTitleFileId,
                 FileName = "testpdf-notitle.pdf",
                 BlobName = "testpdf-notitle.pdf",
                 FileType = FileType.Pdf,
                 ContentType = "application/pdf",
                 Size = 17797,
-                AltText = "Assignment PDF without title test file",
-                AssignmentId = Assignment2Id,
+                AltText = "Assignment resource PDF without title",
+                StudyFolderId = TestFolderId,
                 UploadedById = TeacherId
             },
             new StudyFile
             {
-                Id = AssignmentTestPdfTitleFileId,
+                Id = ResourceTestPdfTitleFileId,
                 FileName = "testpdf-title.pdf",
                 BlobName = "testpdf-title.pdf",
                 FileType = FileType.Pdf,
                 ContentType = "application/pdf",
                 Size = 17797,
-                AltText = "Assignment PDF with title test file",
-                AssignmentId = Assignment2Id,
+                AltText = "Assignment resource PDF with title",
+                StudyFolderId = TestFolderId,
                 UploadedById = TeacherId
             },
             new StudyFile
             {
-                Id = AssignmentTestTextFileId,
+                Id = ResourceTestTextFileId,
                 FileName = "testtext.txt",
                 BlobName = "testtext.txt",
                 FileType = FileType.Document,
                 ContentType = "text/plain",
                 Size = 2048,
-                AltText = "Assignment text test file",
-                AssignmentId = Assignment2Id,
+                AltText = "Assignment resource text file",
+                StudyFolderId = TestFolderId,
                 UploadedById = TeacherId
             },
             new StudyFile
             {
-                Id = AssignmentTestVideoFileId,
+                Id = ResourceTestVideoFileId,
                 FileName = "testvideo.mp4",
                 BlobName = "testvideo.mp4",
                 FileType = FileType.Video,
                 ContentType = "video/mp4",
                 Size = 4194304,
-                AltText = "Assignment MP4 video test file",
-                AssignmentId = Assignment2Id,
+                AltText = "Assignment resource MP4 video",
+                StudyFolderId = TestFolderId,
                 UploadedById = TeacherId
             }
         );
